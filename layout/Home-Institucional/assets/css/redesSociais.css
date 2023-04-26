@@ -1,0 +1,51 @@
+
+/*----rede social do topo------*/
+#header-portal .fill-top path {
+    fill:#363636;
+}
+/*-----------------------------*/
+
+/*----rede social do footer------*/
+#footer-portal .fill-down path {
+    fill: #fff;
+}
+/*-----------------------------*/
+
+/*----rede social do menuMobile------*/
+#navbarsExample08 .fill-down path {
+    fill: #fff;
+}
+/*-----------------------------*/
+
+
+#footer-portal .home-barra-midias-sociais-not-interna {
+    max-width: 100%;
+    display: flex;
+    position: inherit;
+    justify-content: flex-start;
+}
+
+
+@media (min-width: 0px) and (max-width:990px) {
+
+
+    #footer-portal .home-barra-midias-sociais-not-interna {
+        justify-content: center;
+    }
+
+    .nav-item .home-barra-midias-sociais-not-interna {
+        max-width: 100%;
+        display: flex;
+        justify-content: space-between;
+        position: inherit;
+        margin-inline: 24px;
+    }
+}
+
+@media (min-width: 990px) and (max-width: 3000px) {
+
+    .nav-item .navb{
+        display:none;
+        }
+
+    }

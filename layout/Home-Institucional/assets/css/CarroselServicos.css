@@ -1,0 +1,208 @@
+.icon-service
+/* CSS da parte do filtro de servicos em destaque na pagina home do Portal. */
+
+.icon-service {
+    width: 70px;
+    height: 45px;
+    display: block;
+    text-indent: -99999px;
+    background-position: center;
+    margin: 0 auto;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: contain;
+
+}
+
+
+
+.ajustes {
+    width: 100%;
+    display: flex;
+    height: 56px;
+    justify-content: center;
+    align-items: center;
+    padding-inline: 0px;
+}
+
+figure {
+    margin: 0 0 0rem;
+}
+
+#servicos-destaque #corousel-servicos-destaque a:hover {
+    box-shadow: 0 6px 3px -1px white;
+}
+
+#servicos-destaque {
+    background-color: #04002b;
+    min-height: 290px;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    padding-top: 30px;
+    color: #fff;
+}
+
+#servicos-destaque h2.servicos-destaque-titulo {
+    font-weight: bold;
+}
+
+#filtro-destaque {
+    background-color: #a8292d;
+    padding: 10px 20px;
+}
+
+#filtro-destaque .destaque-categoria {
+    float: left;
+    padding-right: 10px;
+}
+
+
+#filtro-servicos-destaque {
+    padding: 0 100px;
+}
+
+#corousel-servicos-destaque {
+    margin-top: 10px;
+    padding: 0 100px;
+}
+
+#corousel-servicos-destaque .corousel-item .icon-service .disabled {
+    background-color: #c1c1c1;
+    color: #000;
+    display: none;
+}
+
+
+#corousel-servicos-destaque a {
+    color: #fff;
+    font-size: 12px;
+    text-align: center;
+    background-color: #363636;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    display: block;
+
+    text-decoration: none;
+    margin-bottom: 6%;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.corousel-servicos-destaque-item figure {
+    min-height: 120px;
+    max-height: 120px;
+}
+
+.corousel-servicos-destaque-item .icon-destaque {
+    background-color: #525252;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+span.icon-destaque-item figcaption.text-destaque {
+    font-size: 12px;
+    padding: 5px 0;
+}
+
+.chk-label .chk-input+.chk-bubble {
+    width: 18px;
+    height: 18px;
+    background-color: #e0e0e0;
+    border: 3px solid #e0e0e0;
+    display: inline-block;
+    border-radius: 50%;
+    margin-right: 5px;
+    position: relative;
+    top: 3px;
+}
+
+.chk-label .chk-input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.chk-label {
+    padding-left: 8px;
+}
+
+
+
+/* //Responsividade: */
+@media (min-width: 501px) and (max-width: 900px) {
+
+    .swiper-grid-column>.swiper-wrapper {
+        flex-direction: row;
+    }
+
+    #servicos-destaque #filtro-destaque .destaque-categoria {
+        float: none;
+        font-size: 20px;
+        padding: 10px 0;
+    }
+
+
+    #corousel-servicos-destaque .corousel-servicos-destaque-item figure {
+        min-height: 120px;
+        max-height: 210px;
+    }
+
+    #corousel-servicos-destaque .corousel-servicos-destaque-item figcaption .text-destaque {
+        font-size: 15px;
+    }
+
+
+}
+
+    @media (max-width: 500px) {
+        .swiper-grid-column>.swiper-wrapper {
+
+            flex-direction: row;
+        }
+
+        section#servicos-destaque {
+            padding-bottom: 40px;
+        }
+
+        #filtro-destaque {
+            padding: 15px 20px 30px;
+        }
+
+        #filtro-destaque .destaque-categoria {
+            float: none;
+            font-size: 20px;
+            padding: 10px 0;
+        }
+
+        #servicos-destaque {
+        
+            min-height: 100%;
+        }
+
+        div#filtro-servicos-destaque {
+            padding: 0 0;
+        }
+
+        #filtro-servicos-destaque .servicos-destaque-titulo {
+            font-size: 35px;
+            padding-bottom: 25px;
+        }
+        
+    
+
+    #servicos-destaque #corousel-servicos-destaque {
+        margin-top: 10px;
+        padding: 0 0;
+    }
+
+    #corousel-servicos-destaque .corousel-servicos-destaque-item figure {
+        max-height: 210px;
+    }
+
+    #corousel-servicos-destaque figcaption .text-destaque {
+        font-size: 15px;
+    }
+
+
+}

@@ -1,0 +1,279 @@
+@import url(https://fonts.googleapis.com/css?family=Nunito);
+@import url("https://fonts.googleapis.com/css?family=Raleway:900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace+SC&display=swap');
+
+
+:root {
+    --background: 266, 16%, 92%;
+    --text-primary: 0, 0%, 0%;
+    /* Colors */
+    --black: 0, 0%, 0%;
+    --white: 0, 0%, 100%;
+    --red: 347, 84%, 68%;
+    --orange: 23, 84%, 68%;
+    --yellow: 52, 84%, 68%;
+    --green: 114, 84%, 68%;
+    --teal: 163, 84%, 68%;
+    --blue: 219, 84%, 68%;
+    --purple: 279, 84%, 68%;
+    --pink: 312, 84%, 68%;
+}
+
+
+/* evento do texto descrição */
+.center{
+    width: 100%;
+    /* height: 100vh; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.descricao{
+    color: #fff;
+    width: 70%;
+    font-size: 30px;
+    display: block;
+    text-align: center;
+}
+@keyframes an{
+    from{
+        opacity: 0;
+        transform: perspective(500px) translate3d(-35px, -40px, -150px) rotate3d(1, -1, 0, 35deg);
+    }
+    to{
+        opacity: 1;
+        transform: perspective(500px) translate3d(0, 0, 0);
+    }
+}
+.char{
+    font-size: 40px;
+    height: 40px;
+    animation: an 1s ease-out 1 both;
+    display: inline-block;
+}
+/* --------------------------------------------------------------------------- */
+
+
+/* Evento do titulo */
+#container {
+    position: absolute;
+    margin: auto;
+    width: 38%;
+    height: 18%;
+    top: 0;
+    bottom: 0;
+
+    filter: url(#threshold) blur(0.6px);
+}
+
+#text1,
+#text2 {
+    position: absolute;
+    width: 100%;
+    display: inline-block;
+
+    font-family: "Raleway", sans-serif;
+    font-size: 80pt;
+
+    text-align: center;
+
+    user-select: none;
+}
+/* ---------------------------------------------------- */
+
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 20px;
+    font-weight: 600;
+    padding: 6px 15px;
+    border-radius: 20px
+}
+
+.navbar a:hover,
+.navbar a.active {
+    background: #00a3b9
+}
+
+nav.navbar {
+    right: 0;
+    position: fixed;
+    font-size: 23px;
+}
+.nav-position {
+    display: flex;
+    position: absolute;
+    z-index: 1000;
+    align-items: center;
+}
+.logo{
+    color:#fff;
+    font-size: 41px;
+    text-decoration: none;
+    font-weight: bolder;
+    font-family: 'Bruno Ace SC', cursive;
+}
+.logo:hover{
+    background-image: linear-gradient(90deg, hsla(var(--red), 1) 0%, hsla(var(--orange), 1) 12.5%, hsla(var(--yellow), 1) 25%, hsla(var(--green), 1) 37.5%, hsla(var(--teal), 1) 50%, hsla(var(--blue), 1) 62.5%, hsla(var(--blue), 1) 75%, hsla(var(--purple), 1) 87.5%, hsla(var(--pink), 1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-animation: rainbow 20s linear infinite;
+}
+@-webkit-keyframes rainbow {
+    0% {
+    background-position: 0 0;
+   }
+    25% {
+    background-position: 25em 0;
+   }
+    50% {
+    background-position: 50em 0;
+   }
+    75% {
+    background-position: 75em 0;
+   }
+    100% {
+    background-position: 99em 0;
+   }
+   }
+
+body {
+    margin: 0;
+    padding: 0;
+    perspective: 1px;
+    transform-style: preserve-3d;
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    /* font-family: Nunito; */
+    font-family: Inter;
+}
+
+h1 {
+    font-size: 250%
+}
+
+p {
+    font-size: 140%;
+    line-height: 150%;
+    color: #333;
+}
+
+.slide {
+    position: relative;
+    padding: 25vh 10%;
+    min-height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+    box-shadow: 0 -1px 10px rgba(0, 0, 0, .7);
+    transform-style: inherit;
+}
+
+img {
+    position: absolute;
+    top: 50%;
+    left: 74%;
+    width: 320px;
+    height: 240px;
+    transform: translateZ(.25px) scale(.75) translateX(-94%) translateY(-100%) rotate(2deg);
+    padding: 10px;
+    border-radius: 5px;
+    background: rgba(240, 230, 220, .7);
+    box-shadow: 0 0 8px rgba(0, 0, 0, .7);
+}
+#slide3 img {
+  
+        position: absolute;
+        top: 50%;
+        left: 30%;
+        width: 320px;
+        height: 240px;
+        transform: translateZ(.25px) scale(.75) translateX(-94%) translateY(-100%) rotate(2deg);
+        padding: 10px;
+        border-radius: 5px;
+        background: rgba(240, 230, 220, .7);
+        box-shadow: 0 0 8px rgba(0, 0, 0, .7);
+}
+#slide3 img:last-of-type {
+    transform: translateZ(0.4px) scale(.6) translateX(-104%) translateY(-40%) rotate(-5deg);
+}
+
+img:last-of-type {
+    transform: translateZ(.4px) scale(.6) translateX(-104%) translateY(-40%) rotate(-5deg);
+}
+
+.slide:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 0 8px 1px rgba(0, 0, 0, .7);
+}
+
+.title {
+    width: 50%;
+    padding: 5%;
+    border-radius: 5px;
+    background: rgba(240, 230, 220, .7);
+    box-shadow: 0 0 8px rgba(0, 0, 0, .7);
+}
+
+.slide:nth-child(2n) .title {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+.slide:nth-child(2n+1) .title {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.slide,
+.slide:before {
+    background: 50% 50% / cover;
+}
+
+.header {
+    text-align: center;
+    font-size: 175%;
+    color: #fff;
+    text-shadow: 0 2px 2px #000;
+}
+
+#title {
+    background-image: url("../img/header.jpg");
+    z-index: 2;
+}
+
+#title h1 {
+    transform: translateZ(.25px) scale(.75);
+    transform-origin: 50% 100%;
+
+}
+
+#slide1:before {
+    background-image: url("../img/quarto.jpeg");
+    transform: translateZ(-1px) scale(2);
+}
+
+#slide2 {
+    background-image: url("../img/pexels-lucie-liz-3165335.jpg");
+    z-index: 2;
+}
+
+#slide3:before {
+    background-image: url("../img/fundopaginas.jpg");
+    transform: translateZ(-1px) scale(2);
+}
+
+#slide4 {
+    background: #222;
+}

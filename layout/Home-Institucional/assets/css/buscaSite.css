@@ -1,0 +1,68 @@
+
+
+
+#busca-completa-site {
+    background-color: #fff;
+    min-height: 160px;
+    padding-top: 75px;
+}
+#busca-completa-site    .busca-completa-site-wrap {
+        background-color: #363636;
+        border-radius: 5px;
+}
+#busca-completa-site    .busca-completa-site-wrap  .row {
+            padding: 0 100px;
+        }
+
+
+    .busca-completa-site-title 
+        h2 {
+            color: #fff;
+            font-size: 30px;
+            font-weight: 900;
+            padding: 13px 0;
+        }
+    
+     
+
+
+        .busca-completa-site-form     form {
+            padding-top: 15px;
+            
+        }
+.input-group  .form-control {
+                    border-radius: 3px;
+                    border-top-right-radius: 0;
+                    border-bottom-right-radius: 0;
+}
+.input-group  .form-control .btn {
+                    background-color: #fff;
+                    border: none;
+}
+.input-group  .form-control .btn  svg {
+                        color: #878787;
+                    }
+                
+            
+        
+    
+
+
+@media (max-width: 500px) {
+    #busca-completa-site {
+        margin-bottom: 20px;
+        padding-top: 20px;
+    }
+#busca-completa-site .busca-completa-site-wrap {
+            padding-top: 20px;
+            padding-bottom: 20px;
+}
+#busca-completa-site .busca-completa-site-wrap .row {
+                padding: 0 0;
+            }
+        }
+    
+
+    
+
+

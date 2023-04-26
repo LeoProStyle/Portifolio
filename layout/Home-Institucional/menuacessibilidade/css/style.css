@@ -1,0 +1,190 @@
+
+/*a{
+    font-family: arial, helvetica, sans-serif;
+    font-size: 13px;
+    text-decoration: none;
+    color: #fff;
+
+}*/
+/* ------------------------------------------------------------- */
+
+.ring1 ul li {
+    transition: all 1s ease-out;
+    position: absolute;
+    top: 50%;
+    display: block;
+    border-radius: 133%;
+    width: 18vh;
+    height: 13vh;
+}
+
+.ring1 ul li a{
+    display: none;
+    
+}
+i.bi.teste {
+    font-size: 4VH;
+    color: #fff;
+    padding-bottom: 9px;
+    position: absolute;
+    top: -1px;
+    left: 4%;
+}
+.ring1 ul li a {
+    font-family: arial, helvetica, sans-serif;
+    font-size: 13px;
+    text-decoration: none;
+    color: white;
+}
+
+    .ring1 ul li a:focus, .ring1 ul li a:hover {
+        background: #d7373c;
+    }
+
+
+.ring1 { 
+     width: 20vh;
+     height: 1vh;
+     position: fixed;
+     max-width: 95vw;
+     right: 0;
+     top: 45%;
+     margin-top: -26vh;
+     z-index: 99999999;
+     font-family: Arial;
+     color: #000;
+     
+ }
+
+@media (max-width: 500px) {
+
+    .ring1 {
+        top: 35%;
+    }
+
+}
+
+    .ring1 ul.toggle.active {
+        position: relative;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        top: -13vh;
+        right: -3vh;
+        width: 39vh;
+        height: 33vh;
+        border-radius: 100vh;
+        overflow: hidden;
+    }
+
+    .ring1 ul.toggle.active li {
+        position: absolute;
+        top: 50%;
+        display: block;
+        transform-origin: top right;
+        overflow: hidden;
+        border-radius: 10%;
+        width: 18vh;
+        height: 13vh;
+        transition: all 1s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        border: 1px solid #fefefe;
+    }
+.ring1 ul.toggle li{
+    transition:cubic-bezier(1.18, 0.89, 0.32, 1.28);
+}
+
+
+.ring1 ul.toggle.active li:nth-of-type(1) {
+    transform: rotate(90deg);    
+    background: #000;
+    
+}
+
+.ring1 ul.toggle.active li:nth-of-type(2) {
+    transform: rotate(45deg);
+    background: #222;
+}
+
+.ring1 ul.toggle.active li:nth-of-type(3) {
+    transform: rotate(0deg);
+    background: #444;
+}
+
+.ring1 ul.toggle.active li:nth-of-type(4) {
+    transform: rotate(-45deg);
+    background: #666;
+}
+
+.ring1 ul.toggle.active li:nth-of-type(5) {
+    transform: rotate(-54deg);
+    background: #888;
+}
+
+.ring1 ul.toggle.active a {
+    display: block;
+    margin: -9px 0 0 3vh;
+    padding: 10vh 0 0 4vh;
+    box-sizing: border-box;
+    transform: rotate(24deg);
+    transform-origin: top right;
+    width: 20vh;
+    height: 23vh;
+    
+   
+}
+
+i.icones1  {
+width: 27%;
+height: 26%;
+font-size: 4vh;
+rotate: 242deg;
+display: flex;
+}
+i.icones2 {
+    width: 27%;
+    height: 26%;
+    font-size: 4vh;
+    rotate: 282deg;
+    display: flex;
+}
+i.icones3 {
+    width: 27%;
+    height: 26%;
+    font-size: 4vh;
+    rotate: 282deg;
+    display: flex;
+}
+img.icones5 {
+    width: 29%;
+    height: 36%;
+    rotate: 30deg;
+  
+}
+img.icones4 {
+    width: 5vh;
+    height: 5vh;
+    rotate:50deg;;
+}
+
+.center {
+    display: block;
+    position: absolute;
+    top: 40%;
+    right: -81%;
+    width: 22vh;
+    height: 6vh;
+    border-radius: 100px;
+    z-index: 10;
+    background: #444;
+    overflow: hidden;
+    border: 3px solid #fefefe;
+}
+
+.center a {
+    display: block;
+    transform: rotate(0);
+    width: 10vh;   
+        height: 16vh;
+        padding: 0% 0 0 6%;
+    box-sizing: border-box;
+}

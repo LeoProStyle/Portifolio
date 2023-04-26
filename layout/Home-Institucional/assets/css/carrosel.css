@@ -1,0 +1,265 @@
+:root {
+    --seplan: #080050;
+    --d: 2500ms;
+    --angle: 90deg;
+    --gradX: 100%;
+    --gradY: 50%;
+    --c1: rgba(168, 239, 255, 1);
+    --c2: rgba(168, 239, 255, 0.1);
+
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 90deg;
+    inherits: true;
+}
+
+@property --gradX {
+    syntax: '<percentage>';
+    initial-value: 50%;
+    inherits: true;
+}
+
+@property --gradY {
+    syntax: '<percentage>';
+    initial-value: 0%;
+    inherits: true;
+}
+
+.box {    
+    border: 0.35rem solid;   
+    border-image: conic-gradient(from var(--angle), var(--c2), var(--c1) 0.1turn, var(--c1) 0.15turn, var(--c2) 0.25turn) 30;
+    animation: borderRotate var(--d) linear infinite forwards;
+}
+
+figure {
+    margin: 0 0 0;
+}
+
+@keyframes borderRotate {
+    100% {
+        --angle: 420deg;
+    }
+}
+
+@keyframes borderRadial {
+    20% {
+        --gradX: 100%;
+        --gradY: 50%;
+    }
+
+    40% {
+        --gradX: 100%;
+        --gradY: 100%;
+    }
+
+    60% {
+        --gradX: 50%;
+        --gradY: 100%;
+    }
+
+    80% {
+        --gradX: 0%;
+        --gradY: 50%;
+    }
+
+    100% {
+        --gradX: 50%;
+        --gradY: 0%;
+    }
+}
+
+/* --------------------------------------------------------FIM-BORDA-ANIMAÇÃO */
+
+
+
+
+
+.row.d-flex.justify-content-between {
+    --bs-gutter-x: 0rem;
+}
+
+img.img-fluid.teste.sead {
+    width: 63px;
+}
+
+.botoes {
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    background: var(--seplan);
+    /* width: 300px;
+        height: 100px;*/
+}
+
+.texto-servicos {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.linke {
+    text-decoration: none;
+    display: flex;
+    color: black;
+}
+
+.linke:hover {
+    color: #fff;
+}
+
+.sead {
+    background: #562748;
+}
+
+
+
+
+
+#servicos-destaque {
+    background-color: #bebebe;
+}
+
+#servicos-destaque #filtro-destaque {
+    background-color: #363636
+}
+
+#servicos-destaque #corousel-servicos-destaque a {
+    background-color: #363636;
+}
+
+
+.carousel-noticias .swiper-wrapper .carousel-noticias-item figure figcaption {
+    background-color: var(--seplan);
+}
+
+.tabela {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 40px 0 rgba(0, 0, 0, .15);
+    -moz-box-shadow: 0 0 40px 0 rgba(0, 0, 0, .15);
+}
+
+.tema-titulo {
+    color: #fff;
+    font-size: 25px;
+    margin-top: 42px;
+
+}
+
+
+.titulo-tab {
+    width: auto;
+}
+
+.carousel-noticias-topo .swiper-wrapper .carousel-perfil figure img {
+    width: 100%;
+    background-image: url(../img/3x2.jpg);
+    background-size: cover;
+    height: 400px
+}
+
+.titulo {
+    color: #0099ff;
+    font-size: 25px;
+}
+
+.margem {
+    margin-top: 1%;
+}
+
+.swiper-custom-buttons {
+    width: 400px;
+    height: 40px;
+    margin: 5px auto;
+}
+
+.swiper-custom-buttons .swiper-pagination .swiper-pagination-bullet {
+    opacity: 1;
+    background-color: #e0e0e0;
+    width: 18px;
+    height: 18px;
+}
+
+.swiper-custom-buttons .swiper-pagination .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    background-color: #363636;
+    border: 3px #e0e0e0 solid;
+}
+
+#slider-top {
+    background: url("../img/background.jpeg");
+
+
+}
+
+.swiper-custom-buttons .swiper-button-next,
+.swiper-custom-buttons .swiper-button-prev {
+    position: relative;
+    z-index: 100;
+    width: 42px;
+    height: 25px;
+    background-color: #363636;
+    border-radius: 5px;
+    margin-top: -13px;
+}
+
+.swiper-custom-buttons .swiper-button-next:after,
+.swiper-custom-buttons .swiper-button-prev:after {
+    font-size: 10px;
+    color: #fff;
+    font-weight: 900;
+}
+
+
+.swiper-button-next {
+    float: right;
+}
+
+.swiper-button-prev {
+    float: left;
+}
+
+@media (max-width: 500px) {
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        display: none;
+    }
+
+    .txt-mobile-carrosel {
+        font-size: 25px;
+    }
+}
+
+@media (min-width: 501px) and (max-width: 900px) {
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        display: none;
+    }
+
+    .txt-mobile-carrosel {
+        font-size: 25px;
+    }
+}
+
+
+
+@media(max-width:768px) {
+    .margem {
+        margin-top: 25%;
+    }
+}
+
+@media (min-width: 0px) and (max-width: 990px) {
+
+    .carousel-noticias-topo .swiper-wrapper .carousel-perfil figure img {
+
+        height: 177px;
+    }
+
+    #slider-top {
+        margin-top: 3%;
+    }
+
+}
