@@ -1,0 +1,28 @@
+{
+  "systemParams": "win32-x64-108",
+  "modulesFolders": [
+    "vendor"
+  ],
+  "flags": [],
+  "linkedModules": [],
+  "topLevelPatterns": [
+    "aos@^2.3.4",
+    "bootstrap-icons@^1.10.4",
+    "bootstrap@^5.2.3",
+    "install@^0.13.0",
+    "swiper@^9.2.4"
+  ],
+  "lockfileEntries": {
+    "aos@^2.3.4": "https://registry.yarnpkg.com/aos/-/aos-2.3.4.tgz#eb1c29f5c1806a197cf6323080747547edd3db8e",
+    "bootstrap-icons@^1.10.4": "https://registry.yarnpkg.com/bootstrap-icons/-/bootstrap-icons-1.10.4.tgz#97f991eeb215ba8b63474b5fc508be599f2f7931",
+    "bootstrap@^5.2.3": "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.2.3.tgz#54739f4414de121b9785c5da3c87b37ff008322b",
+    "classlist-polyfill@^1.0.3": "https://registry.yarnpkg.com/classlist-polyfill/-/classlist-polyfill-1.2.0.tgz#935bc2dfd9458a876b279617514638bcaa964a2e",
+    "install@^0.13.0": "https://registry.yarnpkg.com/install/-/install-0.13.0.tgz#6af6e9da9dd0987de2ab420f78e60d9c17260776",
+    "lodash.debounce@^4.0.6": "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af",
+    "lodash.throttle@^4.0.1": "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4",
+    "ssr-window@^4.0.2": "https://registry.yarnpkg.com/ssr-window/-/ssr-window-4.0.2.tgz#dc6b3ee37be86ac0e3ddc60030f7b3bc9b8553be",
+    "swiper@^9.2.4": "https://registry.yarnpkg.com/swiper/-/swiper-9.2.4.tgz#2fa3cf58cef586366f674a10fa56fe6eec2026fe"
+  },
+  "files": [],
+  "artifacts": {}
+}
