@@ -3,4 +3,4 @@ exclude:
 - Gemfile.lock
 
 include:  
-- vendor
+- vendor/
