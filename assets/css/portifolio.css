@@ -221,7 +221,7 @@ p {
 
 .slide {
     position: relative;
-    padding: 55% 10%;
+    padding: 21% 10%;   
     min-height: 100%;
     width: 100%;
     box-sizing: border-box;
@@ -397,6 +397,9 @@ figcaption.tooltip.astro-ZKLRK7BA {
 
 @media (min-width: 0px) and (max-width: 990px) {
 
+    .slide{
+        padding: 55% 10%;
+    }
     #text1,
     #text2 {
         left: 0;
