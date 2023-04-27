@@ -256,6 +256,9 @@ p{
   .hover-text{
     display: none;
   }
+  #title span { 
+    font-size: 70px;
+}
 }
 
 @media (min-width: 990px) and (max-width: 1200px) {
