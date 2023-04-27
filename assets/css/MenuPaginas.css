@@ -261,7 +261,7 @@ p{
 }
 }
 
-@media (min-width: 990px) and (max-width: 1200px) {
+@media (min-width: 990px) and (max-width: 3000px) {
 
   .titulos{
     display: none;
