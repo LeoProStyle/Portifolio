@@ -6,10 +6,10 @@ const elts = {
 const texts = [
     "Engenheiro",
     "da",
-    "Computação",    
+    "Computação",
     "Desenvolvedor",
-    "Front - End",    
-    ":)"   
+    "Front - End",
+    ":)"
 ];
 
 const morphTime = 1;
@@ -83,20 +83,38 @@ function animate() {
 animate();
 
 // --------------------------------------------------------------------------------------
+// window.addEventListener("load", (event) => {
+//     var text = document.getElementById('text');
+//     var newDom = '';
+//     var animationDelay = 6;
+//     if (text) {
+//         for (let i = 0; i < text.innerText.length; i++) {
+//             newDom += '<span class="char">' + (text.innerText[i] == ' ' ? '&nbsp;' : text.innerText[i]) + '</span>';
+//         }
 
-var text = document.getElementById('text');
-var newDom = '';
-var animationDelay = 6;
+//         text.innerHTML = newDom;
 
-for(let i = 0; i < text.innerText.length; i++)
-{
-    newDom += '<span class="char">' + (text.innerText[i] == ' ' ? '&nbsp;' : text.innerText[i])+ '</span>';
-}
+//         var length = text.children.length;
 
-text.innerHTML = newDom;
-var length = text.children.length;
+//         for (let i = 0; i < length; i++) {
+//             text.children[i].style['animation-delay'] = animationDelay * i + 'ms';
+//         }
+//     }
+// });
 
-for(let i = 0; i < length; i++)
-{
-    text.children[i].style['animation-delay'] = animationDelay * i + 'ms';
+// suavisar o SCROLL DA PAGINA
+
+const links = document.querySelectorAll('a[href^="#"]');
+
+for (const link of links) {
+    link.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        const targetId = link.getAttribute("href");
+        const targetElement = document.querySelector(targetId);
+
+        targetElement.scrollIntoView({
+            behavior: "smooth",
+        });
+    });
 }

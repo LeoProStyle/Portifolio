@@ -6,12 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="assets/css/portifolio.css" />
+
+
     <title>Meu Portifolio</title>
 </head>
 
 <body>
-    <header>
+    <!-- <header>
         <div class="nav-position">
             <div>
 
@@ -24,7 +27,40 @@
                 <a href="#">Contato</a>
             </nav>
         </div>
-    </header>
+    </header> -->
+    <section class="Menu">
+        <!--menu-->
+        <header id="topo">
+            <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+                <div>
+                    <a href="#" class="logo">LeoProStyle</a>
+                </div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link " aria-current="page" href="#slide1">Sobre</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#slide2">Biografia</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " href="#slide3" tabindex="-1" aria-disabled="true">Páginas</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#slide4" tabindex="-1" aria-disabled="true">Contato</a>
+                        </li>
+                    </ul>
+                </div>
+                </div>
+            </nav>
+        </header>
+    </section>
+    <!--menu-->
 
     <div id="title" class="slide header">
 
@@ -62,6 +98,9 @@
                 Trabalho construindo interfaces de usuário da Web e produtos digitais com foco em design responsivo,
                 acessibilidade, desempenho e tecnologia de ponta.</p>
         </div>
+        <!-- botão flutuante -->
+        <a class="Botao-flutuante" href="#title"><i class="bi bi-arrow-up-circle-fill" width="40" height="40"></i></a>
+        <!-- botão flutuante -->
     </div>
 
     <div id="slide2" class="slide">
@@ -74,9 +113,14 @@
                 Desenvolvedor Front-End, realizando toda a manutenção e atualização das paginas para ultimas ferramentas
                 da atualidade.
             </p>
+            <!-- botão flutuante -->
+            <a class="Botao-flutuante" href="#title"><i class="bi bi-arrow-up-circle-fill" width="40"
+                    height="40"></i></a>
+            <!-- botão flutuante -->
         </div>
-        <img src="./assets/img/perfil.png">
         <img src="./assets/img/pexels-pixabay-270360.jpg">
+        <img src="./assets/img/perfil.png">
+
     </div>
 
     <div id="slide3" class="slide">
@@ -85,20 +129,69 @@
             <p> Você pode navegar pelos diferentes exemplos e explorar seu conteúdo. Sinta-se à vontade para interagir
                 com as páginas e experimentar as diferentes funcionalidades que foram incluídas. Esperamos que você
                 aproveite sua experiência e encontre inspiração para suas próprias criações!</p>
-<div class="d-flex justify-content-center">
-                <a class="btn btn-dark" href="MenuPaginas.html" role="button">Veja mais</a></div>
-
+            <div class="d-flex justify-content-center">
+                <a class="btn btn-dark edicao" href="MenuPaginas.html" role="button">Veja mais</a>
+            </div>
+            <!-- botão flutuante -->
+            <a class="Botao-flutuante" href="#title"><i class="bi bi-arrow-up-circle-fill" width="40"
+                    height="40"></i></a>
+            <!-- botão flutuante -->
         </div>
-        
-        <img src="./assets/img/exemplo01.jpg">
         <img src="./assets/img/pexels-pixabay-270360.jpg">
+        <img src="./assets/img/exemplo01.jpg">
+
     </div>
 
     <div id="slide4" class="slide header">
-        <h1>Em Construção</h1>
+        <h1>Contatos</h1>
+
+        <ul class="link-bar astro-ZKLRK7BA" style="--numLinks: 4;">
+
+            <li class="link astro-ZKLRK7BA">
+                <a href="https://github.com/LeoProStyle" target="_blank" class="astro-ZKLRK7BA">
+                    <figure class="astro-ZKLRK7BA">
+                        <img src="assets/icons/icon-github.svg" alt="" class="astro-ZKLRK7BA">
+                        <figcaption class="tooltip astro-ZKLRK7BA">Github</figcaption>
+                    </figure>
+                </a>
+            </li>
+            <li class="link astro-ZKLRK7BA">
+                <a href="mailto:leoprostyle@gmail.com?subject=Olá tudo bem!&amp;body=Olá Léo, estava olhando seu site..."
+                    target="_blank" class="astro-ZKLRK7BA">
+                    <figure class="astro-ZKLRK7BA">
+                        <img src="assets/icons/icon-email.svg" alt="" class="astro-ZKLRK7BA">
+                        <figcaption class="tooltip astro-ZKLRK7BA">Email</figcaption>
+                    </figure>
+                </a>
+            </li>           
+            <li class="link astro-ZKLRK7BA">
+                <a href="https://www.youtube.com/@leoprostylebr" target="_blank" class="astro-ZKLRK7BA">
+                    <figure class="astro-ZKLRK7BA">
+                        <img src="assets/icons/icon-youtube.svg" alt="" class="astro-ZKLRK7BA">
+                        <figcaption class="tooltip astro-ZKLRK7BA">Youtube</figcaption>
+                    </figure>
+                </a>
+            </li>           
+            <li class="link astro-ZKLRK7BA">
+                <a href="https://www.linkedin.com/in/leonardo-augusto-albuquerque/" target="_blank" class="astro-ZKLRK7BA">
+                    <figure class="astro-ZKLRK7BA">
+                        <img src="assets/icons/icon-linkedin.svg" alt="" class="astro-ZKLRK7BA">
+                        <figcaption class="tooltip astro-ZKLRK7BA">LinkedIn</figcaption>
+                    </figure>
+                </a>
+            </li>
+        </ul>
+         <!-- botão flutuante -->
+         <a class="Botao-flutuante" href="#title"><i class="bi bi-arrow-up-circle-fill" width="40"
+            height="40"></i></a>
+    <!-- botão flutuante -->
     </div>
+
+
     <script src="vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/PortifolioJS.js"></script>
+
+
 </body>
 
 </html>
