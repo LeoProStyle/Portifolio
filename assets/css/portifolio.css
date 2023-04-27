@@ -483,4 +483,11 @@ figcaption.tooltip.astro-ZKLRK7BA {
     padding-right: 6%;
     flex-direction: column;
     }
+
+    .tooltip:where(.astro-ZKLRK7BA) {        
+        transform: translate(16%) translateY(0.5em);       
+    }
+    .link:where(.astro-ZKLRK7BA):focus-within .tooltip:where(.astro-ZKLRK7BA), .link:where(.astro-ZKLRK7BA):has(:hover) .tooltip:where(.astro-ZKLRK7BA) {
+    transform: translate(28%) translateY(0em);
+    }
 }
