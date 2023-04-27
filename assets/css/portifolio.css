@@ -222,8 +222,8 @@ p {
 
 .slide {
     position: relative;
-    padding: 25vh 10%;
-    min-height: 100vh;
+    padding: 6% 10%;
+    min-height: 100%;
     width: 100%;
     box-sizing: border-box;
     box-shadow: 0 -1px 10px rgba(0, 0, 0, .7);
