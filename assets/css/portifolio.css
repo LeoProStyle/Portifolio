@@ -19,7 +19,7 @@
     --pink: 312, 84%, 68%;
 }
 
-body {
+/* body {
     margin: 0;
     padding: 0;
     perspective: 1px;
@@ -27,6 +27,17 @@ body {
     height: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
+    font-family: Nunito;
+    font-family: Inter;
+} */
+body.corpo{
+    margin: 0;
+    padding: 0;
+    perspective: 1px;
+    transform-style: preserve-3d;
+    height: 100%!important;
+    overflow-y: scroll!important;
+    overflow-x: hidden!important;
     /* font-family: Nunito; */
     font-family: Inter;
 }
