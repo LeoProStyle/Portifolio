@@ -164,7 +164,7 @@ p{
 .section-in{
   position: relative;
   display: block;
-  width: 100%;
+  width: 94%;
   overflow: hidden;
   border-radius: 6px;
   cursor: pointer;
@@ -258,6 +258,13 @@ p{
   }
   #title span { 
     font-size: 70px;
+}
+.section-in {
+  width: 89%;
+}
+
+.titulos {
+  padding-right: 10%;
 }
 }
 
