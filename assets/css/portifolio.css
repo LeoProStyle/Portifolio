@@ -33,13 +33,13 @@
 body.corpo{
     margin: 0;
     padding: 0;
-    perspective: 1px;
-    transform-style: preserve-3d;
+    perspective: 1px;    
     height: 100%!important;
     overflow-y: scroll!important;
     overflow-x: hidden!important;
     /* font-family: Nunito; */
     font-family: Inter;
+    transform-style: preserve-3d;
 }
 
 
