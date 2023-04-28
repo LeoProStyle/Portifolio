@@ -266,6 +266,9 @@ p{
 .titulos {
   padding-right: 10%;
 }
+main {
+  margin-top: 73%;
+}
 }
 
 @media (min-width: 990px) and (max-width: 3000px) {
@@ -273,4 +276,7 @@ p{
   .titulos{
     display: none;
   }
+  main {
+    margin-top: 10%;
+}
 }

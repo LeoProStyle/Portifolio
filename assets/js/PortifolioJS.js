@@ -8,8 +8,8 @@ const texts = [
     "da",
     "Computação",
     "Desenvolvedor",
-    "Front - End",
-    ":)"
+    "Front - End"
+    
 ];
 
 const morphTime = 1;
