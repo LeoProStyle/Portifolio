@@ -56,5 +56,27 @@
         width: 3%;
         top: 111%;
     }
-    
+@media (min-width: 0px) and (max-width: 990px){
 
+    .linhas{
+        position: absolute;
+        right: 49%;
+        width: 3%;
+        top: 111%;
+    }
+}
+    @media (min-width: 991px) and (max-width: 3000px){
+
+    .linhas {
+        position: absolute;
+        right: 49%;
+        width: 3%;
+        top: 74%;
+    }
+
+    .col-xl-6.col-sm-6.mb-5 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+}
