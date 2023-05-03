@@ -1,0 +1,232 @@
+
+    #team {
+        background: #eee !important;
+    }
+
+    .image-flip:hover {
+        z-index: 1;
+        position: relative;
+       
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus {
+        background-color: #108d6f;
+        border-color: #108d6f;
+        box-shadow: none;
+        outline: none;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #007b5e;
+        border-color: #007b5e;
+    }
+
+   
+
+        section .section-title {
+            text-align: center;
+            color: #363636;
+            
+            text-transform: uppercase;
+        }
+
+    #team .card {
+        border: none;
+        background: #ffffff;
+    }
+
+    .image-flip:hover .backside,
+    .image-flip.hover .backside {
+        -webkit-transform: rotateY(0deg);
+        -moz-transform: rotateY(0deg);
+        -o-transform: rotateY(0deg);
+        -ms-transform: rotateY(0deg);
+        transform: rotateY(0deg);
+        border-radius: .25rem;
+    }
+
+    .image-flip:hover .frontside,
+    .image-flip.hover .frontside {
+        -webkit-transform: rotateY(180deg);
+        -moz-transform: rotateY(180deg);
+        -o-transform: rotateY(180deg);
+        transform: rotateY(180deg);
+    }
+
+    .mainflip {
+        -webkit-transition: 1s;
+        -webkit-transform-style: preserve-3d;
+        -ms-transition: 1s;
+        -moz-transition: 1s;
+        transform: perspective(1000px);
+        -moz-transform-style: preserve-3d;
+        -ms-transform-style: preserve-3d;
+        transition: 1s;
+        transform-style: preserve-3d;
+        position: relative;
+    }
+
+    .frontside {
+        position: relative;
+        -webkit-transform: rotateY(0deg);
+        transform: rotateY(0deg);
+        z-index: 2;
+        margin-bottom: 30px;
+    }
+
+    .backside {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: white;
+        -webkit-transform: rotateY(-180deg);
+        -moz-transform: rotateY(-180deg);
+        -o-transform: rotateY(-180deg);
+        -ms-transform: rotateY(-180deg);
+        transform: rotateY(-180deg);
+        -webkit-box-shadow: 5px 7px 9px -4px rgb(158, 158, 158);
+        -moz-box-shadow: 5px 7px 9px -4px rgb(158, 158, 158);
+        box-shadow: 5px 7px 9px -4px rgb(158, 158, 158);
+    }
+
+    .frontside,
+    .backside {
+        -webkit-backface-visibility: hidden;
+        -moz-backface-visibility: hidden;
+        -ms-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-transition: 1s;
+        -webkit-transform-style: preserve-3d;
+        -moz-transition: 1s;
+        -moz-transform-style: preserve-3d;
+        -o-transition: 1s;
+        -o-transform-style: preserve-3d;
+        -ms-transition: 1s;
+        -ms-transform-style: preserve-3d;
+        transition: 1s;
+        transform-style: preserve-3d;
+    }
+
+        .frontside .card,
+        .backside .card {
+            min-height: 312px;
+        }
+
+            .backside .card a {
+                font-size: 18px;
+                color: #363636 !important;
+            }
+
+            .frontside .card .card-title,
+            .backside .card .card-title {
+                color: #363636 !important;
+            }
+
+            .frontside .card .card-body img {
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+            }
+
+
+    img.img-fluid.teste {
+        
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+    }
+
+
+    p.card-text {
+        font-size: 12px;
+    }
+    .fonte {
+        font-size: 17px;
+    }
+    ul.list-inline {
+        margin-bottom: 0rem;
+    }
+   /*Fontes titulos*/
+    .administracao-fonte {
+        font-size: 22px;
+    }
+    .seas-fonte {
+        font-size: 22px;
+    }
+    .seai-fonte {
+        font-size: 17px;
+    }
+    .sectur-fonte {
+        font-size: 22px;
+    }
+    .gp-fonte{
+        font-size:17px;
+    }
+
+    /*cores secretarias*/
+    .sead {
+        background: #00aeef;
+    }
+    .seas {
+        background: #8781bd;
+    }
+    .seai {
+        background: #648596;
+    }
+    .sectur {
+        background: #b41e8e;
+    }
+    .seduc {
+        background: #007dc5;
+    }
+    .seel {
+        background: #00a99d;
+    }
+    .sefin {
+        background: #662d91;
+    }
+    .gp {
+        background: #000;
+    }
+    .seg {
+        background: #6d6e71;
+    }
+    .sehab {
+        background: #8d3803;
+    }
+    .sema {
+        background: #a6ce39;
+    }
+    .seop {
+        background: #034ea2;
+    }
+    .seplan {
+        background: #743963;
+    }
+    .progem {
+        background: #896632;
+    }
+    .sesap {
+        background: #00a651;
+    }
+    .seasp {
+        background: #003974;
+    }
+    .sesurb {
+        background: #9d0a0e;
+    }
+    .setran {
+        background: #f15a22;
+    }
+    .setransp {
+        background: #f99d1c;
+    }
+    .seurb {
+        background: #f58220;
+    }
+
+    a.btn-sm {
+        text-decoration: none;
+    }
