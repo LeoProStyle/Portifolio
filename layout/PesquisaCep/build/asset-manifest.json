@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/LeoProStyle/Portifolio/tree/main/layout/PesquisaCep/static/css/main.543a871d.css",
-    "main.js": "/LeoProStyle/Portifolio/tree/main/layout/PesquisaCep/static/js/main.129a431e.js",
-    "index.html": "/LeoProStyle/Portifolio/tree/main/layout/PesquisaCep/index.html",
-    "main.543a871d.css.map": "/LeoProStyle/Portifolio/tree/main/layout/PesquisaCep/static/css/main.543a871d.css.map",
-    "main.129a431e.js.map": "/LeoProStyle/Portifolio/tree/main/layout/PesquisaCep/static/js/main.129a431e.js.map"
+    "main.css": "/Portifolio/layout/PesquisaCep/static/css/main.543a871d.css",
+    "main.js": "/Portifolio/layout/PesquisaCep/static/js/main.129a431e.js",
+    "index.html": "/Portifolio/layout/PesquisaCep/index.html",
+    "main.543a871d.css.map": "/Portifolio/layout/PesquisaCep/static/css/main.543a871d.css.map",
+    "main.129a431e.js.map": "/Portifolio/layout/PesquisaCep/static/js/main.129a431e.js.map"
   },
   "entrypoints": [
     "static/css/main.543a871d.css",
