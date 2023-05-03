@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/Portifolio/layout/PesquisaCep/static/css/main.543a871d.css",
-    "main.js": "/Portifolio/layout/PesquisaCep/static/js/main.80ece515.js",
-    "index.html": "/Portifolio/layout/PesquisaCep/index.html",
-    "main.543a871d.css.map": "/Portifolio/layout/PesquisaCep/static/css/main.543a871d.css.map",
-    "main.80ece515.js.map": "/Portifolio/layout/PesquisaCep/static/js/main.80ece515.js.map"
+    "main.css": "/Portifolio/layout/buscadorcep/static/css/main.543a871d.css",
+    "main.js": "/Portifolio/layout/buscadorcep/static/js/main.80ece515.js",
+    "index.html": "/Portifolio/layout/buscadorcep/index.html",
+    "main.543a871d.css.map": "/Portifolio/layout/buscadorcep/static/css/main.543a871d.css.map",
+    "main.80ece515.js.map": "/Portifolio/layout/buscadorcep/static/js/main.80ece515.js.map"
   },
   "entrypoints": [
     "static/css/main.543a871d.css",
