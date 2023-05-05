@@ -79,7 +79,7 @@ body {
 @keyframes loaderAnim {
     to {
         opacity: 1;
-        transform: scale3d(.5, .5, 1)
+        transform: scale3d(0.5, 0.5, 1)
     }
 }
 
@@ -229,6 +229,7 @@ a:focus-visible {
     position: relative;
     width: calc(100% - var(--grid-padding)*2)
 }
+
 
 .grid__cell-img-inner {
     background-position: 50% 50%;
@@ -435,6 +436,7 @@ a:focus-visible {
     body #cdawrap {
         pointer-events: auto
     }
+    
 
     body #cdawrap {
         --cda-left: auto;
@@ -491,6 +493,8 @@ a:focus-visible {
 #titlle span{
         font-size: 70px;
     }
+
+ 
 
    
 }
