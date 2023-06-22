@@ -1,355 +1,426 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="assets/css/Style.css" />
-    <title>Document</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="vendor/bootstrap-icons/font/bootstrap-icons.css" />
+	<link rel="stylesheet" href="assets/css/Style.css" />
+	<title>Document</title>
 </head>
+
+
+<style>
+	@-webkit-keyframes flow {
+		0% {
+			left: -20px;
+			opacity: 0;
+		}
+
+		50% {
+			left: 100px;
+			opacity: 0.3;
+		}
+
+		100% {
+			left: 180px;
+			opacity: 0;
+		}
+	}
+
+	@keyframes flow {
+		0% {
+			left: -20px;
+			opacity: 0;
+		}
+
+		50% {
+			left: 100px;
+			opacity: 0.3;
+		}
+
+		100% {
+			left: 180px;
+			opacity: 0;
+		}
+	}
+
+	.glow {
+		background: rgb(255, 255, 255);
+		width: 40px;
+		height: 100%;
+		z-index: 999;
+		position: absolute;
+		-webkit-animation: flow 1.5s linear infinite;
+		-moz-animation: flow 1.5s linear infinite;
+		-webkit-transform: skew(20deg);
+		-moz-transform: skew(20deg);
+		-o-transform: skew(20deg);
+		background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 1) 100%);
+		/* FF3.6+ */
+		background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(1%, rgba(255, 255, 255, 0)), color-stop(100%, rgba(255, 255, 255, 1)));
+		/* Chrome,Safari4+ */
+		background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 1) 100%);
+		/* Chrome10+,Safari5.1+ */
+		background: -o-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 1) 100%);
+		/* Opera 11.10+ */
+		background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 1) 100%);
+		/* IE10+ */
+		background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 1%, rgba(255, 255, 255, 1) 100%);
+		/* W3C */
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#ffffff', GradientType=1);
+		/* IE6-9 */
+		border-left: 1px solid #fff;
+	}
+</style>
+
 <body>
-  
-
-
-<!------------------------------------------ SERVIÇOS QUE TODAS SECRETARIAS USAM  ------------------------------------------------------------>
 
 
 
-<div class="container margem">
-	<div class="display-4">
-		<span>Serviços Online</span>
-	</div>
+	<!------------------------------------------ SERVIÇOS QUE TODAS SECRETARIAS USAM  ------------------------------------------------------------>
 
 
 
-	<div class="container">
-		<div class="row text-center">
+	<div class="container margem">
+		<div class="display-4">
+			<span>Serviços Online</span>
+		</div>
 
-			<span>Gerais</span>
-			<hr size="2" align="center" noshade class="linha">
 
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem Picsum</h5>
-					</div>
-				</a>
-			</div> <!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem Picsum</h5>
-					</div>
-				</a>
-			</div> <!-- End -->
+		<div class="container">
+			<div class="row text-center">
 
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem Picsum</h5>
-					</div>
-				</a>
-			</div> <!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div> <!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div> <!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			<!-- Team item -->
-			<div class="col-xl-2 col-6 mb-5">
-				<a href="#" class="icones">
-					<div class="bg-white rounded shadow-sm py-1"><img
-							src="https://picsum.photos/200/200" alt="" width="100"
-							class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-						<h5 class="mb-0">Lorem, ipsum.</h5>
-					</div>
-				</a>
-			</div>
-			<!-- End -->
-			
+				<span>Gerais</span>
+				<hr size="2" align="center" noshade class="linha">
 
-			<!------------------------------------------ SERVIÇOS ESPECIFICOS DE CADA SECRETÁRIA  ------------------------------------------------------------>
-			<div class="row">
-				<div class="col-xl-6 col-sm-6 mb-5">
-					<span>Sefin</span>
-					<hr size="2" align="center" noshade class="linha">
-					<!-- Team item -->
-					<div class="row">
-						<div class="col-xl-3 col-6 mb-5">
-							<a href="#"
-								class="icones">
-								<div class="bg-white rounded shadow-sm py-1"><img
-										src="https://picsum.photos/200/200" alt=""
-										width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-									<h5 class="mb-0">Lorem, ipsum.</h5>
-								</div>
-							</a>
+				<!-- Team item -->
+
+				<div class="col-xl-2 col-6 mb-5">
+
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1">
+							
+							<div class="ribbon ribbon-top-right"><span><div class="glow">&nbsp;</div>Novo</span></div>
+							<img src="https://picsum.photos/200/200" alt="" width="100"
+								class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem Picsum</h5>
 						</div>
-						<!-- End -->
-						<!-- Team item -->
-						<div class="col-xl-3 col-6 mb-5">
-							<a href="#"
-								class="icones">
-								<div class="bg-white rounded shadow-sm py-1"><img
-										src="https://picsum.photos/200/200" alt=""
-										width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-									<h5 class="mb-0">Lorem, ipsum.</h5>
-								</div>
-							</a>
-						</div>
-						<!-- End -->
-						<!-- Team item -->
-						<div class="col-xl-3 col-6 mb-5">
-							<a href="#"
-								class="icones">
-								<div class="bg-white rounded shadow-sm py-1"><img
-										src="https://picsum.photos/200/200" alt=""
-										width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-									<h5 class="mb-0">Lorem, ipsum.</h5>
-								</div>
-							</a>
-						</div>
-						<!-- End -->
-                        <!-- Team item -->
-						<div class="col-xl-3 col-6 mb-5">
-							<a href="#"
-								class="icones">
-								<div class="bg-white rounded shadow-sm py-1"><img
-										src="https://picsum.photos/200/200" alt=""
-										width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-									<h5 class="mb-0">Lorem, ipsum.</h5>
-								</div>
-							</a>
-						</div>
-						<!-- End -->
-                         <!-- Team item -->
-						<div class="col-xl-3 col-6 mb-5">
-							<a href="#"
-								class="icones">
-								<div class="bg-white rounded shadow-sm py-1"><img
-										src="https://picsum.photos/200/200" alt=""
-										width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-									<h5 class="mb-0">Lorem, ipsum.</h5>
-								</div>
-							</a>
-						</div>
-						<!-- End -->
-					</div>
+					</a>
 				</div>
-                <!-- ------------------------------------------sefin------------------------------------------------------------------- -->
-                <div class="d-flex linhas" style="height: 400px;">
-                    <div class="vr"></div>
-                  </div>
-
-                   <!-- ------------------------------------------planejamento------------------------------------------------------------------- -->
-
-				<div class="col-xl-6 col-sm-6 mb-5">
-					<span>Planejamento</span>
-					<hr size="2" align="center" noshade class="linha">
-					<!-- Team item -->
-					<div class="row">
-						<div class="col-xl-3 col-6 mb-5">
-							<a href="#"
-								class="icones">
-								<div class="bg-white rounded shadow-sm py-1"><img
-										src="https://picsum.photos/200/200" alt=""
-										width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-									<h5 class="mb-0">Lorem, ipsum.</h5>
-								</div>
-							</a>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1">
+							<div class="ribbon ribbon-top-right"><span><div class="glow">&nbsp;</div>Novo</span></div><img
+								src="https://picsum.photos/200/200" alt="" width="100"
+								class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem Picsum</h5>
 						</div>
-						<!-- End -->
+					</a>
+				</div> <!-- End -->
+
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem Picsum</h5>
+						</div>
+					</a>
+				</div> <!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div> <!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div> <!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+				<!-- Team item -->
+				<div class="col-xl-2 col-6 mb-5">
+					<a href="#" class="icones">
+						
+						<div class="bg-white rounded shadow-sm py-1"><img src="https://picsum.photos/200/200" alt=""
+								width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+							<h5 class="mb-0">Lorem, ipsum.</h5>
+						</div>
+					</a>
+				</div>
+				<!-- End -->
+
+
+				<!------------------------------------------ SERVIÇOS ESPECIFICOS DE CADA SECRETÁRIA  ------------------------------------------------------------>
+				<div class="row">
+					<div class="col-xl-6 col-sm-6 mb-5">
+						<span>Sefin</span>
+						<hr size="2" align="center" noshade class="linha">
 						<!-- Team item -->
-						<div class="col-xl-3 col-6 mb-5">
-							<a href="#"
-								class="icones">
-								<div class="bg-white rounded shadow-sm py-1"><img
-										src="https://picsum.photos/200/200" alt=""
-										width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-									<h5 class="mb-0">Lorem, ipsum.</h5>
-								</div>
-							</a>
+						<div class="row">
+							<div class="col-xl-3 col-6 mb-5">
+								<a href="#" class="icones">
+									<div class="bg-white rounded shadow-sm py-1"><img
+											src="https://picsum.photos/200/200" alt="" width="100"
+											class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+										<h5 class="mb-0">Lorem, ipsum.</h5>
+									</div>
+								</a>
+							</div>
+							<!-- End -->
+							<!-- Team item -->
+							<div class="col-xl-3 col-6 mb-5">
+								<a href="#" class="icones">
+									<div class="bg-white rounded shadow-sm py-1"><img
+											src="https://picsum.photos/200/200" alt="" width="100"
+											class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+										<h5 class="mb-0">Lorem, ipsum.</h5>
+									</div>
+								</a>
+							</div>
+							<!-- End -->
+							<!-- Team item -->
+							<div class="col-xl-3 col-6 mb-5">
+								<a href="#" class="icones">
+									<div class="bg-white rounded shadow-sm py-1"><img
+											src="https://picsum.photos/200/200" alt="" width="100"
+											class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+										<h5 class="mb-0">Lorem, ipsum.</h5>
+									</div>
+								</a>
+							</div>
+							<!-- End -->
+							<!-- Team item -->
+							<div class="col-xl-3 col-6 mb-5">
+								<a href="#" class="icones">
+									<div class="bg-white rounded shadow-sm py-1"><img
+											src="https://picsum.photos/200/200" alt="" width="100"
+											class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+										<h5 class="mb-0">Lorem, ipsum.</h5>
+									</div>
+								</a>
+							</div>
+							<!-- End -->
+							<!-- Team item -->
+							<div class="col-xl-3 col-6 mb-5">
+								<a href="#" class="icones">
+									<div class="bg-white rounded shadow-sm py-1"><img
+											src="https://picsum.photos/200/200" alt="" width="100"
+											class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+										<h5 class="mb-0">Lorem, ipsum.</h5>
+									</div>
+								</a>
+							</div>
+							<!-- End -->
 						</div>
-						<!-- End -->
-						<!-- Team item -->
-						<div class="col-xl-3 col-6 mb-5">
-							<a href="#"
-								class="icones">
-								<div class="bg-white rounded shadow-sm py-1"><img
-										src="https://picsum.photos/200/200" alt=""
-										width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-									<h5 class="mb-0">Lorem, ipsum.</h5>
-								</div>
-							</a>
-						</div>
-						<!-- End -->
+					</div>
+					<!-- ------------------------------------------sefin------------------------------------------------------------------- -->
+					<div class="d-flex linhas" style="height: 590px;">
+						<div class="vr"></div>
+					</div>
 
-                        <!-- Team item -->
-						<div class="col-xl-3 col-6 mb-5">
-							<a href="#"
-								class="icones">
-								<div class="bg-white rounded shadow-sm py-1"><img
-										src="https://picsum.photos/200/200" alt=""
-										width="100" class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
-									<h5 class="mb-0">Lorem, ipsum.</h5>
-								</div>
-							</a>
+					<!-- ------------------------------------------planejamento------------------------------------------------------------------- -->
+
+					<div class="col-xl-6 col-sm-6 mb-5">
+						<span>Planejamento</span>
+						<hr size="2" align="center" noshade class="linha">
+						<!-- Team item -->
+						<div class="row">
+							<div class="col-xl-3 col-6 mb-5">
+								<a href="#" class="icones">
+									<div class="bg-white rounded shadow-sm py-1"><img
+											src="https://picsum.photos/200/200" alt="" width="100"
+											class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+										<h5 class="mb-0">Lorem, ipsum.</h5>
+									</div>
+								</a>
+							</div>
+							<!-- End -->
+							<!-- Team item -->
+							<div class="col-xl-3 col-6 mb-5">
+								<a href="#" class="icones">
+									<div class="bg-white rounded shadow-sm py-1"><img
+											src="https://picsum.photos/200/200" alt="" width="100"
+											class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+										<h5 class="mb-0">Lorem, ipsum.</h5>
+									</div>
+								</a>
+							</div>
+							<!-- End -->
+							<!-- Team item -->
+							<div class="col-xl-3 col-6 mb-5">
+								<a href="#" class="icones">
+									<div class="bg-white rounded shadow-sm py-1"><img
+											src="https://picsum.photos/200/200" alt="" width="100"
+											class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+										<h5 class="mb-0">Lorem, ipsum.</h5>
+									</div>
+								</a>
+							</div>
+							<!-- End -->
+<style>
+							.icone {
+								position: relative;
+								display: inline-block;
+							}
+					
+							.icone:hover::before {
+								content: "\f067"; /* código do ícone - aqui você pode usar outros códigos de ícones */
+								font-family: "Font Awesome"; /* certifique-se de ter a fonte do ícone incluída no seu projeto */
+								position: absolute;
+								top: -20px; /* ajuste a posição vertical do ícone */
+								left: 0; /* ajuste a posição horizontal do ícone */
+								font-size: 20px; /* ajuste o tamanho do ícone */
+								color: red; /* ajuste a cor do ícone */
+							}
+</style>
+							<!-- Team item -->
+							<div class="col-xl-3 col-6 mb-5">
+								<a href="#" class="icones">
+									
+									<div class="bg-white rounded shadow-sm py-1">
+									
+										<img
+											src="https://picsum.photos/200/200" alt="" width="100"
+											class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm">
+										<h5 class="mb-0">Lorem, ipsum.</h5>
+									</div>
+								</a>
+							</div>
+							<!-- End -->
 						</div>
-						<!-- End -->
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
 
-    <script src="vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+		<script src="vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
