@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+
+    <style>
+        html {
+            color-scheme: dark;
+        }
+
+        table {
+            border-collapse: collapse;
+            background: #323232;
+            width: 100%;
+        }
+
+        caption,
+        th,
+        td {
+            padding: 1rem;
+        }
+
+        caption,
+        th {
+            text-align: left;
+        }
+
+        th {
+            background-color: #f5f5dc;
+            color: #323232;
+        }
+
+        tr:nth-of-type(2n) {
+            background: hsl(0 0% 0% / 0.1);
+        }
+
+        @media (max-width: 640px) {
+            th {
+                display: none;
+            }
+
+            td {
+                padding: 0.5rem 1rem;
+                display: block;
+            }
+
+            td:first-child {
+                padding-top: 2rem;
+            }
+
+            td:last-child {
+                padding-bottom: 2rem;
+            }
+
+            /* Declarar uma propriedade content e definir o texto para cada uma das células */
+
+            td:nth-of-type(1):before {
+                content: "Nome: ";
+            }
+
+            td:nth-of-type(2):before {
+                content: "Escola: ";
+            }
+
+            td:nth-of-type(3):before {
+                content: "Nascimento: ";
+            }
+
+            td:nth-of-type(4):before {
+                content: "Local: ";
+            }
+
+            td:nth-of-type(5):before {
+                content: "Morte: ";
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+      
+
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Escola</th>
+                <th>Nascimento</th>
+                <th>Local</th>
+                <th>Morte</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>Sócrates</td>
+                <td>Filosofia grega</td>
+                <td>469 a.C.</td>
+                <td>Atenas</td>
+                <td>399 a.C.</td>
+            </tr>
+
+            <tr>
+                <td>Platão</td>
+                <td>Platonismo</td>
+                <td>427 a.C.</td>
+                <td>Atenas</td>
+                <td>347 a.C.</td>
+            </tr>
+
+            <tr>
+                <td>Aristóteles</td>
+                <td>Aristotelismo</td>
+                <td>384 a.C.</td>
+                <td>Estagira</td>
+                <td>322 a.C.</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

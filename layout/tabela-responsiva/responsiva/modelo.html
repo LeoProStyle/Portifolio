@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+
+    <style>
+        html {
+            color-scheme: dark;
+        }
+
+        table {
+            border-collapse: collapse;
+            background: #323232;
+            width: 100%;
+        }
+
+        caption,
+        th,
+        td {
+            padding: 1rem;
+        }
+
+        caption,
+        th {
+            text-align: center;
+        }
+
+        th {
+            background-color: #f5f5dc;
+            color: #323232;
+        }
+
+        tr:nth-of-type(2n) {
+            background: hsl(0 0% 0% / 0.1);
+        }
+
+        @media (max-width: 640px) {
+            th {
+                display: none;
+            }
+
+            td {
+                padding: 0.5rem 1rem;
+
+                /* Exibir block ou grid */
+
+                display: block;
+
+                /* display: grid;
+                gap: 0.5rem;
+                grid-template-columns: 15ch auto; */
+            }
+
+            td:first-child {
+                padding-top: 2rem;
+            }
+
+            td:last-child {
+                padding-bottom: 2rem;
+            }
+
+            /* Obter o texto no atributo data- */
+
+            td::before {
+                content: attr(data-cell) ": ";
+                font-weight: 700;
+                text-transform: capitalize;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <caption>
+            Filósofos clássicos
+        </caption>
+
+        <thead>
+            <tr>
+                <th colspan="2" >Papel</th>               
+                <th rowspan="2">Escola</th>
+                <th colspan="2" >Nascimento</th>
+                <th>Local</th>
+                <th>Morte</th>
+            </tr>
+            <tr>
+                <th>Paginas</th>               
+                <th>Toneladas</th>  
+                
+                <th>Toneladas</th>  
+                <th>Toneladas</th>               
+            </tr>
+           
+        </thead>
+
+        <tbody>
+            <tr>
+                <td data-cell="nome">Sócrates</td>
+                <td data-cell="escola">Filosofia grega</td>
+                <td data-cell="nascimento">469 a.C.</td>
+                <td data-cell="local">Atenas</td>
+                <td data-cell="local">Atenas</td>
+                <td data-cell="morte">399 a.C.</td>
+            </tr>
+
+            <tr>
+                <td data-cell="nome">Platão</td>
+                <td data-cell="escola">Platonismo</td>
+                <td data-cell="nascimento">427 a.C.</td>
+                <td data-cell="local">Atenas</td>
+                <td data-cell="local">Atenas</td>
+                <td data-cell="morte">347 a.C.</td>
+            </tr>
+
+            <tr>
+                <td data-cell="nome">Aristóteles</td>
+                <td data-cell="escola">Aristotelismo</td>
+                <td data-cell="nascimento">384 a.C.</td>
+                <td data-cell="local">Estagira</td>
+                <td data-cell="local">Atenas</td>
+                <td data-cell="morte">322 a.C.</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
