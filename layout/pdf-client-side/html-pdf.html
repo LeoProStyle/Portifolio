@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+
+    <script src="lib/html2canvas/dist/html2canvas.min.js"></script>
+    <script src="lib/jspdf/dist/jspdf.umd.min.js"></script>
+
+    <style>
+        p {
+            background: #E0E0E0;
+            margin: 10px;
+            padding: 10px;
+            text-align: justify;
+            width: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus nisl orci. Nulla pretium in orci
+        quis venenatis. Maecenas a velit diam. Proin bibendum, risus non luctus lacinia, nunc enim maximus nulla, eu
+        efficitur ex enim in tellus. Etiam scelerisque eget dui non tempor. Praesent semper odio at nunc suscipit,
+        sed condimentum ipsum condimentum. Fusce in condimentum tortor, vel consectetur nulla. Nam non eros et
+        libero elementum sodales.
+    </p>
+
+    <input type="button" value="PDF" onclick="gerar()" />
+
+    <script>
+        function gerar() {
+            html2canvas(document.querySelector("p")).then(function (canvas) {
+                const doc = new window.jspdf.jsPDF();
+
+                doc.addImage(canvas.toDataURL("image/png"), "png", 20, 20);
+                doc.save("clone.pdf");
+            });
+        }
+    </script>
+</body>
+
+</html>

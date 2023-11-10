@@ -1,0 +1,285 @@
+@import url("https://fonts.googleapis.com/css?family=Raleway:900&display=swap");
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+   
+}
+
+
+
+main {
+    width: 100%;
+    padding-bottom: 20%;
+}
+
+body {
+ height:100%;
+ display:flex;
+ flex-direction:column;     
+ /* font-family: Source Sans Pro; */
+ 
+}
+
+
+.tabela {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 40px 0 rgba(0,0,0,.15);
+    -moz-box-shadow: 0 0 40px 0 rgba(0,0,0,.15);
+}
+
+:root {
+    --fundo-texto: #b5b5b5;
+}
+.titulo {
+    color: #000000;
+    font-size: 57px;
+    font-weight: bolder;
+    display: flex;
+    justify-content: center;
+    font-family: "Raleway", sans-serif;
+}
+.bandeira {
+    width: 346px;
+}
+
+.brasaoo {
+    width: 261px;
+}
+
+.pg-bandeira {
+    position: relative;
+}
+
+.pg-bandeira .intro-container {
+    position: relative;
+    z-index: 10;
+}
+
+.pg-bandeira .tiles-container {
+    margin-top: -232px;
+}
+
+.pg-bandeira .tiles-container-title h3 {
+    font-size: 6.192rem;
+    font-size: 5.16rem;
+    text-align: center;
+    padding-left: 25%;
+    font-weight: 900;
+    color: #e6eced;
+    margin: 0;
+    line-height: 0.579em;
+    font-family: 'futura-pt', sans-serif;
+}
+
+
+.tiles-list.aos-animate.aos-init {
+    position: relative;
+    background: var(--fundo-texto);
+    padding: 48px 46px;
+    display: inline-block;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+.pg-bandeira .tiles-list {
+    width: 75%;
+    margin-left: 25%;
+}
+
+.botao-teste {
+    padding-top: 10px;
+    margin-left: 61px;
+}
+
+a.button {
+    background:#363636;
+    border: none;
+    border-radius: 100px;
+    box-shadow: 0 10px 20px 0 rgba(0,0,0,.1);
+    color: #fff;
+    display: inline-block;
+    font-family: Roboto,sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    line-height: 1;
+    margin: auto;
+    padding: 1.2em 2.3em;
+    text-decoration: none;
+    word-spacing: 0.03em;
+}
+
+a.button:hover {
+    background: #363636;
+}
+
+
+#botao.button:hover {
+    background: #00a2ff;
+    color: #fff;
+}
+
+
+.pg-bandeira .intro-container .tile:before {
+    width: 3px;
+    height: 25%;
+    top: 30px;
+    right: 26px;
+}
+
+.pg-bandeira .intro-container .tile:after {
+    width: 25%;
+    height: 3px;
+    bottom: -30px;
+    left: 30px;
+}
+
+.pg-bandeira .intro-container .tile:before, .pg-bandeira .intro-container .tile:after {
+    content: '';
+    position: absolute;
+    background-color: var(--fundo-texto);
+    opacity: 0.50;
+}
+
+.texto-emblema {
+    width: 82%;
+}
+
+.texto-emblema.aos-animate.aos-init {
+    position: relative;
+    background: var(--fundo-texto);
+    padding: 48px 46px;
+    display: inline-block;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+}
+
+.justify-brasao {
+    display: flex;
+    justify-content: end;
+}
+
+#botao .botao-brasao {
+    margin-left: 185px;
+    padding-top: 10px;
+}
+
+.titulo-brasao.aos-init.aos-animate {
+    display: flex;
+}
+
+.titulo-brasao h3 {
+    font-size: 6.192rem;
+    font-size: 5.16rem;
+    text-align: center;
+    padding-left: 25%;
+    font-weight: 900;
+    color: #e6eced;
+    margin: 0;
+    line-height: 0.579em;
+    font-family: 'futura-pt', sans-serif;
+}
+
+.pg-bandeira .intro-container .traco-brasao:before {
+    width: 3px;
+    height: 25%;
+    top: 61px;
+    right: 281px;
+}
+
+.pg-bandeira .intro-container .traco-brasao:after {
+    width: 25%;
+    height: 3px;
+    bottom: -30px;
+    left: 317px;
+}
+
+.pg-bandeira .intro-container .traco-brasao:before, .pg-bandeira .intro-container .traco-brasao:after {
+    content: '';
+    position: absolute;
+    background-color: var(--fundo-texto);
+    opacity: 0.50;
+}
+
+.fonte-brasao {
+    font-size: 1.25rem;
+}
+
+.autor {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.logo-musica {
+    width: 400px;
+}
+
+
+
+
+
+@media(max-width:768px) {
+   
+}
+@media (min-width: 0px) and (max-width: 990px){
+
+    
+
+    .pg-bandeira .tiles-container {
+        margin-top: 24px;
+    }
+    .pg-bandeira .tiles-container-title h3 {
+        padding-left: 0%;
+        font-size: 4.16rem;
+        line-height: 0em;
+        margin: 7%;
+    }
+    .tiles-list.aos-animate.aos-init {
+        padding: 11px 17px;
+    }
+    .pg-bandeira .tiles-list {
+        width: 100%;
+         margin-left: 0%; 
+    }
+    .pg-bandeira .intro-container .tile:before, .pg-bandeira .intro-container .tile:after, .pg-bandeira .intro-container .traco-brasao:before, .pg-bandeira .intro-container .traco-brasao:after {
+        display: none;
+    }
+    .justify-brasao {       
+        justify-content: center;
+    }
+    #botao .botao-brasao {
+        margin-left: 74px;       
+    }
+
+    .titulo-brasao h3 {
+        padding-left: 0%;
+        font-size: 4.30rem;
+      /*  line-height: 0em;
+        margin: 7%;*/
+    }
+
+    .texto-emblema.aos-animate.aos-init {      
+        padding: 11px 17px;
+       
+    }
+    .texto-emblema {
+        width: 100%;
+    }
+
+    .titulo-brasao.aos-init.aos-animate {
+        margin-top: 34px;
+        justify-content: center;
+    }
+
+    .logo-musica {
+        width: 371px;
+    }
+    h3.titulo-hino {
+        line-height: 0.75em !important;
+        margin: 0%!important;
+    }
+    .tiles-container-title.margin-titulo.aos-init.aos-animate {
+        margin-top: 28%;
+    }
+    
+}

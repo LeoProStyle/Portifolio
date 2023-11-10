@@ -1,167 +1,48 @@
-@model AprovaGestor.App.CQRS.ViewModels.DadosRequerimentoViewModel
-
-@{
-    Layout = null;
-}
-
-<style>
-    body {
-        font-size: 15px;
-        font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .requerimentopdf {
-        padding: 30px;
-        background-color: white;
-        border: 1px solid black;
-        height: 1040px;
-        width: 800px;
-    }
-
-    .cabecalho-requerimento {
-        align-items: center;
-        text-align: center;
-    }
-
-        .cabecalho-requerimento .logo {
-            position: absolute;
-            margin-top: -28px;
-            margin-left: 42px;
-        }
-
-        .cabecalho-requerimento .logo-requerimento {
-            align-items: center;
-            width: 80px;
-        }
-
-        .cabecalho-requerimento .titulo-requerimento {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-
-    .subtitulo-requerimento {
-        font-size: 16px;
-        margin-top: 0px !important;
-    }
-
-    .cabecalho-requerimento .nome-requerimento {
-        font-size: 20px;
-        font-weight: bold;
-        /* font-style: italic; */
-    }
-
-
-
-    .corpo-requerimento {
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-        .corpo-requerimento .campo-requerimento {
-            font-weight: bold;
-        }
-
-        .corpo-requerimento .barra-corpo-requerimento {
-            border: 1px solid silver;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .corpo-requerimento .titulo-corpo-requerimento {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-    .label {
-        margin-bottom: 20px;
-    }
-
-
-
-
-    p.titulo-requerimento {
-        margin-bottom: 0em !important;
-    }
-
-    p.titulo-dadosProprietario {
-        border: 2px solid black;
-        background: #bebebe;
-        padding-left: 9px;
-    }
-
-    .assinatura-text {
-        text-align: center;
-    }
-</style>
-
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
+
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <title>Document</title>
 </head>
+
 <body>
+  <div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+          aria-expanded="true" aria-controls="collapseOne">
+          Recurso para leitura de PDF em voz alta "Navegador Microsoft Edge"
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <ol>
+            <li>
+              Realize o download do arquivo PDF
+            </li>
+            <li>
+              Clique com botão direito sobre o arquivo, selecione abrir com, em seguida navegador "Microsoft Edge".
+            </li>
+            <li>
 
-    <div class="requerimentopdf">
-        <header>
-            <div class="cabecalho-requerimento">
-                <div class="logo">
-
-                    <img class="logo-requerimento" src="../assets/img/logo.png" alt="Logo">
-
-                </div>
-                <div class="text-center">
-                    <p class="titulo-requerimento"> <u>Município da Estância Balneária de Praia Grande </u></p>
-                    <p class="subtitulo-requerimento">Estado de São Paulo</p>
-                    <p class="titulo-requerimento">Secretaria de Urbanismo</p>
-                    <p class="subtitulo-requerimento">Divisão de Obras Particulares</p>
-                    <p class="titulo-requerimento">Requerimento</p>
-                    <p class="nome-requerimento"><u>Alvará de Aprovação de Projeto</u></p>
-                </div>
-            </div>
-        </header>
-
-
-
-        <div class="corpo-requerimento">
-            <div class="container">
-                <div>
-                    <label class="campo-requerimento mt-5">Lançamentos: </label> <br />
-                    <label>
-                        @foreach (var item in Model.Lancamento)
-                        {
-                            @Model.Lancamento.FirstOrDefault().lancamento;
-                            <br />
-                        }
-                    </label>
-                </div>
-                <br />
-                <div>
-                    <label class="campo-requerimento">Requerente: </label> <label class="campo-requerimento">@Model.NomeRequerente </label>
-                </div>
-            </div>
-            <div class="barra-corpo-requerimento"></div>
-            <div class="container">
-                <div class="titulo-corpo-requerimento">Dados do Proprietário</div>
-                <label class="campo-requerimento">Nome Completo: </label> <label> @Model.NomeProprietario</label> <br />
-                <label class="campo-requerimento">E-mail: </label> <label> @Model.EmailProprietario</label> <br />
-                <label class="campo-requerimento">Documento: </label> <label> @Model.DocumentoProprietario</label> <br />
-            </div>
-            <div class="barra-corpo-requerimento"></div>
-            <div class="container">
-                <div class="titulo-corpo-requerimento">Dados do Profissional</div>
-                <label class="campo-requerimento">Nome Completo: </label> <label> @Model.NomeResponsavel</label> <br />
-                <label class="campo-requerimento">CPF: </label> <label> @Model.DocumentoResponsavel</label> <br />
-                <label class="campo-requerimento">Registro: </label> <label> </label> @Model.Registro<br /><br />
-            </div>
-
-            <div class="container text-center">
-                <label>Solicitação feita em @Model.DataSolicitacao</label>
-            </div>
+              Para começar, selecione Ler em Voz Alta na Leitura Avançada de ferramentas. Uma barra de ferramentas da
+              faixa de opções é exibida na parte superior da página depois que você inicia a Leitura em Voz Alta. A
+              barra de ferramentas inclui botões para reproduzir áudio, pular para o parágrafo seguinte ou anterior e
+              ajustar as opções de voz. As opções de voz permitem que você altere a voz do leitor e reduza ou acelere o
+              ritmo de leitura.
+              Para parar de ouvir, selecione o botão Pausar ou o X para fechar Ler em voz alta.
+            </li>
+          </ol>
         </div>
+      </div>
     </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 </body>
+
 </html>

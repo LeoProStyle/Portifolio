@@ -1,0 +1,158 @@
+.accordion .item .item-header h2 button.btn.btn-link {
+    background-color: #626262;
+    font-family: Source Sans Pro;
+    font-weight: bold;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+
+
+a.btn.w-100.style-btn:hover {
+    font-weight: bold;
+}
+
+.t-p {
+    font-size: 20px;
+}
+p {
+    font-size: 18px;
+}
+
+.fundo {
+    background: #743963;
+}
+
+span {
+    color: #fff;
+}
+
+.imagem {
+    width: 100%;
+}
+
+.alinhamento-botao {
+    display: flex;
+    justify-content: center;
+}
+
+.style-btn {
+    background: grey;
+}
+
+.style-btn:hover {
+    background: grey;
+    color: #fff;
+}
+
+.style-linha {
+    background: #626262;
+    opacity: 1;
+    border-top: none;
+}
+
+.titulo {
+    color: black;
+    font-size: 50px;
+}
+
+.sub-titulo {
+    color: black;
+    font-size: 20px;
+    text-decoration: underline;
+}
+
+.link-acesso {
+    text-decoration: none;
+    color: black;
+    font-weight: bolder;
+}
+
+.accordion .item {
+    border: none;
+    margin-bottom: 25px;
+    background: none;
+}
+
+.t-p {
+    color: rgb(46, 46, 46);
+    padding: 7px 30px 0px 30px;
+}
+
+/*.accordion .item .item-header h2 button.btn.btn-link {
+    background: #743963;
+    color: white;
+    border-radius: 0px;
+    font-family: 'Poppins';
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 2.5;
+    text-decoration: none;
+}*/
+
+.accordion .item .item-header {
+    border-bottom: none;
+    background: transparent;
+    padding: 0px;
+}
+
+.accordion .item .item-header h2 button {
+    color: white;
+    font-size: 20px;
+    padding: 15px;
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding-left: 58px;
+}
+
+.accordion .item .item-header h2 i {
+    float: right;
+    font-size: 30px;
+    color: #fff;
+    /* background-color: black; */
+    width: 60px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+button.btn.btn-link.collapsed i {
+    transform: rotate(0deg);
+}
+
+button.btn.btn-link i {
+    transform: rotate(180deg);
+    transition: 0.5s;
+}
+
+.imagem-mobile {
+    display: none;
+}
+
+@media (min-width: 0px) and (max-width: 990px) {
+    .imagem-mobile {
+        display: block;
+    }
+
+    .imagem {
+        display: none;
+    }
+
+    .alinhamento-botao {
+        margin: 1%;
+    }
+
+    .accordion .item .item-header h2 button {
+        padding-left: 19px;
+    }
+
+    span.px-5 {
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 991px) and (max-width: 3000px) {
+}

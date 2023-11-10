@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+</head>
+
+<style>
+    .carousel {
+  position: relative;
+}
+.carousel-item img {
+  object-fit: cover;
+}
+#carousel-thumbs {
+  background: rgba(255,255,255,.3);
+  bottom: 0;
+  left: 0;
+  padding: 0 50px;
+  right: 0;
+}
+#carousel-thumbs img {
+  border: 5px solid transparent;
+  cursor: pointer;
+}
+#carousel-thumbs img:hover {
+  border-color: rgba(255,255,255,.3);
+}
+#carousel-thumbs .selected img {
+  border-color: #fff;
+}
+.carousel-control-prev,
+.carousel-control-next {
+  width: 50px;
+}
+@media all and (max-width: 767px) {
+  .carousel-container #carousel-thumbs img {
+    border-width: 3px;
+  }
+}
+@media all and (min-width: 576px) {
+  .carousel-container #carousel-thumbs {
+    position: absolute;
+  }
+}
+@media all and (max-width: 576px) {
+  .carousel-container #carousel-thumbs {
+    background: #ccccce;
+  }
+}
+</style>
+<body>
+    <div class="container mt-5">
+        <div class="carousel-container position-relative row">
+          
+        <!-- Sorry! Lightbox doesn't work - yet. -->
+          
+        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active" data-slide-number="0">
+              <img src="https://source.unsplash.com/Pn6iimgM-wo/1600x900/" class="d-block w-100" alt="..." data-remote="https://source.unsplash.com/Pn6iimgM-wo/" data-type="image" data-toggle="lightbox" data-gallery="example-gallery">
+            </div>
+            <div class="carousel-item" data-slide-number="1">
+              <img src="https://source.unsplash.com/tXqVe7oO-go/1600x900/" class="d-block w-100" alt="..." data-remote="https://source.unsplash.com/tXqVe7oO-go/" data-type="image" data-toggle="lightbox" data-gallery="example-gallery">
+            </div>
+            <div class="carousel-item" data-slide-number="2">
+              <img src="https://source.unsplash.com/qlYQb7B9vog/1600x900/" class="d-block w-100" alt="..." data-remote="https://source.unsplash.com/qlYQb7B9vog/" data-type="image" data-toggle="lightbox" data-gallery="example-gallery">
+            </div>
+            <div class="carousel-item" data-slide-number="3">
+              <img src="https://source.unsplash.com/QfEfkWk1Uhk/1600x900/" class="d-block w-100" alt="..." data-remote="https://source.unsplash.com/QfEfkWk1Uhk/" data-type="image" data-toggle="lightbox" data-gallery="example-gallery">
+            </div>           
+          </div>
+        </div>
+        
+        <!-- Carousel Navigation -->
+        <div id="carousel-thumbs" class="carousel slide" data-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <div class="row mx-0">
+                <div id="carousel-selector-0" class="thumb col-md-3 col-sm-2 px-1 py-2 selected" data-target="#myCarousel" data-slide-to="0">
+                  <img src="https://source.unsplash.com/Pn6iimgM-wo/400x200/" class="img-fluid" alt="...">
+                </div>
+                <div id="carousel-selector-1" class="thumb col-md-3 col-sm-2 px-1 py-2" data-target="#myCarousel" data-slide-to="1">
+                  <img src="https://source.unsplash.com/tXqVe7oO-go/400x200/" class="img-fluid" alt="...">
+                </div>
+                <div id="carousel-selector-2" class="thumb col-md-3 col-sm-2 px-1 py-2" data-target="#myCarousel" data-slide-to="2">
+                  <img src="https://source.unsplash.com/qlYQb7B9vog/400x200/" class="img-fluid" alt="...">
+                </div>
+                <div id="carousel-selector-3" class="thumb col-md-3 col-sm-2 px-1 py-2" data-target="#myCarousel" data-slide-to="3">
+                  <img src="https://source.unsplash.com/QfEfkWk1Uhk/400x200/" class="img-fluid" alt="...">
+                </div>
+              
+              </div>
+            </div>            
+          </div>
+        
+   
+        </div>
+        
+        </div> <!-- /row -->
+        </div> <!-- /container -->
+
+
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>       
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js"></script>
+        
+     
+        
+      
+
+
+        <script>  
+
+$(document).ready(function() {
+  $("#myCarousel").carousel({
+    interval: false }
+  );
+});
+$('#carousel-thumbs').carousel({
+  interval: false
+});
+
+$('[id^=carousel-selector-]').click(function() {
+  var id_selector = $(this).attr('id');
+  var id = parseInt( id_selector.substr(id_selector.lastIndexOf('-') + 1) );
+  $('#myCarousel').carousel(id);
+});
+// Only display 3 items in nav on mobile.
+if ($(window).width() < 575) {
+  $('#carousel-thumbs .row div:nth-child(4)').each(function() {
+    var rowBoundary = $(this);
+    $('<div class="row mx-0">').insertAfter(rowBoundary.parent()).append(rowBoundary.nextAll().addBack());
+  });
+  $('#carousel-thumbs .carousel-item .row:nth-child(even)').each(function() {
+    var boundary = $(this);
+    $('<div class="carousel-item">').insertAfter(boundary.parent()).append(boundary.nextAll().addBack());
+  });
+}
+// Hide slide arrows if too few items.
+if ($('#carousel-thumbs .carousel-item').length < 2) {
+  $('#carousel-thumbs [class^=carousel-control-]').remove();
+  $('.machine-carousel-container #carousel-thumbs').css('padding','0 5px');
+}
+// when the carousel slides, auto update
+$('#myCarousel').on('slide.bs.carousel', function(e) {
+  var id = parseInt( $(e.relatedTarget).attr('data-slide-number') );
+  $('[id^=carousel-selector-]').removeClass('selected');
+  $('[id=carousel-selector-'+id+']').addClass('selected');
+});
+
+
+
+$('#myCarousel .carousel-item img').on('click', function(e) {
+  var src = $(e.target).attr('data-remote');
+  if (src) $(this).ekkoLightbox();
+});
+        </script>
+</body>
+</html>

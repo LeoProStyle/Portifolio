@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <meta charset="UTF-8">
+  <title>Ler texto com Web Speech API</title>
+</head>
+<style>
+  body {
+  font-family: sans-serif;
+}
+
+h1 {
+  color: blue;
+  font-size: 20px;
+}
+
+p {
+  margin-bottom: 10px;
+}
+
+input {
+  width: 200px;
+}
+
+button {
+  background-color: rgb(148, 148, 148);
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------ */
+:root {
+    --button-height: 0.5rem;
+    --button-color: rgb(7, 7, 7);
+}
+
+.fake-player {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10px;
+    height: 0px;
+    padding: 1rem;
+    border: 0.2rem solid var(--button-color);
+    border-radius: 50%;
+    filter: drop-shadow(0 0 3.1rem rgba(255,255,255, 0.8));
+}
+
+button {
+    margin: 0;
+    padding: 0;
+}
+
+.play {
+    height: 0;
+    width: 0;
+    margin-left: calc(2 * 0.14 * var(--button-height));
+    /*margin-left: 17px;*/
+    background: none;
+    border: none;
+    border-top: var(--button-height) solid transparent;
+    border-bottom: var(--button-height) solid transparent;
+    border-left: calc(var(--button-height) * 2 * 0.86) solid var(--button-color);
+    
+}
+
+.pause {
+    position: relative;
+    background: none;
+    border: none;
+    height: calc(var(--button-height) * 2);
+    width: calc(var(--button-height) * 2 * 0.86);
+}
+    .pause:before, .pause:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 33%;
+        background: var(--button-color);
+    }
+    .pause:before {
+        left: 0;
+    }
+    .pause:after {
+        right: 0;
+    }
+
+
+.hidden {
+    display:none;
+}
+.player {
+  display: flex;
+    background-color: darkgray;
+    align-items: center;
+    width: 250px;
+    border-radius: 15px;
+}
+.texto-play {
+    font-size: 28px;
+    margin-left: 13px;
+}
+</style>
+<body>
+  <h1>Ler texto com Web Speech API</h1>
+  <p>
+    Insira o texto que deseja que o Web Speech API leia:
+  </p>
+  <input type="text" id="texto">
+  <div id="texto1">aleatorio 123</div>
+<div class="player">
+  <div class="fake-player">
+    <button role="ler" id="ler" class="play"></button>
+    <button role="pause" id="pause" class="pause hidden"></button>    
+</div>
+<div class="texto-play">Ler o texto</div>
+</div>
+
+
+
+
+
+  <button id="ler"><i class="bi bi-play-circle-fill"></i></button>
+  <button id="pause"><i class="bi bi-pause-circle-fill"></i></button>     
+  <button id="stop"><i class="bi bi-stop-circle-fill"></i></button>
+  <script>
+        // Cria um evento de clique ao botão para iniciar ou retomar a fala
+document.querySelector('#ler').addEventListener('click', function() {
+  // Verifica se a fala está em execução
+  if (!window.speechSynthesis.speaking) {
+    // Inicia a fala do texto
+    const utterance = new SpeechSynthesisUtterance();
+    utterance.text = document.querySelector('#texto1').textContent;
+    utterance.voice = window.speechSynthesis.getVoices()[0];
+    window.speechSynthesis.speak(utterance);
+  } else {
+    // Retoma a fala do ponto em que foi interrompida
+    window.speechSynthesis.resume();
+  }
+
+  // Cria um evento de clique ao botão para pausar a fala
+  document.querySelector('#pause').addEventListener('click', function() {
+      window.speechSynthesis.pause();
+    });
+   // Cria um evento de clique ao botão para parar a fala
+   document.querySelector('#stop').addEventListener('click', function() {
+      window.speechSynthesis.cancel();
+    });
+});
+
+  </script>
+
+  <script>
+    const player = document.querySelector('.fake-player');
+
+function clickHandler () { 
+    const buttons = Array.from(this.children);
+    buttons.forEach(button => button.classList.toggle('hidden'))
+};
+
+player.addEventListener('click', clickHandler);
+  </script>
+</body>
+</html>

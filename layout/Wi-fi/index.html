@@ -242,6 +242,7 @@
                 </div>
             </div>
         </div>
+        <button class="button">Ler notícia</button>
     </div>
 
 
@@ -252,7 +253,29 @@
 
 
     <script src="vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.bard.ai/bard.js"></script>   
+    <script>
+     function readNews(url) {
+     // Abre a página da notícia
+     var xhr = new XMLHttpRequest();
+     xhr.open("GET", url);
+     xhr.onload = function() {
+       // Lê o conteúdo da página
+       var text = xhr.responseText;
+   
+       // Chama o Bard para ler a notícia
+       var bard = new Bard();
+       bard.read(text);
+     };
+     xhr.send();
+   }
+   
+   // Adiciona o botão ao site
+   document.querySelector(".button").addEventListener("click", function() {
+     // Lê a notícia
+     readNews(document.location.href);
+   });
+    </script>
 
 </body>
 
