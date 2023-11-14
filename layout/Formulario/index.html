@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="assets/css/style.css" rel="stylesheet" />
+    <title>Formulário</title>
+</head>
+<!-- TinyMCE CDN -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: 'textarea#editor',
+    });
+</script>
+
+<body>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Criar Nova Notícia</h2>
+                <!-- Cadastrar galeria: -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        
+                        <i class="bi bi-layout-text-sidebar"></i>
+                        Criar Notícia:                    
+
+                        <button type="button" class="btn btn-primary btn-sm button-open-form" data-bs-toggle="collapse"
+                            data-bs-target=".collapse-cadastro" aria-expanded="false" aria-controls="collapse-cadastro">
+                            Novo <i class="bi bi-plus-circle"></i>
+                        </button>
+
+                    </div>
+
+                    <div class="card-body collapse hide collapse-cadastro">
+                        <form class="row g-2" id="#">
+                            <input type="hidden" id="txt_nomeFoto" name="nomeFoto" />
+                            <input type="hidden" id="txt_idFoto" name="idFoto" />
+                            <div class="col-md-12">
+                                <label for="txt_codigoo" class="form-label">Título da Notícia</label>
+                                <span class="ms-1" tabindex="0" data-bs-placement="top" data-bs-toggle="popover"
+                                    data-bs-trigger="hover focus" data-bs-content="Será atribuido o Título da notícia.">
+                                    <i class="bi bi-info-circle"></i>
+                                </span>
+                                <input type="text" class="form-control txt_titulo" id="#" name="titulo">
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="txt_titulo" class="form-label">Subtítulo da Notícia</label>
+                                <span class="ms-1" tabindex="0" data-bs-placement="top" data-bs-toggle="popover"
+                                    data-bs-trigger="hover focus"
+                                    data-bs-content="Será atribuido o Subtitulo da noticia.">
+                                    <i class="bi bi-info-circle"></i>
+                                </span>
+                                <input type="text" class="form-control txt_titulo" id="#" name="Subtitulo">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="txt_titulo" class="form-label">Legenda da Imagem</label>
+                                <span class="ms-1" tabindex="0" data-bs-placement="top" data-bs-toggle="popover"
+                                    data-bs-trigger="hover focus" data-bs-content="Será atribuido a Legenda da imagem.">
+                                    <i class="bi bi-info-circle"></i>
+                                </span>
+                                <input type="text" class="form-control txt_titulo" id="#" name="Legenda da imagem">
+                            </div>                       
+
+
+                            <div class="col-md-12">
+                                <label for="fl_image_capa" class="form-label">
+                                    Imagem de capa
+                                </label>
+                                <span class="ms-1" tabindex="0" data-bs-placement="top" data-bs-toggle="popover"
+                                    data-bs-trigger="hover focus"
+                                    data-bs-content="Mostra a imagem que será a capa do album.">
+                                    <i class="bi bi-info-circle"></i>
+                                </span>
+
+                                <div id="capa-image-galeria">
+                                    <img id="#" src="assets/img/imgteste.png" class="img-list img-list-s2"
+                                        alt="..." width="200" height="200">
+                                </div>
+
+                            </div>
+
+                            
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" name="chk_prioridade"
+                                    id="chk_prioridade" value="true">
+                                <label class="form-check-label" for="chk_prioridade">Tornar primeiro item a ser
+                                    exibido</label>
+                                <span class="ms-1" tabindex="0" data-bs-placement="top" data-bs-toggle="popover"
+                                    data-bs-trigger="hover focus"
+                                    data-bs-content="Selecionado torna o item a ser o primeiro no carrosel de fotos.">
+                                    <i class="bi bi-info-circle"></i>
+                                </span>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary me-1" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal">Pesquisar</button>                               
+                            </div>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Selecione a imagem</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="input-group">
+                                                <input type="file" class="form-control" id="inputGroupFile04"
+                                                    aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                          
+
+                            <div class="col-md-1" id="#">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked"
+                                        checked>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        Evento
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-1" id="#">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked"
+                                        checked>
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        Evento 02
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="row tag-cks">
+                                    
+                                    <!-- @* TAG *@ -->
+                                    <label for="txt_titulo" class="form-label">TAGS da noticia</label><br />
+                                    <div class="col-md-4">
+                                    <div class="tags-input margin-btn">
+                                        <ul id="tags"></ul>
+                                        <input type="text" id="input-tag" placeholder="Add a tag" />
+                                    </div>
+                                    </div>
+                               
+                                    <!-- @* CATEGORIA *@ -->
+
+                                    <div class="col-md-2 col-6 dropdown margin-btn">
+                                        <button class="btn btn-success dropdown-toggle " type="button"
+                                            id="multiSelectDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Categorias
+                                        </button>
+                                        <ul class="dropdown-menu categoria" aria-labelledby="multiSelectDropdown">
+                                            <li class="list">
+                                                <label>
+                                                    <input type="checkbox" value="Administração">
+                                                    Administração
+                                                </label>
+                                            </li>
+                                            <li class="list">
+                                                <label>
+                                                    <input type="checkbox" value=" Saúde">
+                                                    Saúde
+                                                </label>
+                                            </li>
+                                            <li class="list">
+                                                <label>
+                                                    <input type="checkbox" value="Planejamento">
+                                                    Planejamento
+                                                </label>
+                                            </li>
+                                            <li class="list">
+                                                <label>
+                                                    <input type="checkbox" value="Esporte">
+                                                    Esporte
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <!--  AUTOR  -->
+                                    <div class="col-md-2 col-6 dropdown margin-btn">
+                                        <button class="btn btn-success dropdown-toggle" type="button"
+                                            id="multiSelectAutor" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Autor
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="multiSelectAutor">
+                                            <li class="list form-check">
+                                                <input type="radio" class="form-check-input" id="radio1" name="optradio"
+                                                    value="Daniel" checked>Daniel
+                                                <label class="form-check-label" for="radio1"></label>
+                                            </li>
+                                            <li class="list form-check">
+                                                <input type="radio" class="form-check-input" id="radio1" name="optradio"
+                                                    value="Alessandra">Alessandra
+                                                <label class="form-check-label" for="radio1"></label>
+                                            </li>
+                                            <li class="list form-check">
+                                                <input type="radio" class="form-check-input" id="radio1" name="optradio"
+                                                    value="Yuri">Yuri
+                                                <label class="form-check-label" for="radio1"></label>
+                                            </li>
+                                            <li class="list form-check">
+                                                <input type="radio" class="form-check-input" id="radio1" name="optradio"
+                                                    value="Rebeca">Rebeca
+                                                <label class="form-check-label" for="radio1"></label>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- CO/AUTOR  -->
+                                    <div class="col-md-2 col-6 dropdown margin-btn">
+                                        <button class="btn btn-success dropdown-toggle" type="button"
+                                            id="multiSelectCoautor" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Co/Autor
+                                        </button>
+                                        <ul class="dropdown-menu CoAutor" id="teste01"
+                                            aria-labelledby="multiSelectCoautor">
+                                            <li class="list">
+                                                <label>
+                                                    <input type="checkbox" value="Daniel">
+                                                    Daniel
+                                                </label>
+                                            </li>
+                                            <li class="list">
+                                                <label>
+                                                    <input type="checkbox" value="Alessandra">
+                                                    Alessandra
+                                                </label>
+                                            </li>
+                                            <li class="list">
+                                                <label>
+                                                    <input type="checkbox" value="Yuri">
+                                                    Yuri
+                                                </label>
+                                            </li>
+                                            <li class="list">
+                                                <label>
+                                                    <input type="checkbox" value="Rebeca">
+                                                    Rebeca
+                                                </label>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="txt_titulo" class="form-label">Corpo da Notícia</label>
+                                <span class="ms-1" tabindex="0" data-bs-placement="top" data-bs-toggle="popover"
+                                    data-bs-trigger="hover focus" data-bs-content="Será atribuido o Corpo da notícia.">
+                                    <i class="bi bi-info-circle"></i>
+                                </span>
+                                <div class="form-group">
+                                    <textarea id="editor"></textarea>
+                                </div>
+
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button id="btn_adicionar_item" class="btn btn-primary " type="submit">Cria
+                                    Destaque</button>
+                            </div>
+                        </form>
+                    </div>
+                    <hr>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <script src="https://cdn.tiny.cloud/1/e2e2whx6fc9fngbj5y7i5y3m811rk0x1b3x4dzgp9iq8ytx1/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="assets/js/script.js"></script>
+    <script>
+        //CATEGORIA
+        const chBoxes =
+            document.querySelectorAll('.dropdown-menu.categoria input[type="checkbox"]');
+
+        const dpBtn =
+            document.getElementById('multiSelectDropdown');
+        let mySelectedListItems = [];
+
+        function handleCB() {
+            mySelectedListItems = [];
+            let mySelectedListItemsText = '';
+
+            chBoxes.forEach((checkbox) => {
+                if (checkbox.checked) {
+                    mySelectedListItems.push(checkbox.value);
+                    mySelectedListItemsText += checkbox.value + ', ';
+                }
+            });
+
+            dpBtn.innerText =
+                mySelectedListItems.length > 0
+                    ? mySelectedListItemsText.slice(0, -2) : 'Categorias';
+        }
+
+        chBoxes.forEach((checkbox) => {
+            checkbox.addEventListener('change', handleCB);
+        });
+    </script>
+
+
+    <script>
+        //AUTOR
+        const chBoxess =
+            document.querySelectorAll('.dropdown-menu input[type="radio"]');
+        const dpBtnn =
+            document.getElementById('multiSelectAutor');
+        let mySelectedListItemss = [];
+
+        function handleCB() {
+            mySelectedListItemss = [];
+            let mySelectedListItemsTextt = '';
+
+            chBoxess.forEach((radio) => {
+                if (radio.checked) {
+                    mySelectedListItemss.push(radio.value);
+                    mySelectedListItemsTextt += radio.value + ', ';
+                }
+            });
+
+            dpBtnn.innerText =
+                mySelectedListItemss.length > 0
+                    ? mySelectedListItemsTextt.slice(0, -2) : 'Autor';
+        }
+
+        chBoxess.forEach((radio) => {
+            radio.addEventListener('change', handleCB);
+        });
+    </script>
+
+</body>
+
+</html>

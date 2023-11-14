@@ -1,0 +1,86 @@
+#ui-id-1 {
+    background-color: white;
+    width: 20%;
+    border: solid;
+    border-width: 0.5px;
+    border-color: #DDD;
+}
+
+button#multiSelectDropdown {
+    width: 100%;
+}
+button#multiSelectAutor {
+    width: 100%;
+}
+button#multiSelectCoautor {
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
+.tags-input {
+    display: inline-block;
+    position: relative;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+    box-shadow: 2px 2px 5px #00000033;
+    width: 100%;
+}
+
+    .tags-input ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .tags-input li {
+        display: inline-block;
+        background-color: #f2f2f2;
+        color: #333;
+        border-radius: 20px;
+        padding: 5px 10px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+
+    .tags-input input[type="text"] {
+        border: none;
+        outline: none;
+        padding: 5px;
+        font-size: 14px;
+    }
+
+        .tags-input input[type="text"]:focus {
+            outline: none;
+        }
+
+    .tags-input .delete-button {
+        background-color: transparent;
+        border: none;
+        color: #999;
+        cursor: pointer;
+        margin-left: 5px;
+    }
+
+
+li.list {
+    margin-left: 8px;
+}
+
+@media (min-width: 0px) and (max-width: 990px){
+    .tag-cks{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .margin-btn{
+margin-bottom: 3px;
+    }
+}

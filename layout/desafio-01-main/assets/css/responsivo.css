@@ -1,0 +1,47 @@
+@media screen and (max-width:700px) {
+    .col-md-5.alinhamento-direita {
+        text-align: center;
+    }
+
+    .col-md-5.order-md-1.alinhamento-esquerda {
+        text-align: center;
+    }
+    input#telefone{
+        padding-right: 200px;    
+    }
+    .rede-social{
+        margin-right: 0.25rem!important;
+    }
+    .titulo-social{
+        margin-right: 0.5rem!important;
+    }
+    .form-check-label{
+        font-size: 16px;
+    }
+
+
+}
+
+@media screen and (min-width:993px) {
+    ul.textos {
+        margin-top: 48%;
+    }
+}
+
+/* @media screen and (min-width:768px) {
+    ul.textos {
+        margin-top: 75%;
+    }
+} */
+
+@media screen and (min-width:1200px) {
+    ul.textos {
+        margin-top: 19%;
+    }
+}
+
+@media screen and (min-width:1400px) {
+    ul.textos {
+        margin-top: 10%;
+    }
+}
