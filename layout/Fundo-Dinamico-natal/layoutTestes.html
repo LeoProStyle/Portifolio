@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cenário de Natal</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #B22222; /* Fundo vermelho */
+    }
+
+    #snow-particles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      pointer-events: none;
+      background-color: transparent; /* Fundo transparente */
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="snow-particles"></div>
+
+  <div class="container">
+    <img src="./img/caravana editada.jpeg" alt="Imagem da caravana" style="width: 100%; height: auto;">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <script>
+    particlesJS("snow-particles", {
+      "particles": {
+        "number": {
+          "value": 70,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "shape": {
+          "type": "image",
+          "image": {
+            "src": "./img/rb_1208.png", // Substitua pelo URL correto da imagem do floco de neve
+            "width": 100,
+            "height": 100
+          }
+        },
+        "opacity": {
+          "value": 0.8,
+          "random": true
+        },
+        "size": {
+          "value": 15,
+          "random": true
+        },
+        "line_linked": {
+          "enable": false // Desativa as linhas entre as partículas
+        },
+        "move": {
+          "enable": true,
+          "speed": 1,
+          "direction": "bottom",
+          "out_mode": "out"
+        }
+      },
+      "retina_detect": true
+    });
+  </script>
+</body>
+</html>

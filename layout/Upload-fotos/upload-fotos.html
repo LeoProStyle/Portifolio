@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+  <title>Combo-upload fotos</title>
+</head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.css">
+
+<style>
+ 
+  .sortable-list {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+  }
+
+      .sortable-list li {
+          display: inline-block;
+          margin: 10px;
+          position: relative;
+      }
+
+          .sortable-list li img {
+              max-width: 100px;
+              max-height: 100px;
+              cursor: grab;
+          }
+
+          .sortable-list li .delete-icon {
+              position: absolute;
+              top: -18px;
+              right: -12px;
+              font-size: 26px;
+              cursor: pointer;
+          }
+
+
+
+  #file-input {
+      display: none;
+  }
+  #upload-container {
+      position: relative;
+      width:100%; /* ajuste conforme necessário */
+      height: 150px; /* ajuste conforme necessário */
+  }
+
+  .upload-dialog {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 2px dashed #ccc;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+  }
+
+      .upload-dialog:hover {
+          border-color: #666;
+      }
+</style>
+<body>
+  <!-- @* COMBO DE INPUT COM FOTOS *@ -->
+                                   
+  <div class="col-md-12 col-12">
+      <div id="upload-container">
+          <label for="file-input" class="upload-dialog">
+              Clique aqui para fazer o upload<br>
+              ou arraste e solte arquivos
+          </label>
+          <input type="file" id="file-input" accept="image/*" multiple>
+      </div>
+
+      <ul id="sortable-list" class="sortable-list"></ul>
+      </div>
+      <!-- @* FIM COMBO DE INPUT COM FOTOS *@ -->
+</body>
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const fileList = [];
+      const sortableList = document.getElementById("sortable-list");
+      const dropContainer = document.getElementById('upload-container');
+
+      function updateFileInput() {
+          const inputFiles = fileList.map(file => file);
+          const newFileList = new DataTransfer();
+          inputFiles.forEach(file => newFileList.items.add(file));
+          document.getElementById("file-input").files = newFileList.files;
+          console.log("Input File updated:", inputFiles);
+      }
+
+      document.getElementById("file-input").addEventListener("change", function (event) {
+          handleFileSelect(event.target.files);
+      });
+
+      dropContainer.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          dropContainer.classList.add('hover');
+      });
+
+      dropContainer.addEventListener('dragleave', () => {
+          dropContainer.classList.remove('hover');
+      });
+
+      dropContainer.addEventListener('drop', (e) => {
+          e.preventDefault();
+          dropContainer.classList.remove('hover');
+          const files = e.dataTransfer.files;
+          handleFileSelect(files);
+      });
+
+      function handleFileSelect(files) {
+          for (let i = 0; i < files.length; i++) {
+              const file = files[i];
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                  const listItem = document.createElement("li");
+                  listItem.innerHTML = `
+                      <img src="${e.target.result}" alt="${file.name}">
+                      <div class="delete-icon" data-file-index="${fileList.length}">❌</div>
+                  `;
+                  sortableList.appendChild(listItem);
+                  fileList.push(file);
+                  updateFileInput(); // Atualiza o input file
+              };
+              reader.readAsDataURL(file);
+          }
+      }
+
+      new Sortable(sortableList, {
+          animation: 150,
+          handle: "img",
+          ghostClass: "sortable-ghost",
+          chosenClass: "sortable-chosen",
+          dragClass: "sortable-drag",
+          onEnd: function (event) {
+              const newIndex = event.newIndex;
+              const oldIndex = event.oldIndex;
+              const movedFile = fileList.splice(oldIndex, 1)[0];
+              fileList.splice(newIndex, 0, movedFile);
+              updateFileInput(); // Atualiza o input file
+          }
+      });
+
+      sortableList.addEventListener("click", function (event) {
+          if (event.target.classList.contains("delete-icon")) {
+              const fileIndex = event.target.dataset.fileIndex;
+              fileList.splice(fileIndex, 1);
+              event.target.parentElement.remove();
+              updateFileInput(); // Atualiza o input file
+              // Atualiza os índices de data-file-index
+              const deleteIcons = sortableList.querySelectorAll('.delete-icon');
+              deleteIcons.forEach((icon, index) => {
+                  icon.dataset.fileIndex = index;
+              });
+          }
+      });
+  });
+</script>

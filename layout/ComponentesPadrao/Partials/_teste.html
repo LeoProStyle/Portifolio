@@ -1,0 +1,47 @@
+
+<div class="container" id="combo-imagem"> 
+    <!-- Swiper -->
+    <div class="swiper fotoSwiper">
+        <div class="swiper-wrapper mobile">
+            <div class="swiper-slide"><img src="/layout/ComponentesPadrao/img/exe4.png" alt="" class="zoomable"></div>
+            <div class="swiper-slide"><img src="/layout/ComponentesPadrao/img/exe2.png" alt="" class="zoomable"></div>
+            <div class="swiper-slide"><img src="/layout/ComponentesPadrao/img/exe3.png" alt="" class="zoomable"></div>
+            <div class="swiper-slide"><img src="/layout/ComponentesPadrao/img/exe4.png" alt="" class="zoomable"></div>
+        </div>      
+    </div>
+</div>
+
+<!-- Modal para ampliar a imagem -->
+<div id="imageModal" class="modal">
+    <span id="closeModal" class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+
+
+<!-- Script JS -->
+<script>
+  // Inicialização do Swiper
+  var swiper = new Swiper(".fotoSwiper", {
+    slidesPerView: 4,
+    spaceBetween: 30,
+    freeMode: true,   
+  });
+
+  // Função para ampliar a imagem
+  var modal = document.getElementById("imageModal");
+  var modalImg = document.getElementById("modalImage");
+  var closeModal = document.getElementById("closeModal");
+
+  document.querySelectorAll('.zoomable').forEach(function (img) {
+    img.addEventListener('click', function () {
+      modal.style.display = "block";
+      modalImg.src = this.src;
+    });
+  });
+
+  // Fechar o modal ao clicar no botão
+  closeModal.onclick = function () {
+    modal.style.display = "none";
+  };
+</script>

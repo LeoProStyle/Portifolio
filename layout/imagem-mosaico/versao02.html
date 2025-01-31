@@ -1,0 +1,281 @@
+@using System.Collections.Generic;
+@using PortalPG.Servicos.Application.DTOs;
+
+@{
+    var servicos = ViewData["servicos"] as List<CartaServicoDTO>;
+}
+
+
+
+
+
+
+
+<style>
+
+
+    #novo-modelo .tabs {
+        display: flex;
+        cursor: pointer;
+        background-color: #f0f0f0;
+        padding: 10px;
+    }
+
+    #novo-modelo .tab {
+        flex: 1;
+        text-align: center;
+        padding: 10px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        margin-right: 5px;
+    }
+
+        #novo-modelo .tab.active {
+            font-weight: bold;
+            border-bottom: 2px solid #007bff;
+        }
+
+    #novo-modelo .tab-content {
+        display: none;
+    }
+
+        #novo-modelo .tab-content.active {
+            display: block;
+            padding: 10px;
+        }
+
+    #novo-modelo .swiper {
+        width: 100%;
+        height: auto;
+    }
+
+    #novo-modelo .swiper-slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #eaeaea;
+        border: 1px solid #ddd;
+        height: 120px;
+    }
+
+    #novo-modelo .card {
+        width: 100px;
+        height: 100px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 8px;
+    }
+</style>
+
+<div class="container" id="novo-modelo">
+    <div class="tabs">
+        <div class="tab active" name="ck_servico_destaque" data-tab="cidadao" id="ck_cidadao" value="1">Cidadão</div>
+        <div class="tab" name="ck_servico_destaque" data-tab="turista" id="ck_turismo" value="2">Turista</div>
+        <div class="tab" name="ck_servico_destaque" data-tab="empresa" id="ck_empresa" value="3">Empresa</div>
+        <div class="tab" name="ck_servico_destaque" data-tab="servidor" id="ck_servidor" value="4">Servidor</div>
+    </div>
+    
+    <!-- Cidadão -->
+    <div class="tab-content active" id="cidadao">
+        <div class="swiperr">
+            <div class="swiper-wrapper">
+                @foreach (CartaServicoDTO servico in servicos)
+                {
+
+                    var categoriaName = "";
+
+                    if (servico.categoria != null)
+                    {
+                        categoriaName = servico.categoria.LabelName;
+                    }
+                    if (servico.id == 102)
+                    {
+                        <div class="swiper-slide corousel-item" data-id="@servico.id" data-category="@servico.CategoriaExibicao">
+                            <a href="@servico.LinkServicoSiteAntigo" target="_blank" class="corousel-servicos-destaque-item" data-service-id="@servico.id">
+                                <figure>
+                                    <div class="icon-destaque coleta_seletiva">
+                                        <span class="icon-destaque-item icon-service coleta_seletiva">coleta_seletiva</span>
+                                    </div>
+                                    <div class="container ajustes">
+                                        <figcaption class="text-destaque">@servico.NomeExibicao(0, 40)</figcaption>
+                                    </div>
+                                </figure>
+                            </a>
+                        </div>
+                    }
+                    else if (servico.id == 104)
+                    {
+                        <div class="swiper-slide corousel-item" data-id="@servico.id" data-category="@servico.CategoriaExibicao">
+                            <a href="@servico.LinkServicoSiteAntigo" target="_blank" class="corousel-servicos-destaque-item" data-service-id="@servico.id">
+                                <figure>
+                                    <div class="icon-destaque ecoponto">
+                                        <span class="icon-destaque-item icon-service ecoponto">ecoponto</span>
+                                    </div>
+                                    <div class="container ajustes">
+                                        <figcaption class="text-destaque">@servico.NomeExibicao(0, 40)</figcaption>
+                                    </div>
+                                </figure>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="swiper-slide corousel-item" data-id="@servico.id" data-category="@servico.CategoriaExibicao">
+                            <a href="@servico.LinkServicoSiteAntigo" target="_blank" class="corousel-servicos-destaque-item" data-service-id="@servico.id">
+                                <figure>
+                                    <div class="icon-destaque @categoriaName">
+                                        <span class="icon-destaque-item icon-service @categoriaName">@categoriaName</span>
+                                    </div>
+                                    <div class="container ajustes">
+                                        <figcaption class="text-destaque">@servico.NomeExibicao(0, 40)</figcaption>
+                                    </div>
+                                </figure>
+                            </a>
+                        </div>
+                    }
+
+                }
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+
+    <!-- Turista -->
+    <div class="tab-content" id="turista">
+        <div class="swiperr">
+            <div class="swiper-wrapper">
+                @foreach (CartaServicoDTO servico in servicos)
+                {
+
+                    var categoriaName = "";
+
+                    if (servico.categoria != null)
+                    {
+                        categoriaName = servico.categoria.LabelName;
+                    }
+                    if (servico.id == 102)
+                    {
+                        <div class="swiper-slide corousel-item" data-id="@servico.id" data-category="@servico.CategoriaExibicao">
+                            <a href="@servico.LinkServicoSiteAntigo" target="_blank" class="corousel-servicos-destaque-item" data-service-id="@servico.id">
+                                <figure>
+                                    <div class="icon-destaque coleta_seletiva">
+                                        <span class="icon-destaque-item icon-service coleta_seletiva">coleta_seletiva</span>
+                                    </div>
+                                    <div class="container ajustes">
+                                        <figcaption class="text-destaque">@servico.NomeExibicao(0, 40)</figcaption>
+                                    </div>
+                                </figure>
+                            </a>
+                        </div>
+                    }
+                    else if (servico.id == 104)
+                    {
+                        <div class="swiper-slide corousel-item" data-id="@servico.id" data-category="@servico.CategoriaExibicao">
+                            <a href="@servico.LinkServicoSiteAntigo" target="_blank" class="corousel-servicos-destaque-item" data-service-id="@servico.id">
+                                <figure>
+                                    <div class="icon-destaque ecoponto">
+                                        <span class="icon-destaque-item icon-service ecoponto">ecoponto</span>
+                                    </div>
+                                    <div class="container ajustes">
+                                        <figcaption class="text-destaque">@servico.NomeExibicao(0, 40)</figcaption>
+                                    </div>
+                                </figure>
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="swiper-slide corousel-item" data-id="@servico.id" data-category="@servico.CategoriaExibicao">
+                            <a href="@servico.LinkServicoSiteAntigo" target="_blank" class="corousel-servicos-destaque-item" data-service-id="@servico.id">
+                                <figure>
+                                    <div class="icon-destaque @categoriaName">
+                                        <span class="icon-destaque-item icon-service @categoriaName">@categoriaName</span>
+                                    </div>
+                                    <div class="container ajustes">
+                                        <figcaption class="text-destaque">@servico.NomeExibicao(0, 40)</figcaption>
+                                    </div>
+                                </figure>
+                            </a>
+                        </div>
+                    }
+
+                }
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+
+    <!-- Empresa -->
+    <div class="tab-content" id="empresa">
+        <div class="swiperr">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><div class="card">Card 1</div></div>
+                <div class="swiper-slide"><div class="card">Card 2</div></div>
+                <div class="swiper-slide"><div class="card">Card 3</div></div>
+                <div class="swiper-slide"><div class="card">Card 4</div></div>
+                <div class="swiper-slide"><div class="card">Card 5</div></div>
+                <div class="swiper-slide"><div class="card">Card 6</div></div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+
+    <!-- Servidor -->
+    <div class="tab-content" id="servidor">
+        <div class="swiperr">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide"><div class="card">Card 1</div></div>
+                <div class="swiper-slide"><div class="card">Card 2</div></div>
+                <div class="swiper-slide"><div class="card">Card 3</div></div>
+                <div class="swiper-slide"><div class="card">Card 4</div></div>
+                <div class="swiper-slide"><div class="card">Card 5</div></div>
+                <div class="swiper-slide"><div class="card">Card 6</div></div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+    // Tabs Functionality
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Swiper Initialization
+        document.querySelectorAll('.swiperr').forEach(swiperEl => {
+      new Swiper(swiperEl, {
+        slidesPerView: 4,
+        slidesPerGroup: 4,
+        grid: { rows: 3, fill: 'row' },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        spaceBetween: 10,
+      });
+    });
+    </script>
+
+
+
+
+
+
+<br />
+<div class="container"><hr /></div>
+<br />

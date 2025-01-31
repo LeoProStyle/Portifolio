@@ -1,0 +1,680 @@
+@using System.Collections.Generic;
+@using PortalPG.Servicos.Application.DTOs;
+
+@{
+    var servicos = ViewData["servicos"] as List<CartaServicoDTO>;
+}
+
+<section id="servicos-destaque" class="container rounded">
+
+    <div id="filtro-servicos-destaque" class="row">
+        <div class="col-xl-5 col-sm-12">
+            <h2 class="servicos-destaque-titulo">Serviços em destaque</h2>
+        </div>
+        <div class="col-xl-7 col-12">
+
+            <div id="filtro-destaque" class="rounded">
+                <div class="destaque-categoria">Por categoria:</div>
+                <label class="chk-label" for="ck_todos">
+                    <input class="chk-input" type="radio" name="ck_servico_destaque" id="ck_todos" value="0" checked>
+                    <span class="chk-bubble"></span>
+                    <span class="chk-text">Todos</span>
+                </label>
+                <label class="chk-label" for="ck_cidadao">
+                    <input class="chk-input" type="radio" name="ck_servico_destaque" id="ck_cidadao" value="1">
+                    <span class="chk-bubble"></span>
+                    <span class="chk-text">Cidadão</span>
+                </label>
+                <label class="chk-label" for="ck_turismo">
+                    <input class="chk-input" type="radio" name="ck_servico_destaque" id="ck_turismo" value="2">
+                    <span class="chk-bubble"></span>
+                    <span class="chk-text">Turismo</span>
+                </label>
+                <label class="chk-label" for="ck_empresa">
+                    <input class="chk-input" type="radio" name="ck_servico_destaque" id="ck_empresa" value="3">
+                    <span class="chk-bubble"></span>
+                    <span class="chk-text">Empresa</span>
+                </label>
+
+                <label class="chk-label" for="ck_servidor">
+                    <input class="chk-input" type="radio" name="ck_servico_destaque" id="ck_servidor" value="4">
+                    <span class="chk-bubble"></span>
+                    <span class="chk-text">Servidor</span>
+                </label>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="corousel-servicos-destaque" class="row">
+        <div class="col-md-12 col-12">
+
+            <div class="carousel-destaque-servicos swiper">
+
+
+
+
+                <div class="swiper-wrapper mobile">
+
+                    @* GALERIA DE IMAGENS *@
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="/galeria" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque galeria">
+                                    <span class="icon-destaque-item icon-service galeria">Galeria de Imagens e Videos</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Galeria de Imagens e Videos</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+
+                    @* REQUERIMENTO DIGITAL *@
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www2.praiagrande.sp.gov.br/sistema/requerimento-digital" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque holerite">
+                                    <span class="icon-destaque-item icon-service holerite">REQUERIMENTO</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Requerimento Digital</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    @* LIBRAS  *@
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://atendimento.gestalkconecta.com.br/backoffice/threads/initiate/6eb8903d-69e1-416b-a7a6-1292a7f9c827" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque prova-de-vida">
+                                    <span class="icon-destaque-item icon-service LIBRAS">LIBRAS</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Atendimento em Libras</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    @* PROVA DE VIDA *@
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="/ProvadeVIda" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque prova-de-vida">
+                                    <span class="icon-destaque-item icon-service prova-de-vida">prova-de-vida</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Prova de Vida</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    @* AGENDAMENTO *@
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a asp-controller="Agendamento" asp-action="index" asp-area="" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque perguntas">
+                                    <span class="icon-destaque-item icon-service agendamento">Agendamentos</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Agendamento</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    @* PERGUNTAS *@
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://transparencia.praiagrande.sp.gov.br/aprcportalclientvisionhtml.aspx?2,211" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque perguntas">
+                                    <span class="icon-destaque-item icon-service perguntas">perguntas</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Perguntas frequentes</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    @* FALE NOCOSCO *@
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www.praiagrande.sp.gov.br/fale-conosco/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque perguntas">
+                                    <span class="icon-destaque-item icon-service faleconosco">Fale-Conosco</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Fale-Conosco</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    @* OUVIDORIA *@
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://ouvidoria.etransparencia.com.br/praiagrande.sp/wpstartpagenew.aspx" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque ouvidoria">
+                                    <span class="icon-destaque-item icon-service ouvidoria">ouvidoria</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Ouvidoria</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://forms.gle/8xAnBdDodRJjZkg7A" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service avalie">avalie</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Avalie ouvidoria</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a asp-controller="PaginasIntrodutorias" asp-action="PortalDadosAberto" asp-area="" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque dados-abertos">
+                                    <span class="icon-destaque-item icon-service dados-abertos">dados-abertos</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Dados abertos</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+
+                    @*<div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                            <a  asp-controller="WifiPg" asp-action="Index" asp-area="" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                                <figure>
+                                    <div class="icon-destaque WiFiPG">
+                                        <span class="icon-destaque-item icon-service WiFiPG">Wi-Fi PG</span>
+                                    </div>
+                                    <div class="container ajustes">
+                                        <figcaption class="text-destaque">Wi-Fi PG</figcaption>
+                                    </div>
+                                </figure>
+                            </a>
+                        </div>*@
+
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="http://www.ssp.sp.gov.br/depa" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque maus_tratos">
+                                    <span class="icon-destaque-item icon-service maus_tratos">maus_tratos</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Denuncia maus tratos animais</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://transparencia.praiagrande.sp.gov.br/TDAPortalClient.aspx?416" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque transparencia">
+                                    <span class="icon-destaque-item icon-service transparencia">transparencia</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Portal da transparência</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao turismo empresa">
+                        <a href="https://geopg.praiagrande.sp.gov.br/ServicosOnline/GeoProcessamento/Mapas/ConsultaGeo.aspx" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque planejamento">
+                                    <span class="icon-destaque-item icon-service planejamento">planejamento</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Geopg</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao turismo">
+                        <a href="http://cameras.praiagrande.sp.gov.br/aovivo/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque seguranca">
+                                    <span class="icon-destaque-item icon-service seguranca">seguranca</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Câmeras ao vivo</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao empresa">
+                        <a href="https://www.praiagrande.sp.gov.br/administracao/menu_licitacao2.asp" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service administracao-publica">administracao-publica</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Licitações</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao empresa">
+                        <a href="https://www.praiagrande.sp.gov.br/planodiretor/revisao/QueremosSaberSuaOpiniao.asp" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque queremos-sua-opiniao">
+                                    <span class="icon-destaque-item icon-service queremos-sua-opiniao">queremos-sua-opiniao</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Queremos saber a sua opinião</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao empresa">
+                        <a href="https://crachadigital.praiagrande.sp.gov.br/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service administracao-publica">administracao-publica</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Crachá digital</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao empresa">
+                        <a asp-controller="ConsultaPublica" asp-action="index" asp-area="" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service administracao-publica">administracao-publica</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Consultas públicas</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="/secretarias/administracao/guias-servicos-municipais" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service administracao-publica">administracao-publica<</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Guias de serviços</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao turismo">
+                        <a href="https://www.praiagrande.sp.gov.br/coronavirus" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque portal_corona">
+                                    <span class="icon-destaque-item icon-service portal_corona">portal_corona</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Portal corona vírus</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www.praiagrande.sp.gov.br/cartaservicos/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service administracao-publica">administracao-publica</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Carta de serviços</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www.praiagrande.sp.gov.br/pgnoticias/noticias/assunto_noticia.asp?idAssunto=52" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque trabalho">
+                                    <span class="icon-destaque-item icon-service trabalho">trabalho</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">PAT</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://linktr.ee/qualificapg" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque trabalho">
+                                    <span class="icon-destaque-item icon-service trabalho">trabalho</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Qualifica pg</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www.praiagrande.sp.gov.br/Atendimento/Tributo.asp?cd_pagina=282" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque IPTU">
+                                    <span class="icon-destaque-item icon-service IPTU">IPTU</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Serviços on line iptu</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www.praiagrande.sp.gov.br/arquivos/ChamadaPublica/35187.pdf" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque cultura">
+                                    <span class="icon-destaque-item icon-service cultura">cultura</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Conselho municipal de políticas culturais</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://adocaoanimalpg.blogspot.com/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque saude">
+                                    <span class="icon-destaque-item icon-service adote">adote</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Adote um bichinho</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www.praiagrande.sp.gov.br/PraiaGrande/conselhos/index.asp" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service administracao-publica">administracao-publica</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Conselhos municipais</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://praiagrande.notificacao.gestoriluminacaopublica.com.br/municipio/2758" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque ligue_luz">
+                                    <span class="icon-destaque-item icon-service ligue_luz">ligue_luz</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Ligue luz</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    @*<div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                            <a href="https://forms.gle/HUcvTzNUDZW7RVHEA" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                                <figure>
+                                    <div class="icon-destaque cultura">
+                                        <span class="icon-destaque-item icon-service cultura">cultura</span>
+                                    </div>
+                                    <div class="container ajustes">
+                                        <figcaption class="text-destaque">Cadastro cultural</figcaption>
+                                    </div>
+                                </figure>
+                            </a>
+                        </div>*@
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www.praiagrande.sp.gov.br/Atendimento/saude/medica.asp" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque saude">
+                                    <span class="icon-destaque-item icon-service saude">saude</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Programa residência médica</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www.praiagrande.sp.gov.br/administracao/comissao_gestora_orla.asp?cdSecretaria=81" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque urbanismo">
+                                    <span class="icon-destaque-item icon-service urbanismo">urbanismo</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Gestão da orla</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                        <a href="https://www.praiagrande.sp.gov.br/pgnoticias/noticias/noticia_01.asp?cod=57531" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque impostos-e-taxas">
+                                    <span class="icon-destaque-item icon-service impostos-e-taxas">impostos-e-taxas</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Acerta PG</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+
+                    @*<div class="swiper-slide corousel-item" data-id="0" data-category="cidadao">
+                            <a href="https://licencatemporariaespecialambulante.praiagrande.sp.gov.br/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                                <figure>
+                                    <div class="icon-destaque alvaras-e-licencas">
+                                        <span class="icon-destaque-item icon-service alvaras-e-licencas">alvaras-e-licencas</span>
+                                    </div>
+                                    <div class="container ajustes">
+                                        <figcaption class="text-destaque">Requerimento temporário ambulante</figcaption>
+                                    </div>
+                                </figure>
+                            </a>
+                        </div>*@
+
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="cidadao empresa turismo">
+                        <a href="https://turismo.praiagrande.sp.gov.br/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque cultura-e-turismo">
+                                    <span class="icon-destaque-item icon-service cultura-e-turismo">cultura-e-turismo</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Portal Turismo</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="servidor">
+                        <a href="http://pontoeletronico.praiagrande.sp.gov.br/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque ponto_eletronico">
+                                    <span class="icon-destaque-item icon-service ponto_eletronico">ponto_eletronico</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Ponto eletrônico</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="servidor">
+                        <a href="https://portal.conam.com.br/rhpraiagrande/login.php" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque holerite">
+                                    <span class="icon-destaque-item icon-service holerite">holerite</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Holerite</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="servidor">
+                        <a href="https://processodigital.praiagrande.sp.gov.br/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service administracao-publica">administracao-publica</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Processo Digital</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="servidor">
+                        <a href="https://www.portaldoconsignado.org.br/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service administracao-publica">administracao-publica</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">
+                                        Portal do Consignado
+                                        Servidores
+                                    </figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="servidor">
+                        <a asp-controller="PaginasIntrodutorias" asp-action="RecadastramentoServidores" asp-area="" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque administracao-publica">
+                                    <span class="icon-destaque-item icon-service administracao-publica">administracao-publica</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">
+                                        Cadastramento de Bens
+                                        Servidores
+                                    </figcaption>
+                                </div>
+                            </figure>
+                        </a>
+
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="servidor">
+                        <a href="http://pgcursos.praiagrande.sp.gov.br/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque curso">
+                                    <span class="icon-destaque-item icon-service curso">curso</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Cursos de treinamento e capacitação</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="empresa">
+                        <a href="http://www.issnetonline.com.br/praiagrande" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque trabalho">
+                                    <span class="icon-destaque-item icon-service trabalho">trabalho</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Iss.NET</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="servidor">
+                        <a href="https://www.praiagrande.sp.gov.br/pgnoticias/noticias/noticia_01.asp?cod=58011" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque chave-dos-sonhos">
+                                    <span class="icon-destaque-item icon-service chave-dos-sonhos">chave-dos-sonhos</span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Chave dos Sonhos</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+                    <div class="swiper-slide corousel-item" data-id="0" data-category="servidor">
+                        <a href="http://assinadordigitalexterno.praiagrande.sp.gov.br/" target="_blank" class="corousel-servicos-destaque-item" data-service-id="0">
+                            <figure>
+                                <div class="icon-destaque assinador">
+                                    <span class="icon-destaque-item icon-service assinador">assinador </span>
+                                </div>
+                                <div class="container ajustes">
+                                    <figcaption class="text-destaque">Assinador Digital</figcaption>
+                                </div>
+                            </figure>
+                        </a>
+                    </div>
+
+                    @foreach (CartaServicoDTO servico in servicos)
+                    {
+
+                        var categoriaName = "";
+
+                        if (servico.categoria != null)
+                        {
+                            categoriaName = servico.categoria.LabelName;
+                        }
+                        if (servico.id == 102)
+                        {
+                            <div class="swiper-slide corousel-item" data-id="@servico.id" data-category="@servico.CategoriaExibicao">
+                                <a href="@servico.LinkServicoSiteAntigo" target="_blank" class="corousel-servicos-destaque-item" data-service-id="@servico.id">
+                                    <figure>
+                                        <div class="icon-destaque coleta_seletiva">
+                                            <span class="icon-destaque-item icon-service coleta_seletiva">coleta_seletiva</span>
+                                        </div>
+                                        <div class="container ajustes">
+                                            <figcaption class="text-destaque">@servico.NomeExibicao(0, 40)</figcaption>
+                                        </div>
+                                    </figure>
+                                </a>
+                            </div>
+                        }
+                        else if (servico.id == 104)
+                        {
+                            <div class="swiper-slide corousel-item" data-id="@servico.id" data-category="@servico.CategoriaExibicao">
+                                <a href="@servico.LinkServicoSiteAntigo" target="_blank" class="corousel-servicos-destaque-item" data-service-id="@servico.id">
+                                    <figure>
+                                        <div class="icon-destaque ecoponto">
+                                            <span class="icon-destaque-item icon-service ecoponto">ecoponto</span>
+                                        </div>
+                                        <div class="container ajustes">
+                                            <figcaption class="text-destaque">@servico.NomeExibicao(0, 40)</figcaption>
+                                        </div>
+                                    </figure>
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="swiper-slide corousel-item" data-id="@servico.id" data-category="@servico.CategoriaExibicao">
+                                <a href="@servico.LinkServicoSiteAntigo" target="_blank" class="corousel-servicos-destaque-item" data-service-id="@servico.id">
+                                    <figure>
+                                        <div class="icon-destaque @categoriaName">
+                                            <span class="icon-destaque-item icon-service @categoriaName">@categoriaName</span>
+                                        </div>
+                                        <div class="container ajustes">
+                                            <figcaption class="text-destaque">@servico.NomeExibicao(0, 40)</figcaption>
+                                        </div>
+                                    </figure>
+                                </a>
+                            </div>
+                        }
+
+                    }
+
+                </div>
+
+                <div class="swiper-custom-buttons">
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-pagination"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</section>
+<br />
+<div class="container"><hr /></div>
+<br />

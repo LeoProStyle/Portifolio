@@ -1,0 +1,180 @@
+:root {
+    --hide: none;
+}
+
+.form-wrap.form-builder .cb-wrap.pull-left,
+.form-wrap.form-builder .stage-wrap.pull-left {
+    float: none !important;
+}
+
+.form-wrap.form-builder.formbuilder-embedded-bootstrap .pull-left {
+    float: none !important;
+}
+
+.form-actions {
+    display: var(--hide) !important;
+}
+
+.copy-button {
+    display: var(--hide) !important;
+}
+
+/* checkbox */
+
+.checkbox-group-field .required-wrap,
+.checkbox-group-field .description-wrap,
+.checkbox-group-field .toggle-wrap,
+.checkbox-group-field .inline-wrap,
+.checkbox-group-field .className-wrap,
+.checkbox-group-field .name-wrap,
+.checkbox-group-field .access-wrap,
+.checkbox-group-field .other-wrap {
+    display: var(--hide) !important;
+}
+
+.checkbox-group-field .field-options .option-attr:last-of-type {
+    display: var(--hide) !important;
+}
+
+/* .checkbox-group-field .add.add-opt {
+    display: var(--hide) !important;
+} */
+
+/* number */
+
+/* .number-field .required-wrap, */
+.number-field .description-wrap,
+.number-field .placeholder-wrap,
+.number-field .className-wrap,
+.number-field .name-wrap,
+.number-field .access-wrap,
+.number-field .value-wrap,
+.number-field .subtype-wrap,
+.number-field .min-wrap,
+.number-field .max-wrap,
+.number-field .step-wrap {
+    display: var(--hide) !important;
+}
+
+/* .form-wrap.form-builder .frmb .prev-holder input[type="number"] {
+    width: auto;
+    max-width: 100%;
+} */
+
+/* radio */
+
+.radio-group-field .required-wrap,
+.radio-group-field .description-wrap,
+.radio-group-field .inline-wrap,
+.radio-group-field .className-wrap,
+.radio-group-field .name-wrap,
+.radio-group-field .access-wrap,
+.radio-group-field .other-wrap {
+    display: var(--hide) !important;
+}
+
+.radio-group-field .field-options .option-attr:last-of-type {
+    display: var(--hide) !important;
+}
+
+/* select */
+
+.select-field .required-wrap,
+.select-field .description-wrap,
+.select-field .placeholder-wrap,
+.select-field .className-wrap,
+.select-field .name-wrap,
+.select-field .access-wrap,
+.select-field .multiple-wrap {
+    display: var(--hide) !important;
+}
+
+.select-field .field-options .option-attr:last-of-type {
+    display: var(--hide) !important;
+}
+
+/* text */
+
+/* .text-field .required-wrap, */
+.text-field .description-wrap,
+.text-field .placeholder-wrap,
+.text-field .className-wrap,
+.text-field .name-wrap,
+.text-field .access-wrap,
+.text-field .value-wrap,
+.text-field .subtype-wrap,
+.text-field .maxlength-wrap {
+    display: var(--hide) !important;
+}
+
+/* textarea */
+
+/* .textarea-field .required-wrap, */
+.textarea-field .description-wrap,
+.textarea-field .placeholder-wrap,
+.textarea-field .className-wrap,
+.textarea-field .name-wrap,
+.textarea-field .access-wrap,
+.textarea-field .value-wrap,
+.textarea-field .subtype-wrap,
+.textarea-field .maxlength-wrap {
+    display: var(--hide) !important;
+}
+
+.textarea-field textarea {
+    resize: none;
+}
+
+/* Redefinição dos ícones */
+
+.formbuilder-icon-text:before,
+.formbuilder-icon-number:before,
+.formbuilder-icon-select:before,
+.formbuilder-icon-radio-group:before,
+.formbuilder-icon-checkbox-group:before,
+.formbuilder-icon-textarea:before {
+    font-family: "bootstrap-icons" !important;
+}
+
+.formbuilder-icon-text:before {
+    content: "\F436" !important;
+}
+
+.formbuilder-icon-number::before {
+    content: "\F67F" !important;
+}
+
+.formbuilder-icon-select::before {
+    content: "\F229" !important;
+}
+
+.formbuilder-icon-radio-group:before {
+    content: "\F51C" !important;
+}
+
+.formbuilder-icon-checkbox-group:before {
+    content: "\F26D" !important;
+}
+
+.formbuilder-icon-textarea:before {
+    content: "\F3B9" !important;
+}
+
+/* Campos customizados */
+
+.formbuilder-text .form-control.input-cpf,
+.formbuilder-text .form-control.input-cnpj,
+.formbuilder-text .form-control.input-data {
+    width: auto !important;
+    max-width: 100% !important;
+}
+
+/* @media (max-width: 767px) {
+    .frmb-control.ui-sortable {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 60px;
+    }
+} */

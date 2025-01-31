@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    .non-bootstrap-accordion {
+      max-width: 100%;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      overflow: hidden;
+      background: #1976d2;
+    }
+
+    .non-bootstrap-accordion__label {
+      padding: 18px 20px;
+    }
+
+    .non-bootstrap-accordion__label {
+      display: block;
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .non-bootstrap-accordion__label:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .non-bootstrap-accordion__label::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 20px;
+      width: 12px;
+      height: 6px;
+      background-image: url('data:image/svg+xml;utf8,<svg width="100" height="50" xmlns="http://www.w3.org/2000/svg"><polygon points="0,0 100,0 50,50" style="fill:%23FFFFFF99;" /></svg>');
+      background-size: contain;
+      transition: transform 0.4s ease-in-out; /* Transição do ícone */
+    }
+
+    .non-bootstrap-accordion__content {
+      padding: 0 20px;
+      background: #ffffff;
+      line-height: 1.6;
+      font-size: 0.85em;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.8s ease-in-out; /* Transição do conteúdo */
+    }
+
+    .non-bootstrap-accordion__input {
+      display: none;
+    }
+
+    .non-bootstrap-accordion__input:checked~.non-bootstrap-accordion__content {
+      max-height: 500px;
+    }
+
+    .non-bootstrap-accordion__input:checked~.non-bootstrap-accordion__label::after {
+      transform: translateY(-50%) rotate(0.5turn);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="non-bootstrap-accordion">
+    <!-- Crie uma container como este. Basta definir um id como o "section1" no input e adicioná-lo na label -->
+    <div>
+      <input type="checkbox" id="section1" class="non-bootstrap-accordion__input" autocomplete="off" />
+      <label for="section1" class="non-bootstrap-accordion__label">Section #1</label>
+      <div class="non-bootstrap-accordion__content">
+        <p>Section #1</p>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam sit reiciendis, ipsam quaerat, aperiam
+          perspiciatis ad ullam architecto
+          impedit natus illo nostrum molestias voluptas earum a voluptatibus fugiat fuga facere!
+        </p>
+      </div>
+    </div>
+      <div>
+      <input type="checkbox" id="section2" class="non-bootstrap-accordion__input" autocomplete="off" />
+      <label for="section2" class="non-bootstrap-accordion__label">Section #2</label>
+      <div class="non-bootstrap-accordion__content">
+        <p>Section #2</p>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam sit reiciendis, ipsam quaerat, aperiam
+          perspiciatis ad ullam architecto
+          impedit natus illo nostrum molestias voluptas earum a voluptatibus fugiat fuga facere!
+        </p>
+      </div>
+    </div>
+    <div>
+      <input type="checkbox" id="section3" class="non-bootstrap-accordion__input" autocomplete="off" />
+      <label for="section3" class="non-bootstrap-accordion__label">Section #3</label>
+      <div class="non-bootstrap-accordion__content">
+        <p>Section #3</p>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam sit reiciendis, ipsam quaerat, aperiam
+          perspiciatis ad ullam architecto
+          impedit natus illo nostrum molestias voluptas earum a voluptatibus fugiat fuga facere!
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // O uso da função permite abrir somente um accordion por vez
+    // Ao abrir um fecha o outro
+    function controlarSelecaoAccordion() {
+      const checkboxes = document.querySelectorAll(".non-bootstrap-accordion__input");
+
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          checkboxes.forEach((outroCheckbox) => {
+            if (outroCheckbox !== checkbox) outroCheckbox.checked = false;
+          });
+        });
+      });
+    }
+
+    // Se comentar a chamada é possível abrir todos os accordions se fechar qualquer outro
+    controlarSelecaoAccordion();
+  </script>
+</body>
+
+</html>

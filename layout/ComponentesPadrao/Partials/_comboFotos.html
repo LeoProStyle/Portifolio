@@ -1,0 +1,240 @@
+
+<div class="container">
+    <h4>Combo Fotos</h4>
+</div>
+
+
+<div class="container">
+    <div class="row mt-4">
+        <div class="col-12 col-xl-12">
+            <!-- Exemplo de carrossel -->
+            <div class="element">
+
+
+
+
+
+
+<div class="container" id="combo-imagem"> 
+    <!-- Swiper -->
+    <div class="swiper fotoSwiper">
+        <div class="swiper-wrapper mobile">
+            <div class="swiper-slide"><img src="/layout/ComponentesPadrao/img/exe4.png" alt="" class="zoomable"></div>
+            <div class="swiper-slide"><img src="/layout/ComponentesPadrao/img/exe2.png" alt="" class="zoomable"></div>
+            <div class="swiper-slide"><img src="/layout/ComponentesPadrao/img/exe3.png" alt="" class="zoomable"></div>
+            <div class="swiper-slide"><img src="/layout/ComponentesPadrao/img/exe4.png" alt="" class="zoomable"></div>
+        </div>      
+    </div>
+</div>
+
+<!-- Modal para ampliar a imagem -->
+<div id="imageModal" class="modal">
+    <span id="closeModal" class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+
+   <!-- Aba de Tabs para HTML, CSS e JS -->
+   <ul class="nav nav-tabs mt-2" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="html-tab" data-bs-toggle="tab" data-bs-target="#html-content"
+                type="button" role="tab" aria-controls="html-content" aria-selected="true">
+            HTML
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="css-tab" data-bs-toggle="tab" data-bs-target="#css-content"
+                type="button" role="tab" aria-controls="css-content" aria-selected="false">
+            SaaS
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="js-tab" data-bs-toggle="tab" data-bs-target="#js-content"
+                type="button" role="tab" aria-controls="js-content" aria-selected="false">
+            JavaScript
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <!-- Conteúdo da Aba HTML -->
+    <div class="tab-pane fade show active" id="html-content" role="tabpanel" aria-labelledby="html-tab">
+        <div class="code-box">
+            <pre><code>
+                &lt;div class=&quot;container&quot; id=&quot;combo-imagem&quot;&gt; 
+                &lt;!-- Swiper --&gt;
+                &lt;div class=&quot;swiper fotoSwiper&quot;&gt;
+                    &lt;div class=&quot;swiper-wrapper mobile&quot;&gt;
+                        &lt;div class=&quot;swiper-slide&quot;&gt;&lt;img src=&quot;/layout/ComponentesPadrao/img/exe4.png&quot; alt=&quot;&quot; class=&quot;zoomable&quot;&gt;&lt;/div&gt;
+                        &lt;div class=&quot;swiper-slide&quot;&gt;&lt;img src=&quot;/layout/ComponentesPadrao/img/exe2.png&quot; alt=&quot;&quot; class=&quot;zoomable&quot;&gt;&lt;/div&gt;
+                        &lt;div class=&quot;swiper-slide&quot;&gt;&lt;img src=&quot;/layout/ComponentesPadrao/img/exe3.png&quot; alt=&quot;&quot; class=&quot;zoomable&quot;&gt;&lt;/div&gt;
+                        &lt;div class=&quot;swiper-slide&quot;&gt;&lt;img src=&quot;/layout/ComponentesPadrao/img/exe4.png&quot; alt=&quot;&quot; class=&quot;zoomable&quot;&gt;&lt;/div&gt;
+                    &lt;/div&gt;      
+                &lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;!-- Modal para ampliar a imagem --&gt;
+            &lt;div id=&quot;imageModal&quot; class=&quot;modal&quot;&gt;
+                &lt;span id=&quot;closeModal&quot; class=&quot;close&quot;&gt;&amp;times;&lt;/span&gt;
+                &lt;img class=&quot;modal-content&quot; id=&quot;modalImage&quot;&gt;
+            &lt;/div&gt;
+</code></pre>
+            <div class="btn-copiar">
+                <button class="btn btn-primary" onclick="copiarTexto(this)">Copiar HTML</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteúdo da Aba CSS -->
+    <div class="tab-pane fade" id="css-content" role="tabpanel" aria-labelledby="css-tab">
+        <div class="code-box">
+            <pre><code>
+                #combo-imagem {
+                    .swiper {
+                        width: 100%;
+                        height: 100%;
+            
+                        .swiper-slide {
+                            text-align: center;
+                            font-size: 18px;
+                            background: #fff;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+            
+                             img {
+                                display: block;
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+            
+            
+                                &.zoomable {
+                                    cursor: zoom-in;
+                                }
+                            }
+                        }
+            
+                    }
+            
+                }
+            
+            
+            
+                .modal {
+                    display: none;
+                    position: fixed;
+                    z-index: 1000;
+                    left: 0;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-color: rgba(0, 0, 0, 0.9);
+            
+            
+                    .modal-content {
+                        margin: auto;
+                        display: block;
+                        top: 10%;
+                        max-width: 80%;
+                        max-height: 80%;
+                    }
+            
+                    .close {
+                        position: absolute;
+                        top: 10px;
+                        right: 25px;
+                        color: white;
+                        font-size: 35px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    }
+                }
+            
+            
+            
+                @media (min-width: 0px) and (max-width: 990px) {
+                    #combo-imagem .mobile {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                    }
+                }
+</code></pre>
+            <div class="btn-copiar">
+                <button class="btn btn-primary" onclick="copiarTexto(this)">Copiar SaaS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conteúdo da Aba JavaScript -->
+    <div class="tab-pane fade" id="js-content" role="tabpanel" aria-labelledby="js-tab">
+        <div class="code-box">
+            <pre><code>
+                &lt;script&gt;
+                // Inicializa&ccedil;&atilde;o do Swiper
+                var swiper = new Swiper(&quot;.fotoSwiper&quot;, {
+                  slidesPerView: 4,
+                  spaceBetween: 30,
+                  freeMode: true,   
+                });
+              
+                // Fun&ccedil;&atilde;o para ampliar a imagem
+                var modal = document.getElementById(&quot;imageModal&quot;);
+                var modalImg = document.getElementById(&quot;modalImage&quot;);
+                var closeModal = document.getElementById(&quot;closeModal&quot;);
+              
+                document.querySelectorAll('.zoomable').forEach(function (img) {
+                  img.addEventListener('click', function () {
+                    modal.style.display = &quot;block&quot;;
+                    modalImg.src = this.src;
+                  });
+                });
+              
+                // Fechar o modal ao clicar no bot&atilde;o
+                closeModal.onclick = function () {
+                  modal.style.display = &quot;none&quot;;
+                };
+              &lt;/script&gt;
+
+              &lt;script src=&quot;https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+            <div class="btn-copiar">
+                <button class="btn btn-primary" onclick="copiarTexto(this)">Copiar JS</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Script JS -->
+<script>
+  // Inicialização do Swiper
+  var swiper = new Swiper(".fotoSwiper", {
+    slidesPerView: 4,
+    spaceBetween: 30,
+    freeMode: true,   
+  });
+
+  // Função para ampliar a imagem
+  var modal = document.getElementById("imageModal");
+  var modalImg = document.getElementById("modalImage");
+  var closeModal = document.getElementById("closeModal");
+
+  document.querySelectorAll('.zoomable').forEach(function (img) {
+    img.addEventListener('click', function () {
+      modal.style.display = "block";
+      modalImg.src = this.src;
+    });
+  });
+
+  // Fechar o modal ao clicar no botão
+  closeModal.onclick = function () {
+    modal.style.display = "none";
+  };
+</script>
