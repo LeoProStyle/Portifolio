@@ -1,9 +1,16 @@
 import React from 'react'
+import Display from './components/Display'
+import Player from './components/Player'
+import Sidebar from './components/Sidebar'
 
 const App = () => {
   return (
-    <div className='w-20 h-10 bg-neutral-500'>
-      
+    <div className='h-screen bg-black'>
+      <div className='h-[90%] flex'>
+        <Sidebar />
+        <Display />
+      </div>
+      <Player />
     </div>
   )
 }
