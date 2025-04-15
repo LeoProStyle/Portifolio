@@ -1,258 +1,366 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="../atendimento/css/extrato_debitos.css" rel="stylesheet" type="text/css" media="screen" />
-
-    <title>Prefeitura Praia Grande.:: RELATÓRIOS OUVIDORIA ::.</title>
-
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoom de Imagem com Lupa</title>
     <style>
-        .btn-acessar{
-            background-color:#363636;
-            color: white!important;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .caixa-sefin{
-            background-color:#363636;
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .gallery-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .gallery-item:hover {
+            opacity: 0.9;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: none;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        .btn-zoom.active {
+            background-color: #e6f7ff;
+            color: #0066cc;
+        }
+
+        .modal-body {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .modal-image-container {
+            position: relative;
+            max-height: 500px;
+        }
+
+        .modal-image {
+            max-height: 500px;
+            max-width: 100%;
+            display: block;
+        }
+
+        .cursor-none {
+            cursor: none;
+        }
+
+        .magnifier {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid #0066cc;
+            overflow: hidden;
+            pointer-events: none;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            display: none;
+        }
+
+        .magnifier-content {
+            width: 100%;
+            height: 100%;
+            background-repeat: no-repeat;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .crosshair {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 11;
+            display: none;
+        }
+
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .modal-hint {
+            font-size: 14px;
+            color: #666;
         }
     </style>
 </head>
+<body>
+    <h1>Galeria de Imagens com Zoom</h1>
+    <p>Clique em uma imagem para abri-la. Use o botão de lupa para ativar o zoom e visualizar textos pequenos.</p>
 
-
-    <!------------------------- TOPO ----------------------------------->
-   
-        <!-- #include file="../assets/include/menuNovoNewVersion.asp"   -->
-    
-
-
-    <!------------------------- CORPO DO SITE ----------------------------------->
-
-    <body class="d-flex flex-column h-100">
-     <Section id="corpo">
-
-    <div class="container">    
-
-      <section class="caminho-site mt-4">
-        <div class="container">
-          <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-              <li class="breadcrumb-item home"><a
-                                    href="https://www.praiagrande.sp.gov.br/HomePortal-.asp?cd_pagina=71">Home</a></li>
-                            <li class="breadcrumb-item linky"><a
-                                    href="../atendimento/home.asp">Servi&#231;os
-                                    online</a></li>
-                                       <li class="breadcrumb-item linky"><a
-                                    href="../atendimento/governo.asp">Governo</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">RELATÓRIOS OUVIDORIA MUNICIPAL</li>
-                        </ol>
-        </nav> 
-      </div>
-      </section>
-
-      <div class="Subtitulo mt-3">
-        <h2>RELATÓRIOS OUVIDORIA MUNICIPAL</h2></div>
-      
-
-
-      <div class="container mt-5" style="padding-top:0px">
-
-        
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Mai/2013 a Out/2013</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/1RelatoriodaOuvidoria.pdf"  target='_blank' role="button">Acessar</a>
-          </div>
+    <div class="gallery" id="gallery">
+        <div class="gallery-item">
+            <img src="https://placehold.co/400x300?text=Documento+1" alt="Documento com texto pequeno 1">
         </div>
+        <div class="gallery-item">
+            <img src="https://placehold.co/400x300?text=Documento+2" alt="Documento com texto pequeno 2">
+        </div>
+        <div class="gallery-item">
+            <img src="https://placehold.co/400x300?text=Documento+3" alt="Documento com texto pequeno 3">
+        </div>
+    </div>
 
-        <hr size="2" width="100%" align="center" noshade class="linha">
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Título da Imagem</h2>
+                <div class="button-group">
+                    <button class="btn btn-zoom" id="zoomToggle" title="Ativar/desativar lupa de zoom">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="11" y1="8" x2="11" y2="14"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                    </button>
+                    <button class="btn btn-close" id="closeModal" title="Fechar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Nov/2013 a Abr/2014</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/2RelatoriodaOuvidoria.pdf" target='_blank' role="button">Acessar</a>
-          </div>
-        </div>        
+            <div class="modal-body">
+                <div class="modal-image-container" id="imageContainer">
+                    <img class="modal-image" id="modalImage" src="" alt="">
+                    <div class="magnifier" id="magnifier">
+                        <div class="magnifier-content" id="magnifierContent"></div>
+                    </div>
+                    <div class="crosshair" id="crosshair">
+                        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+                            <path d="M15 0 L15 30 M0 15 L30 15" stroke="rgba(0,0,0,0.5)" stroke-width="1"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
 
-        <hr size="2" width="100%" align="center" noshade class="linha">
+            <div class="modal-footer">
+                <p class="modal-hint" id="modalHint">Clique no botão de lupa para ativar o zoom e visualizar detalhes.</p>
+            </div>
+        </div>
+    </div>
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Mai/2014 a Out/2014</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/3RelatoriodaOuvidoria.pdf"  target='_blank' role="button">Acessar</a>
-          </div>
-        </div>        
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const gallery = document.getElementById('gallery');
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalTitle = document.getElementById('modalTitle');
+            const closeModalBtn = document.getElementById('closeModal');
+            const zoomToggleBtn = document.getElementById('zoomToggle');
+            const imageContainer = document.getElementById('imageContainer');
+            const magnifier = document.getElementById('magnifier');
+            const magnifierContent = document.getElementById('magnifierContent');
+            const crosshair = document.getElementById('crosshair');
+            const modalHint = document.getElementById('modalHint');
 
-        <hr size="2" width="100%" align="center" noshade class="linha">
+            let isZooming = false;
+            const zoomFactor = 2.5;
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Nov/2014 a Abr/2014</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/4RelatoriodaOuvidoria.pdf"  target='_blank'  role="button">Acessar</a>
-          </div>
-        </div>        
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    const img = this.querySelector('img');
+                    openModal(img.src, img.alt);
+                });
+            });
 
-        <hr size="2" width="100%" align="center" noshade class="linha">
+            function openModal(src, alt) {
+                modalImage.src = src;
+                modalTitle.textContent = alt;
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Mai/2015 a Out/2015</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/5RelatoriodaOuvidoria.pdf" target='_blank' role="button">Acessar</a>
-          </div>
-        </div>        
+            function closeModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                isZooming = false;
+                zoomToggleBtn.classList.remove('active');
+                modalImage.classList.remove('cursor-none');
+                magnifier.style.display = 'none';
+                crosshair.style.display = 'none';
+                updateHintText();
+            }
 
-                  <hr size="2" width="100%" align="center" noshade class="linha">
+            function toggleZoom() {
+                isZooming = !isZooming;
+                if (isZooming) {
+                    zoomToggleBtn.classList.add('active');
+                    modalImage.classList.add('cursor-none');
+                    magnifier.style.display = 'block';
+                    crosshair.style.display = 'block';
+                } else {
+                    zoomToggleBtn.classList.remove('active');
+                    modalImage.classList.remove('cursor-none');
+                    magnifier.style.display = 'none';
+                    crosshair.style.display = 'none';
+                }
+                updateHintText();
+            }
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Nov/2015 a Abr/2016</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/6RelatoriodaOuvidoria.pdf"  target='_blank' role="button">Acessar</a>
-          </div>
-        </div>    
-                  <hr size="2" width="100%" align="center" noshade class="linha">
+            function updateHintText() {
+                modalHint.textContent = isZooming
+                    ? 'Mova o cursor sobre a imagem para usar a lupa. A lupa acompanha o movimento do cursor.'
+                    : 'Clique no botão de lupa para ativar o zoom e visualizar detalhes.';
+            }
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Mai/2016 a Out/2016</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/7RelatoriodaOuvidoria.pdf" target='_blank'  role="button">Acessar</a>
-          </div>
-        </div>    
+            function handleMouseMove(event) {
+                if (!isZooming) return;
 
-                  <hr size="2" width="100%" align="center" noshade class="linha">
+                const rect = modalImage.getBoundingClientRect();
+                const x = (event.clientX - rect.left) / rect.width;
+                const y = (event.clientY - rect.top) / rect.height;
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Nov/2016 a Abr/2017</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/8RelatoriodaOuvidoria.pdf" target='_blank' role="button">Acessar</a>
-          </div>
-        </div>    
+                const boundedX = Math.max(0, Math.min(1, x));
+                const boundedY = Math.max(0, Math.min(1, y));
 
-                  <hr size="2" width="100%" align="center" noshade class="linha">
+                magnifier.style.left = `${event.clientX}px`;
+                magnifier.style.top = `${event.clientY}px`;
+                crosshair.style.left = `${event.clientX}px`;
+                crosshair.style.top = `${event.clientY}px`;
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Mai/2017 a Out/2017</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/9RelatoriodaOuvidoria.pdf" target='_blank'  role="button">Acessar</a>
-          </div>
-        </div>    
+                const imgWidth = modalImage.offsetWidth;
+                const imgHeight = modalImage.offsetHeight;
 
-                  <hr size="2" width="100%" align="center" noshade class="linha">
+                magnifierContent.style.backgroundImage = `url(${modalImage.src})`;
+                magnifierContent.style.backgroundSize = `${imgWidth * zoomFactor}px ${imgHeight * zoomFactor}px`;
+                magnifierContent.style.backgroundPosition = `-${boundedX * imgWidth * zoomFactor - 60}px -${boundedY * imgHeight * zoomFactor - 60}px`;
+            }
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Nov/2017 a Abr/2018</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/10RelatoriodaOuvidoria.pdf" target='_blank'  role="button">Acessar</a>
-          </div>
-        </div>    
+            function handleMouseLeave() {
+                if (isZooming) {
+                    magnifier.style.display = 'none';
+                    crosshair.style.display = 'none';
+                }
+            }
 
-                  <hr size="2" width="100%" align="center" noshade class="linha">
+            function handleMouseEnter() {
+                if (isZooming) {
+                    magnifier.style.display = 'block';
+                    crosshair.style.display = 'block';
+                }
+            }
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Mai/2018 a Out/2018</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/11_RelatoriodaOuvidoria.pdf" target='_blank'  role="button">Acessar</a>
-          </div>
-        </div>    
+            closeModalBtn.addEventListener('click', closeModal);
+            zoomToggleBtn.addEventListener('click', toggleZoom);
+            imageContainer.addEventListener('mousemove', handleMouseMove);
+            imageContainer.addEventListener('mouseleave', handleMouseLeave);
+            imageContainer.addEventListener('mouseenter', handleMouseEnter);
 
-                  <hr size="2" width="100%" align="center" noshade class="linha">
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Nov/2018 a Abr/2019</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/12_RelatoriodaOuvidoriaPG.pdf" target='_blank'  role="button">Acessar</a>
-          </div>
-        </div>         
-                           <hr size="2" width="100%" align="center" noshade class="linha">
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape' && modal.style.display === 'flex') {
+                    closeModal();
+                }
+            });
 
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Mai/2019 a Dez/2019</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/13_RelatoriodaOuvidoriaPG.pdf" target='_blank'  role="button">Acessar</a>
-          </div>
-        </div>  
-                           <hr size="2" width="100%" align="center" noshade class="linha">
-
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Anual 2020</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/14_RelatórioOuvidoria.pdf" target='_blank'  role="button">Acessar</a>
-          </div>
-        </div>    
-                           <hr size="2" width="100%" align="center" noshade class="linha">
-
-        <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Anual 2021</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/15_RelatórioOuvidoria.pdf"  target='_blank' role="button">Acessar</a>
-          </div>
-        </div>  
-           <hr size="2" width="100%" align="center" noshade class="linha">
-		   
-		           <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Anual 2022</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/16_RelatórioOuvidoria.pdf"  target='_blank' role="button">Acessar</a>
-          </div>
-		  
-        </div>  
-           <hr size="2" width="100%" align="center" noshade class="linha">
-		   <div class="row sefin-item">
-          <div class="col-md-11 col-sm-6 mobile">
-            <p class="paragrafo"><b>Relatório Anual 2023</b></p>
-          </div>
-          <div class="col-md-1 col-sm-6 mobile">
-            <a class="btn-acessar" href="../arquivos/banner_ouvidoria/relatorio/17_RelatórioOuvidoria.pdf"  target='_blank' role="button">Acessar</a>
-          </div>
-        </div>  
-           <hr size="2" width="100%" align="center" noshade class="linha">
-</div> 
-</div> 
-  </Section>
-
-    <!------------------------- FOOTER ----------------------------------->
-   
-        <!-- #include file="../assets/include/footerNovoNewVersion.asp"   -->
-    
-
-    <script src="../assets/include/bootstrap.bundle.min.js">
+            imageContainer.addEventListener('touchmove', function (event) {
+                event.preventDefault();
+                const touch = event.touches[0];
+                handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
+            }, { passive: false });
+        });
     </script>
-    <script src="../assets/js/script.js"></script>
-
-
 </body>
-<!-- by:LPS -->
-
 </html>
