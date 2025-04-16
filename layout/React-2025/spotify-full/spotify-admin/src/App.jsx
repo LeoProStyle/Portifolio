@@ -9,11 +9,14 @@ import ListSong from './pages/ListSong';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 
+//conexao com banco
+export const url = 'http://localhost:4000'
+
 const App = () => {
   return (
-    <div className='flex items-start min-h-screen'>
-      <ToastContainer/>
+    <div className='flex items-start min-h-screen'>      
       <Sidebar/>
+      <ToastContainer position="bottom-right"/>
       <div className='flex-1 h-screen overflow-y-scroll bg-[#f3fff7]'>
         <Navbar />
         <div className='pt-8 pl-5 sm:pt-12 sm:pl-12'>
@@ -22,7 +25,7 @@ const App = () => {
             <Route path='/add-album' element={<AddAlbum/>}/>
             <Route path='/list-song' element={<ListSong/>}/>
             <Route path='/list-album' element={<ListAlbum/>}/>
-          </Routes>
+          </Routes>          
         </div>
       </div>
     </div>

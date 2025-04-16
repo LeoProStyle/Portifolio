@@ -2,6 +2,8 @@ import {v2 as cloudinary} from 'cloudinary'
 import songModel from '../models/songModel.js';
 
 const addSong = async (req,res)=> {
+
+    console.log('Files recebidos:', req.files); //log para ajudar no debug
     try {
         const name = req.body.name;
         const desc = req.body.desc;
@@ -50,7 +52,7 @@ const listSong = async (req,res) => {
 const removeSong = async(req,res) => {
     try {
         
-        await songModel.fundByIdAndDelete(req.body.id);
+        await songModel.findByIdAndDelete(req.body.id);
         res.json({success:true, message: "Musica Removida!"})
 
     } catch (error) {

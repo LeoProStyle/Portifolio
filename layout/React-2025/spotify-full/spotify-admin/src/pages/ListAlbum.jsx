@@ -1,9 +1,88 @@
-import React from 'react'
+import React, { useEffect, useState, useRef } from 'react'
+import axios from 'axios';
+import {url} from '../App';
+import { toast } from 'react-toastify';
 
 const ListAlbum = () => {
+
+ const [data,setData] = useState ([]);
+    const fetchedRef = useRef(false);
+
+    const fetchAlbums = async () => {
+
+        try {
+
+            const response = await axios.get(`${url}/api/album/list`);
+
+           if(response.data.success){
+            if (!fetchedRef.current) {
+                toast.success("Lista carregada !");
+                fetchedRef.current = true;
+            }
+            setData(response.data.albums)
+           }
+
+        } catch (error) {
+            toast.error("Ocorreu um erro")
+        }
+
+    }
+
+
+
+     //adicionando remoçao da musica 
+     const removeAlbum = async (id) => {
+      try {
+        const response = await axios.post(`${url}/api/album/remove`, { id });
+        console.log("Resposta da API:", response.data); // <-- aqui
+    
+        if (response.data.success) {
+          toast.success(response.data.message);
+          await fetchAlbums();
+        } else {
+          toast.error("Erro na API: " + response.data.message);
+        }
+      } catch (error) {
+        toast.error("Não foi possível excluir");
+        console.error(error); // <-- Mostra erro detalhado
+      }
+    }
+
+  useEffect(() => {
+      fetchAlbums();
+  },[])
+
+
+
+
+
+
+
+
   return (
     <div>
-      Listar albuns
+      <p>Todos os albuns</p>
+        <br/>
+        <div>
+            <div className='sm:grid hidden grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5 bg-gray-100'>
+                <b>Image</b>
+                <b>Name</b>
+                <b>Descrição</b>
+                <b>Cor do Album</b>               
+                <b>Action</b>
+            </div>
+            {data.map((item,index)=>{
+                return(
+                    <div key={index} className='grid grid-cols-[1fr_1fr_1fr] sm:grid-cols-[0.5fr_1fr_2fr_1fr_0.5fr] items-center gap-2.5 p-3 border border-gray-300 text-sm mr-5'>
+                        <img className='w-12' src={item.image} alt="" />
+                        <p>{item.name}</p>
+                        <p>{item.desc}</p>
+                        <input type="color" value = {item.bgColour} />                        
+                        <p className='cursor-pointer' onClick={()=> {console.log("clicou!", item._id);removeAlbum(item._id)}}>x</p>
+                    </div>
+                )
+            })}
+        </div>
     </div>
   )
 }
