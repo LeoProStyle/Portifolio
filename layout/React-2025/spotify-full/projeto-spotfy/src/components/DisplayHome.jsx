@@ -1,18 +1,21 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import NavBar from './NavBar'
-import { albumsData, songsData } from '../assets/frontend-assets/assets'
 import AlbumItem from './AlbumItem'
 import SongItem from './SongItem'
-// import { songsData } from '../assets/frontend-assets/assets'
+import { PlayerContext } from '../context/PlayerContext'
+
 
 const DisplayHome = () => {
+
+  const{songsData, albumsData} = useContext(PlayerContext);
+
   return (
     <>
     <NavBar />
     <div className='mb-4'>
         <h1 className='my-5 font-bold text-wrap'>Top 10</h1>
         <div className='flex overflow-auto'>
-            {albumsData.map((item,index)=>(<AlbumItem key={index} name={item.name} desc={item.desc} id={item.id} image={item.image} />))}
+            {albumsData.map((item,index)=>(<AlbumItem key={index} name={item.name} desc={item.desc} id={item._id} image={item.image} />))}
         </div>
         
     </div>
@@ -20,7 +23,7 @@ const DisplayHome = () => {
     <div className='mb-4'>
         <h1 className='my-5 font-bold text-wrap'>Melhores do Dia</h1>
         <div className='flex overflow-auto'>
-            {songsData.map((item,index)=>(<SongItem key={index} name={item.name} desc={item.desc} id={item.id} image={item.image}/>))}
+            {songsData.map((item,index)=>(<SongItem key={index} name={item.name} desc={item.desc} id={item._id} image={item.image}/>))}
         </div>
         
     </div>
