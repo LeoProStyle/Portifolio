@@ -5,6 +5,8 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
+  console.log("🚀 Webhook recebido");
+
   const payload = await req.json();
   const body = JSON.stringify(payload);
 
@@ -21,7 +23,7 @@ export async function POST(req) {
   try {
     evt = wh.verify(body, svixHeaders);
   } catch (err) {
-    console.error("Falha na verificação da assinatura Svix:", err);
+    console.error("❌ Falha na verificação da assinatura Svix:", err);
     return NextResponse.json({ error: "Unauthorized" }, { status: 400 });
   }
 
@@ -29,25 +31,32 @@ export async function POST(req) {
 
   const userData = {
     _id: data.id,
-    email: data.email_addresses[0].email_address,
-    name: `${data.first_name} ${data.last_name}`,
-    image: data.image_url,
+    email: data.email_addresses[0]?.email_address || "sem-email@exemplo.com",
+    name: `${data.first_name || ""} ${data.last_name || ""}`.trim() || "Usuário",
+    image: data.image_url || data.profile_image_url || "",
   };
+
+  console.log("📨 Evento recebido:", type);
+  console.log("👤 Dados do usuário:", userData);
 
   await connectDB();
 
-  switch (type) {
-    case "user.created":
-      await User.create(userData);
-      break;
-    case "user.updated":
-      await User.findByIdAndUpdate(data.id, userData);
-      break;
-    case "user.deleted":
-      await User.findByIdAndDelete(data.id);
-      break;
-    default:
-      console.log(`Tipo de evento não tratado: ${type}`);
+  try {
+    switch (type) {
+      case "user.created":
+        await User.create(userData);
+        break;
+      case "user.updated":
+        await User.findByIdAndUpdate(data.id, userData);
+        break;
+      case "user.deleted":
+        await User.findByIdAndDelete(data.id);
+        break;
+      default:
+        console.log(`⚠️ Tipo de evento não tratado: ${type}`);
+    }
+  } catch (err) {
+    console.error("❌ Erro ao salvar no MongoDB:", err);
   }
 
   return NextResponse.json({ received: true });
