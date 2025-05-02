@@ -1,7 +1,7 @@
 // app/layout.js
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import UserNav from "@/components/UserNav"; // ajuste o caminho se necessário
+import UserNav from "@/app/components/UserNav"; // ajuste o caminho se necessário
 
 export const metadata = {
   title: "Sistema de Check-ins",
