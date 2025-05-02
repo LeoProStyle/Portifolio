@@ -25,54 +25,40 @@ export default function SignInPage() {
       isRedirecting
     });
 
-    const handleAuth = async () => {
-      if (!isLoaded) {
-        console.log('SignInPage - Ainda carregando Clerk...');
-        return;
-      }
+    if (!isLoaded || !userId || !user || isRedirecting) {
+      return;
+    }
 
-      if (!userId) {
-        console.log('SignInPage - Usuário não autenticado');
-        return;
-      }
-
-      if (!user) {
-        console.log('SignInPage - Dados do usuário ainda não disponíveis');
-        return;
-      }
-
-      if (isRedirecting) {
-        console.log('SignInPage - Já em processo de redirecionamento');
-        return;
-      }
-
-      console.log('SignInPage - Iniciando processo de redirecionamento');
-      setIsRedirecting(true);
-
-      const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
-      const userEmail = user.emailAddresses[0]?.emailAddress;
-      const isAdmin = adminEmails.includes(userEmail);
-
-      console.log('SignInPage - Verificação de Admin:', {
-        userEmail,
-        adminEmails,
-        isAdmin
-      });
-
+    const redirect = () => {
       try {
+        console.log('SignInPage - Iniciando redirecionamento');
+        setIsRedirecting(true);
+
+        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
+        const userEmail = user.emailAddresses[0]?.emailAddress;
+        const isAdmin = adminEmails.includes(userEmail);
+
+        console.log('SignInPage - Verificação de Admin:', {
+          userEmail,
+          adminEmails,
+          isAdmin
+        });
+
         const targetPath = isAdmin ? '/admin' : '/client';
-        console.log('SignInPage - Tentando redirecionar para:', targetPath);
-        
-        await router.push(targetPath);
-        console.log('SignInPage - Redirecionamento iniciado');
+        console.log('SignInPage - Redirecionando para:', targetPath);
+
+        // Força o redirecionamento usando window.location
+        window.location.href = targetPath;
       } catch (error) {
         console.error('SignInPage - Erro no redirecionamento:', error);
         setIsRedirecting(false);
       }
     };
 
-    handleAuth();
-  }, [isLoaded, userId, user, router, isRedirecting]);
+    // Pequeno delay para garantir que o estado do Clerk está sincronizado
+    const timeoutId = setTimeout(redirect, 500);
+    return () => clearTimeout(timeoutId);
+  }, [isLoaded, userId, user, isRedirecting]);
 
   if (!isLoaded || userId || isRedirecting) {
     console.log('SignInPage - Renderizando loading:', {
