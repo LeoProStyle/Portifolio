@@ -1,27 +1,36 @@
 'use client';
-import { SignIn, useAuth } from "@clerk/nextjs";
-import { useRouter, useSearchParams } from "next/navigation";
+import { SignIn, useAuth, useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function SignInPage() {
   const { isLoaded, userId } = useAuth();
+  const { user } = useUser();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect_url');
 
   useEffect(() => {
-    if (isLoaded && userId) {
-      // Se já estiver autenticado, redireciona para a página apropriada
-      router.replace(redirectUrl || '/admin');
-    }
-  }, [isLoaded, userId, router, redirectUrl]);
+    if (isLoaded && userId && user) {
+      const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
+      const userEmail = user.emailAddresses[0]?.emailAddress;
+      const isAdmin = adminEmails.includes(userEmail);
 
-  // Não renderiza nada enquanto verifica autenticação
+      // Redireciona diretamente para a página apropriada
+      if (isAdmin) {
+        window.location.href = '/admin';
+      } else {
+        window.location.href = '/client';
+      }
+    }
+  }, [isLoaded, userId, user]);
+
   if (!isLoaded || userId) {
-    return null;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
-  // Só renderiza o componente SignIn se não estiver autenticado
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md">
@@ -32,9 +41,6 @@ export default function SignInPage() {
               footerActionLink: 'text-blue-500 hover:text-blue-600'
             }
           }}
-          redirectUrl={redirectUrl || '/admin'}
-          routing="path"
-          path="/sign-in"
         />
       </div>
     </div>

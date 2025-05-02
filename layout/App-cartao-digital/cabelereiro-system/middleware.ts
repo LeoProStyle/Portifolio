@@ -27,45 +27,31 @@ export default authMiddleware({
   ignoredRoutes,
 
   async afterAuth(auth, req) {
-    const isAuthPage = req.nextUrl.pathname === '/sign-in' || req.nextUrl.pathname === '/sign-up';
-
-    // Se está autenticado e tentando acessar páginas de auth
-    if (auth.userId && isAuthPage) {
-      try {
-        const user = await clerkClient.users.getUser(auth.userId);
-        const userEmail = user.emailAddresses[0]?.emailAddress;
-        const isAdmin = ADMIN_EMAILS.includes(userEmail);
-        return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
-      } catch (error) {
-        return NextResponse.redirect(new URL('/client', req.url));
-      }
-    }
-
     // Se não está autenticado e tenta acessar rota protegida
     if (!auth.userId && !auth.isPublicRoute) {
-      const signInUrl = new URL('/sign-in', req.url);
-      signInUrl.searchParams.set('redirect_url', req.nextUrl.pathname);
-      return NextResponse.redirect(signInUrl);
+      return NextResponse.redirect(new URL('/sign-in', req.url));
     }
 
-    // Se está autenticado, verifica permissões para rotas protegidas
-    if (auth.userId && !isAuthPage) {
+    // Se está autenticado, verifica permissões
+    if (auth.userId) {
       try {
         const user = await clerkClient.users.getUser(auth.userId);
         const userEmail = user.emailAddresses[0]?.emailAddress;
         const isAdmin = ADMIN_EMAILS.includes(userEmail);
 
-        // Redireciona com base nas permissões
-        if (req.nextUrl.pathname === '/') {
-          return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
-        }
-
+        // Protege rotas administrativas
         if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
           return NextResponse.redirect(new URL('/client', req.url));
         }
 
+        // Redireciona admin para área administrativa
         if (req.nextUrl.pathname.startsWith('/client') && isAdmin) {
           return NextResponse.redirect(new URL('/admin', req.url));
+        }
+
+        // Redireciona da home page
+        if (req.nextUrl.pathname === '/') {
+          return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
         }
       } catch (error) {
         return NextResponse.redirect(new URL('/client', req.url));
