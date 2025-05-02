@@ -28,36 +28,17 @@ export default function SignInPage() {
       const isAdmin = adminEmails.includes(userEmail);
       console.log('SignInPage - É admin?', isAdmin);
 
-      // Pega a URL de redirecionamento dos parâmetros ou usa o padrão
-      let redirectUrl = searchParams.get('redirect_url');
-      console.log('SignInPage - URL de redirecionamento original:', redirectUrl);
+      // Pega o caminho de redirecionamento dos parâmetros ou usa o padrão
+      const redirectPath = searchParams.get('redirect_url') || (isAdmin ? '/admin' : '/client');
+      console.log('SignInPage - Caminho de redirecionamento:', redirectPath);
       
-      // Se tiver URL de redirecionamento, extrai apenas o caminho
-      if (redirectUrl) {
-        try {
-          const url = new URL(redirectUrl);
-          redirectUrl = url.pathname;
-          console.log('SignInPage - URL de redirecionamento convertida para caminho:', redirectUrl);
-        } catch (e) {
-          console.log('SignInPage - URL já é um caminho:', redirectUrl);
-        }
-      }
-      
-      if (redirectUrl) {
-        console.log('SignInPage - Tem URL de redirecionamento');
-        if (redirectUrl.includes('/admin') && !isAdmin) {
-          console.log('SignInPage - Tentativa de acesso admin não autorizada');
-          router.replace('/client');
-        } else if (redirectUrl.includes('/client') && isAdmin) {
-          console.log('SignInPage - Admin tentando acessar área de cliente');
-          router.replace('/admin');
-        } else {
-          console.log('SignInPage - Redirecionando para:', redirectUrl);
-          router.replace(redirectUrl);
-        }
+      // Validar o caminho de redirecionamento
+      if (redirectPath.startsWith('/admin') && !isAdmin) {
+        router.replace('/client');
+      } else if (redirectPath.startsWith('/client') && isAdmin) {
+        router.replace('/admin');
       } else {
-        console.log('SignInPage - Sem URL de redirecionamento, usando padrão');
-        router.replace(isAdmin ? '/admin' : '/client');
+        router.replace(redirectPath);
       }
     } else {
       console.log('SignInPage - Usuário não está autenticado ou ainda carregando');

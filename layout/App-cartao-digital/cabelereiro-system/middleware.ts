@@ -25,7 +25,6 @@ export default authMiddleware({
         const userEmail = user.emailAddresses[0]?.emailAddress;
         const isAdmin = ADMIN_EMAILS.includes(userEmail);
         
-        // Redireciona para a página apropriada
         return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
       } catch (error) {
         console.error('Erro ao buscar informações do usuário:', error);
@@ -35,8 +34,13 @@ export default authMiddleware({
 
     // Se não está autenticado e tenta acessar rota protegida
     if (!auth.userId && !auth.isPublicRoute) {
+      // Usar apenas o pathname para o redirecionamento
       const signInUrl = new URL('/sign-in', req.url);
-      signInUrl.searchParams.set('redirect_url', req.url);
+      // Armazenar apenas o caminho relativo
+      const redirectPath = req.nextUrl.pathname;
+      if (redirectPath !== '/sign-in') {
+        signInUrl.searchParams.set('redirect_url', redirectPath);
+      }
       return NextResponse.redirect(signInUrl);
     }
 
@@ -55,31 +59,16 @@ export default authMiddleware({
         const isAdmin = ADMIN_EMAILS.includes(userEmail);
         console.log('É admin?', isAdmin);
 
-        // Redirecionamento na página inicial
         if (req.nextUrl.pathname === '/') {
-          if (isAdmin) {
-            console.log('Redirecionando admin para /admin');
-            return NextResponse.redirect(new URL('/admin', req.url));
-          } else {
-            console.log('Redirecionando usuário para /client');
-            return NextResponse.redirect(new URL('/client', req.url));
-          }
+          return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
         }
 
-        // Proteção da rota admin
-        if (req.nextUrl.pathname.startsWith('/admin')) {
-          if (!isAdmin) {
-            console.log('Usuário não admin tentando acessar /admin');
-            return NextResponse.redirect(new URL('/client', req.url));
-          }
+        if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
+          return NextResponse.redirect(new URL('/client', req.url));
         }
 
-        // Proteção da rota client
-        if (req.nextUrl.pathname.startsWith('/client')) {
-          if (isAdmin) {
-            console.log('Admin tentando acessar /client');
-            return NextResponse.redirect(new URL('/admin', req.url));
-          }
+        if (req.nextUrl.pathname.startsWith('/client') && isAdmin) {
+          return NextResponse.redirect(new URL('/admin', req.url));
         }
       } catch (error) {
         console.error('Erro ao buscar informações do usuário:', error);
