@@ -10,7 +10,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [name, setName] = useState("");
-  const { user } = useUser();
+  const { isLoaded, user } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
 
@@ -22,20 +22,21 @@ export default function AdminPage() {
   console.log('AdminPage - ADMIN_EMAILS:', ADMIN_EMAILS);
 
   useEffect(() => {
-    console.log('AdminPage - useEffect de verificação de admin');
-    if (user) {
-      const userRole = getUserRole(user);
-      console.log('AdminPage - Role do usuário:', userRole);
-      
-      if (userRole !== 'admin') {
-        console.log('AdminPage - Não é admin, redirecionando para /client');
-        router.push("/client");
-      } else {
-        console.log('AdminPage - É admin, carregando dados');
-        loadClients();
-      }
+    if (!isLoaded) return;
+
+    if (!user) {
+      router.replace('/sign-in');
+      return;
     }
-  }, [user, router]);
+
+    const userRole = getUserRole(user);
+    if (userRole !== 'admin') {
+      router.replace('/client');
+      return;
+    }
+
+    loadClients();
+  }, [isLoaded, user, router]);
 
   const loadClients = async () => {
     try {
@@ -120,76 +121,84 @@ export default function AdminPage() {
       router.push("/");
     } catch (err) {
       console.error('AdminPage - Erro ao fazer logout:', err);
+      setError('Erro ao fazer logout');
     }
   };
 
+  if (!isLoaded || loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">Carregando...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h1 className="text-xl mb-4">Faça login para usar o sistema</h1>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <main className="p-10 max-w-xl mx-auto text-center space-y-6">
-      <SignedIn>
-        <h1 className="text-2xl font-bold">Área Administrativa</h1>
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {error}
-          </div>
-        )}
-        
-        <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
-          Sair
+      <h1 className="text-2xl font-bold">Área Administrativa</h1>
+      
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+      
+      <button onClick={handleSignOut} className="mt-4 bg-red-500 text-white px-4 py-2 rounded">
+        Sair
+      </button>
+
+      <div className="flex gap-2 justify-center mt-4">
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Nome do cliente"
+          className="border px-2 py-1 rounded"
+        />
+        <button 
+          onClick={addClient} 
+          className="bg-blue-500 text-white px-3 py-1 rounded"
+          disabled={!name.trim()}
+        >
+          Adicionar
         </button>
+      </div>
 
-        {loading ? (
-          <div className="text-center py-4">Carregando...</div>
-        ) : (
-          <>
-            <div className="flex gap-2 justify-center mt-4">
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Nome do cliente"
-                className="border px-2 py-1 rounded"
-              />
-              <button 
-                onClick={addClient} 
-                className="bg-blue-500 text-white px-3 py-1 rounded"
-                disabled={!name.trim()}
+      {clients.length === 0 ? (
+        <p className="text-gray-500">Nenhum cliente cadastrado.</p>
+      ) : (
+        <ul className="mt-6 space-y-2">
+          {clients.map(client => (
+            <li key={client._id} className="flex justify-between items-center border-b pb-2">
+              <span>{client.name} — {client.checkIns} check-in(s)</span>
+              <span className="text-sm text-gray-500">Cortes grátis: {client.freeCuts}</span>
+              {client.freeCuts > 0 && (
+                <button
+                  onClick={() => useFreeCut(client._id)}
+                  className="text-sm bg-red-500 text-white px-2 py-1 rounded"
+                >
+                  Usar Corte Grátis
+                </button>
+              )}
+              <button
+                onClick={() => checkIn(client._id)}
+                className="text-sm bg-green-500 text-white px-2 py-1 rounded"
               >
-                Adicionar
+                Check-in
               </button>
-            </div>
-
-            {clients.length === 0 ? (
-              <p className="text-gray-500">Nenhum cliente cadastrado.</p>
-            ) : (
-              <ul className="mt-6 space-y-2">
-                {clients.map(client => (
-                  <li key={client._id} className="flex justify-between items-center border-b pb-2">
-                    <span>{client.name} — {client.checkIns} check-in(s)</span>
-                    <span className="text-sm text-gray-500">Cortes grátis: {client.freeCuts}</span>
-                    {client.freeCuts > 0 && (
-                      <button
-                        onClick={() => useFreeCut(client._id)}
-                        className="text-sm bg-red-500 text-white px-2 py-1 rounded"
-                      >
-                        Usar Corte Grátis
-                      </button>
-                    )}
-                    <button
-                      onClick={() => checkIn(client._id)}
-                      className="text-sm bg-green-500 text-white px-2 py-1 rounded"
-                    >
-                      Check-in
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
-        )}
-      </SignedIn>
-
-      <SignedOut>
-        <h1 className="text-xl mb-4">Faça login para usar o sistema</h1>
-      </SignedOut>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
 }
