@@ -18,25 +18,31 @@ export default authMiddleware({
     "/favicon.ico"
   ],
   async afterAuth(auth, req) {
-    // Debug completo do objeto auth
-    console.log('Auth object:', JSON.stringify({
-      userId: auth.userId,
-      isPublicRoute: auth.isPublicRoute,
-      sessionClaims: auth.sessionClaims,
-      sessionId: auth.sessionId
-    }, null, 2));
+    // Se o usuário está autenticado e tenta acessar páginas de auth
+    if (auth.userId && (req.nextUrl.pathname === '/sign-in' || req.nextUrl.pathname === '/sign-up')) {
+      try {
+        const user = await clerkClient.users.getUser(auth.userId);
+        const userEmail = user.emailAddresses[0]?.emailAddress;
+        const isAdmin = ADMIN_EMAILS.includes(userEmail);
+        
+        // Redireciona para a página apropriada
+        return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
+      } catch (error) {
+        console.error('Erro ao buscar informações do usuário:', error);
+        return NextResponse.redirect(new URL('/client', req.url));
+      }
+    }
 
-    // Handle users who aren't authenticated
+    // Se não está autenticado e tenta acessar rota protegida
     if (!auth.userId && !auth.isPublicRoute) {
       const signInUrl = new URL('/sign-in', req.url);
       signInUrl.searchParams.set('redirect_url', req.url);
       return NextResponse.redirect(signInUrl);
     }
 
-    // Se o usuário está autenticado
+    // Se está autenticado
     if (auth.userId) {
       try {
-        // Buscar informações do usuário usando clerkClient
         const user = await clerkClient.users.getUser(auth.userId);
         const userEmail = user.emailAddresses[0]?.emailAddress;
         
@@ -46,11 +52,10 @@ export default authMiddleware({
           ADMIN_EMAILS
         });
         
-        // Verifica se o email do usuário está na lista de admins
         const isAdmin = ADMIN_EMAILS.includes(userEmail);
         console.log('É admin?', isAdmin);
 
-        // Se estiver tentando acessar a página inicial, redireciona baseado no email
+        // Redirecionamento na página inicial
         if (req.nextUrl.pathname === '/') {
           if (isAdmin) {
             console.log('Redirecionando admin para /admin');
@@ -61,7 +66,7 @@ export default authMiddleware({
           }
         }
 
-        // Protege a rota admin
+        // Proteção da rota admin
         if (req.nextUrl.pathname.startsWith('/admin')) {
           if (!isAdmin) {
             console.log('Usuário não admin tentando acessar /admin');
@@ -69,7 +74,7 @@ export default authMiddleware({
           }
         }
 
-        // Protege a rota client para usuários autenticados
+        // Proteção da rota client
         if (req.nextUrl.pathname.startsWith('/client')) {
           if (isAdmin) {
             console.log('Admin tentando acessar /client');
