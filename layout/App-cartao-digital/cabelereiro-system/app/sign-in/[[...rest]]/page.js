@@ -9,41 +9,57 @@ export default function SignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  console.log('SignInPage - Renderizando componente');
+  console.log('SignInPage - Auth state:', { isLoaded, userId });
+  console.log('SignInPage - User:', user);
+
   useEffect(() => {
+    console.log('SignInPage - useEffect de redirecionamento');
     if (isLoaded && userId) {
+      console.log('SignInPage - Usuário está autenticado');
+      
       // Verifica se o email do usuário está na lista de admins
       const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
+      console.log('SignInPage - Lista de admins:', adminEmails);
+      
       const userEmail = user?.emailAddresses?.[0]?.emailAddress;
+      console.log('SignInPage - Email do usuário:', userEmail);
+      
       const isAdmin = adminEmails.includes(userEmail);
+      console.log('SignInPage - É admin?', isAdmin);
 
       // Pega a URL de redirecionamento dos parâmetros ou usa o padrão
       const redirectUrl = searchParams.get('redirect_url');
+      console.log('SignInPage - URL de redirecionamento:', redirectUrl);
       
       if (redirectUrl) {
-        // Se tiver URL de redirecionamento, verifica se o usuário tem permissão
+        console.log('SignInPage - Tem URL de redirecionamento');
         if (redirectUrl.includes('/admin') && !isAdmin) {
-          // Se tentar acessar admin sem ser admin, redireciona para /client
+          console.log('SignInPage - Tentativa de acesso admin não autorizada');
           router.replace('/client');
         } else if (redirectUrl.includes('/client') && isAdmin) {
-          // Se tentar acessar client sendo admin, redireciona para /admin
+          console.log('SignInPage - Admin tentando acessar área de cliente');
           router.replace('/admin');
         } else {
-          // Se tiver permissão, redireciona para a URL solicitada
+          console.log('SignInPage - Redirecionando para:', redirectUrl);
           router.replace(redirectUrl);
         }
       } else {
-        // Se não tiver URL de redirecionamento, usa o padrão
+        console.log('SignInPage - Sem URL de redirecionamento, usando padrão');
         router.replace(isAdmin ? '/admin' : '/client');
       }
+    } else {
+      console.log('SignInPage - Usuário não está autenticado ou ainda carregando');
     }
   }, [isLoaded, userId, user, router, searchParams]);
 
   // Se estiver carregando ou já autenticado, não mostra nada
   if (!isLoaded || userId) {
+    console.log('SignInPage - Retornando null (carregando ou autenticado)');
     return null;
   }
 
-  // Se não estiver autenticado, mostra o componente de login
+  console.log('SignInPage - Mostrando componente de login');
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md">

@@ -11,22 +11,46 @@ export default function AdminPage() {
   const { signOut } = useClerk();
   const router = useRouter();
 
+  console.log('AdminPage - Renderizando componente');
+  console.log('AdminPage - User:', user);
+
   // Lista de emails de admin
   const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
+  console.log('AdminPage - ADMIN_EMAILS:', ADMIN_EMAILS);
 
   useEffect(() => {
+    console.log('AdminPage - useEffect de verificação de admin');
     if (user) {
       const userEmail = user.emailAddresses[0].emailAddress;
+      console.log('AdminPage - Email do usuário:', userEmail);
       const isAdmin = ADMIN_EMAILS.includes(userEmail);
+      console.log('AdminPage - É admin?', isAdmin);
       
       if (!isAdmin) {
+        console.log('AdminPage - Não é admin, redirecionando para /client');
         router.push("/client");
+      } else {
+        console.log('AdminPage - É admin, permanecendo na página');
       }
+    } else {
+      console.log('AdminPage - Usuário não está disponível ainda');
     }
   }, [user, router]);
 
   useEffect(() => {
-    fetch("/api/clients").then(res => res.json()).then(setClients);
+    console.log('AdminPage - Iniciando fetch de clientes');
+    fetch("/api/clients")
+      .then(res => {
+        console.log('AdminPage - Resposta da API:', res.status);
+        return res.json();
+      })
+      .then(data => {
+        console.log('AdminPage - Dados dos clientes:', data);
+        setClients(data);
+      })
+      .catch(error => {
+        console.error('AdminPage - Erro ao buscar clientes:', error);
+      });
   }, []);
 
   const addClient = async () => {
