@@ -39,39 +39,64 @@ export default authMiddleware({
   ignoredRoutes,
 
   async afterAuth(auth, req) {
+    const path = req.nextUrl.pathname;
+    console.log('Middleware - Requisição recebida:', {
+      path,
+      isAuthenticated: !!auth.userId,
+      isPublicRoute: auth.isPublicRoute
+    });
+
     // Se não está autenticado e tenta acessar rota protegida
     if (!auth.userId && !auth.isPublicRoute) {
+      console.log('Middleware - Redirecionando para login:', path);
       return NextResponse.redirect(new URL('/sign-in', req.url));
     }
 
     // Se está autenticado, verifica permissões apenas para rotas protegidas
     if (auth.userId && !auth.isPublicRoute) {
       try {
+        console.log('Middleware - Verificando permissões para:', path);
+        
         const user = await clerkClient.users.getUser(auth.userId);
         const userEmail = user.emailAddresses[0]?.emailAddress;
         const isAdmin = ADMIN_EMAILS.includes(userEmail);
 
-        const path = req.nextUrl.pathname;
+        console.log('Middleware - Dados do usuário:', {
+          userEmail,
+          isAdmin,
+          currentPath: path
+        });
 
         // Verifica apenas se está tentando acessar uma área não permitida
         if (path.startsWith('/admin') && !isAdmin) {
+          console.log('Middleware - Usuário não autorizado tentando acessar admin');
           return NextResponse.redirect(new URL('/client', req.url));
         }
 
         if (path.startsWith('/client') && isAdmin) {
+          console.log('Middleware - Admin tentando acessar área de cliente');
           return NextResponse.redirect(new URL('/admin', req.url));
         }
 
         // Redireciona da home page apenas se necessário
         if (path === '/') {
-          return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
+          const targetPath = isAdmin ? '/admin' : '/client';
+          console.log('Middleware - Redirecionando da home para:', targetPath);
+          return NextResponse.redirect(new URL(targetPath, req.url));
         }
+
+        console.log('Middleware - Acesso permitido para:', path);
       } catch (error) {
-        console.error('Erro ao verificar permissões:', error);
+        console.error('Middleware - Erro ao verificar permissões:', {
+          error,
+          path,
+          userId: auth.userId
+        });
         return NextResponse.next();
       }
     }
 
+    console.log('Middleware - Permitindo acesso:', path);
     return NextResponse.next();
   }
 });
