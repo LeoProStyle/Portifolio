@@ -12,9 +12,11 @@ const ignoredRoutes = [
   "/api/webhooks(.*)",
   "/_next/static/(.*)",
   "/favicon.ico",
-  "/.*\\.png$",
-  "/.*\\.jpg$",
-  "/.*\\.ico$",
+  "/(.*).png",
+  "/(.*).jpg",
+  "/(.*).jpeg",
+  "/(.*).gif",
+  "/(.*).ico"
 ];
 
 // This example protects all routes including api/trpc routes
