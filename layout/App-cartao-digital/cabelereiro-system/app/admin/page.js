@@ -11,13 +11,19 @@ export default function AdminPage() {
   const { signOut } = useClerk();
   const router = useRouter();
 
-  const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+  // Lista de emails de admin
+  const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
 
   useEffect(() => {
-    if (user && user.emailAddresses[0].emailAddress !== ADMIN_EMAIL) {
-      router.push("/client");
+    if (user) {
+      const userEmail = user.emailAddresses[0].emailAddress;
+      const isAdmin = ADMIN_EMAILS.includes(userEmail);
+      
+      if (!isAdmin) {
+        router.push("/client");
+      }
     }
-  }, [user]);
+  }, [user, router]);
 
   useEffect(() => {
     fetch("/api/clients").then(res => res.json()).then(setClients);
