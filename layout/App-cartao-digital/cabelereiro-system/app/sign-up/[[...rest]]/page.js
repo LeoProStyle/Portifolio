@@ -1,9 +1,9 @@
 'use client';
-import { SignIn, useAuth, useUser } from "@clerk/nextjs";
+import { SignUp, useAuth, useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function SignInPage() {
+export default function SignUpPage() {
   const { isLoaded, userId } = useAuth();
   const { user } = useUser();
   const router = useRouter();
@@ -25,11 +25,11 @@ export default function SignInPage() {
     return null;
   }
 
-  // Se não estiver autenticado, mostra o componente de login
+  // Se não estiver autenticado, mostra o componente de cadastro
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md">
-        <SignIn 
+        <SignUp 
           appearance={{
             elements: {
               formButtonPrimary: 'bg-blue-500 hover:bg-blue-600',
@@ -40,4 +40,4 @@ export default function SignInPage() {
       </div>
     </div>
   );
-}
+} 
