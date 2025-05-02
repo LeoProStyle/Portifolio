@@ -29,8 +29,19 @@ export default function SignInPage() {
       console.log('SignInPage - É admin?', isAdmin);
 
       // Pega a URL de redirecionamento dos parâmetros ou usa o padrão
-      const redirectUrl = searchParams.get('redirect_url');
-      console.log('SignInPage - URL de redirecionamento:', redirectUrl);
+      let redirectUrl = searchParams.get('redirect_url');
+      console.log('SignInPage - URL de redirecionamento original:', redirectUrl);
+      
+      // Se tiver URL de redirecionamento, extrai apenas o caminho
+      if (redirectUrl) {
+        try {
+          const url = new URL(redirectUrl);
+          redirectUrl = url.pathname;
+          console.log('SignInPage - URL de redirecionamento convertida para caminho:', redirectUrl);
+        } catch (e) {
+          console.log('SignInPage - URL já é um caminho:', redirectUrl);
+        }
+      }
       
       if (redirectUrl) {
         console.log('SignInPage - Tem URL de redirecionamento');
