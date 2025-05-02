@@ -5,7 +5,19 @@ import { NextResponse } from "next/server";
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
 
 // Lista de rotas públicas que não precisam de autenticação
-const publicRoutes = ["/", "/sign-in", "/sign-up"];
+const publicRoutes = [
+  "/",
+  "/sign-in",
+  "/sign-up",
+  "/api/webhooks(.*)",
+  "/_next/static/(.*)",
+  "/favicon.ico",
+  "/(.*).png",
+  "/(.*).jpg",
+  "/(.*).jpeg",
+  "/(.*).gif",
+  "/(.*).ico"
+];
 
 // Lista de rotas que devem ser ignoradas pelo middleware
 const ignoredRoutes = [
@@ -32,29 +44,31 @@ export default authMiddleware({
       return NextResponse.redirect(new URL('/sign-in', req.url));
     }
 
-    // Se está autenticado, verifica permissões
-    if (auth.userId) {
+    // Se está autenticado, verifica permissões apenas para rotas protegidas
+    if (auth.userId && !auth.isPublicRoute) {
       try {
         const user = await clerkClient.users.getUser(auth.userId);
         const userEmail = user.emailAddresses[0]?.emailAddress;
         const isAdmin = ADMIN_EMAILS.includes(userEmail);
 
-        // Protege rotas administrativas
-        if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
+        const path = req.nextUrl.pathname;
+
+        // Verifica apenas se está tentando acessar uma área não permitida
+        if (path.startsWith('/admin') && !isAdmin) {
           return NextResponse.redirect(new URL('/client', req.url));
         }
 
-        // Redireciona admin para área administrativa
-        if (req.nextUrl.pathname.startsWith('/client') && isAdmin) {
+        if (path.startsWith('/client') && isAdmin) {
           return NextResponse.redirect(new URL('/admin', req.url));
         }
 
-        // Redireciona da home page
-        if (req.nextUrl.pathname === '/') {
+        // Redireciona da home page apenas se necessário
+        if (path === '/') {
           return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
         }
       } catch (error) {
-        return NextResponse.redirect(new URL('/client', req.url));
+        console.error('Erro ao verificar permissões:', error);
+        return NextResponse.next();
       }
     }
 
