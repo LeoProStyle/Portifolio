@@ -1,12 +1,13 @@
 'use client';
 import { SignIn, useAuth, useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignInPage() {
   const { isLoaded, userId } = useAuth();
   const { user } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (isLoaded && userId) {
@@ -15,10 +16,27 @@ export default function SignInPage() {
       const userEmail = user?.emailAddresses?.[0]?.emailAddress;
       const isAdmin = adminEmails.includes(userEmail);
 
-      // Redireciona baseado no tipo de usuário
-      router.replace(isAdmin ? '/admin' : '/client');
+      // Pega a URL de redirecionamento dos parâmetros ou usa o padrão
+      const redirectUrl = searchParams.get('redirect_url');
+      
+      if (redirectUrl) {
+        // Se tiver URL de redirecionamento, verifica se o usuário tem permissão
+        if (redirectUrl.includes('/admin') && !isAdmin) {
+          // Se tentar acessar admin sem ser admin, redireciona para /client
+          router.replace('/client');
+        } else if (redirectUrl.includes('/client') && isAdmin) {
+          // Se tentar acessar client sendo admin, redireciona para /admin
+          router.replace('/admin');
+        } else {
+          // Se tiver permissão, redireciona para a URL solicitada
+          router.replace(redirectUrl);
+        }
+      } else {
+        // Se não tiver URL de redirecionamento, usa o padrão
+        router.replace(isAdmin ? '/admin' : '/client');
+      }
     }
-  }, [isLoaded, userId, user, router]);
+  }, [isLoaded, userId, user, router, searchParams]);
 
   // Se estiver carregando ou já autenticado, não mostra nada
   if (!isLoaded || userId) {
@@ -36,6 +54,7 @@ export default function SignInPage() {
               footerActionLink: 'text-blue-500 hover:text-blue-600'
             }
           }}
+          redirectUrl={searchParams.get('redirect_url')}
         />
       </div>
     </div>
