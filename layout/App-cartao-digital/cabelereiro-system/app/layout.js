@@ -10,7 +10,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      afterSignInUrl="/"
+      afterSignUpUrl="/"
+    >
       <html lang="pt-BR">
         <body>
           <nav className="bg-gray-800 p-4 text-white flex justify-between">
