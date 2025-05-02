@@ -15,7 +15,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (user && user.emailAddresses[0].emailAddress !== ADMIN_EMAIL) {
-      router.push("/cliente");
+      router.push("/client");
     }
   }, [user]);
 
