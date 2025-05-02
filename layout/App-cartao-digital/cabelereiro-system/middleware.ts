@@ -18,12 +18,6 @@ export default authMiddleware({
     "/favicon.ico"
   ],
   async afterAuth(auth, req) {
-    console.log('Middleware - Iniciando afterAuth', {
-      userId: auth.userId,
-      path: req.nextUrl.pathname,
-      isPublicRoute: auth.isPublicRoute
-    });
-
     // Se não está autenticado e tenta acessar rota protegida
     if (!auth.userId && !auth.isPublicRoute) {
       const signInUrl = new URL('/sign-in', req.url);
@@ -31,46 +25,33 @@ export default authMiddleware({
       return NextResponse.redirect(signInUrl);
     }
 
-    // Se está autenticado
+    // Se está autenticado, verifica permissões
     if (auth.userId) {
       try {
         const user = await clerkClient.users.getUser(auth.userId);
         const userEmail = user.emailAddresses[0]?.emailAddress;
         const isAdmin = ADMIN_EMAILS.includes(userEmail);
-        
-        console.log('Middleware - Verificando acesso', {
-          userEmail,
-          isAdmin,
-          path: req.nextUrl.pathname
-        });
 
-        // Redirecionamentos baseados no tipo de usuário
-        let shouldRedirect = false;
-        let targetPath = '';
-
-        if (req.nextUrl.pathname === '/') {
-          shouldRedirect = true;
-          targetPath = isAdmin ? '/admin' : '/client';
-        } else if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
-          shouldRedirect = true;
-          targetPath = '/client';
-        } else if (req.nextUrl.pathname.startsWith('/client') && isAdmin) {
-          shouldRedirect = true;
-          targetPath = '/admin';
-        } else if (req.nextUrl.pathname === '/sign-in' || req.nextUrl.pathname === '/sign-up') {
-          shouldRedirect = true;
-          targetPath = isAdmin ? '/admin' : '/client';
+        // Protege rotas administrativas
+        if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
+          return NextResponse.redirect(new URL('/client', req.url));
         }
 
-        if (shouldRedirect) {
-          return NextResponse.redirect(new URL(targetPath, req.url));
+        // Redireciona admin para área administrativa
+        if (req.nextUrl.pathname.startsWith('/client') && isAdmin) {
+          return NextResponse.redirect(new URL('/admin', req.url));
+        }
+
+        // Redireciona da home page
+        if (req.nextUrl.pathname === '/') {
+          return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
         }
       } catch (error) {
         console.error('Erro ao verificar permissões:', error);
+        return NextResponse.redirect(new URL('/client', req.url));
       }
     }
 
-    console.log('Middleware - Permitindo acesso:', req.nextUrl.pathname);
     return NextResponse.next();
   }
 });
