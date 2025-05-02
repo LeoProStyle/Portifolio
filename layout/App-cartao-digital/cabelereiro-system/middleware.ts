@@ -18,29 +18,16 @@ export default authMiddleware({
     "/favicon.ico"
   ],
   async afterAuth(auth, req) {
-    // Se o usuário está autenticado e tenta acessar páginas de auth
-    if (auth.userId && (req.nextUrl.pathname === '/sign-in' || req.nextUrl.pathname === '/sign-up')) {
-      try {
-        const user = await clerkClient.users.getUser(auth.userId);
-        const userEmail = user.emailAddresses[0]?.emailAddress;
-        const isAdmin = ADMIN_EMAILS.includes(userEmail);
-        
-        return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
-      } catch (error) {
-        console.error('Erro ao buscar informações do usuário:', error);
-        return NextResponse.redirect(new URL('/client', req.url));
-      }
-    }
+    console.log('Middleware - Iniciando afterAuth', {
+      userId: auth.userId,
+      path: req.nextUrl.pathname,
+      isPublicRoute: auth.isPublicRoute
+    });
 
     // Se não está autenticado e tenta acessar rota protegida
     if (!auth.userId && !auth.isPublicRoute) {
-      // Usar apenas o pathname para o redirecionamento
       const signInUrl = new URL('/sign-in', req.url);
-      // Armazenar apenas o caminho relativo
-      const redirectPath = req.nextUrl.pathname;
-      if (redirectPath !== '/sign-in') {
-        signInUrl.searchParams.set('redirect_url', redirectPath);
-      }
+      signInUrl.searchParams.set('redirect_url', req.nextUrl.pathname);
       return NextResponse.redirect(signInUrl);
     }
 
@@ -49,32 +36,41 @@ export default authMiddleware({
       try {
         const user = await clerkClient.users.getUser(auth.userId);
         const userEmail = user.emailAddresses[0]?.emailAddress;
-        
-        console.log('Informações do usuário:', {
-          userId: user.id,
-          userEmail,
-          ADMIN_EMAILS
-        });
-        
         const isAdmin = ADMIN_EMAILS.includes(userEmail);
-        console.log('É admin?', isAdmin);
+        
+        console.log('Middleware - Verificando acesso', {
+          userEmail,
+          isAdmin,
+          path: req.nextUrl.pathname
+        });
+
+        // Redirecionamentos baseados no tipo de usuário
+        let shouldRedirect = false;
+        let targetPath = '';
 
         if (req.nextUrl.pathname === '/') {
-          return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/client', req.url));
+          shouldRedirect = true;
+          targetPath = isAdmin ? '/admin' : '/client';
+        } else if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
+          shouldRedirect = true;
+          targetPath = '/client';
+        } else if (req.nextUrl.pathname.startsWith('/client') && isAdmin) {
+          shouldRedirect = true;
+          targetPath = '/admin';
+        } else if (req.nextUrl.pathname === '/sign-in' || req.nextUrl.pathname === '/sign-up') {
+          shouldRedirect = true;
+          targetPath = isAdmin ? '/admin' : '/client';
         }
 
-        if (req.nextUrl.pathname.startsWith('/admin') && !isAdmin) {
-          return NextResponse.redirect(new URL('/client', req.url));
-        }
-
-        if (req.nextUrl.pathname.startsWith('/client') && isAdmin) {
-          return NextResponse.redirect(new URL('/admin', req.url));
+        if (shouldRedirect) {
+          return NextResponse.redirect(new URL(targetPath, req.url));
         }
       } catch (error) {
-        console.error('Erro ao buscar informações do usuário:', error);
+        console.error('Erro ao verificar permissões:', error);
       }
     }
 
+    console.log('Middleware - Permitindo acesso:', req.nextUrl.pathname);
     return NextResponse.next();
   }
 });

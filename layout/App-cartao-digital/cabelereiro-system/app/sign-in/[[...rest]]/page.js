@@ -12,46 +12,57 @@ export default function SignInPage() {
   console.log('SignInPage - Renderizando componente');
   console.log('SignInPage - Auth state:', { isLoaded, userId });
   console.log('SignInPage - User:', user);
+  console.log('SignInPage - SearchParams:', searchParams.toString());
 
   useEffect(() => {
-    console.log('SignInPage - useEffect de redirecionamento');
-    if (isLoaded && userId) {
-      console.log('SignInPage - Usuário está autenticado');
-      
-      // Verifica se o email do usuário está na lista de admins
-      const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
-      console.log('SignInPage - Lista de admins:', adminEmails);
-      
-      const userEmail = user?.emailAddresses?.[0]?.emailAddress;
-      console.log('SignInPage - Email do usuário:', userEmail);
-      
-      const isAdmin = adminEmails.includes(userEmail);
-      console.log('SignInPage - É admin?', isAdmin);
+    const handleRedirect = async () => {
+      if (isLoaded && userId && user) {
+        console.log('SignInPage - Iniciando redirecionamento após autenticação');
+        
+        const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',').map(email => email.trim());
+        const userEmail = user.emailAddresses[0]?.emailAddress;
+        const isAdmin = adminEmails.includes(userEmail);
+        
+        console.log('SignInPage - Dados do redirecionamento:', {
+          adminEmails,
+          userEmail,
+          isAdmin,
+          searchParams: searchParams.toString()
+        });
 
-      // Pega o caminho de redirecionamento dos parâmetros ou usa o padrão
-      const redirectPath = searchParams.get('redirect_url') || (isAdmin ? '/admin' : '/client');
-      console.log('SignInPage - Caminho de redirecionamento:', redirectPath);
-      
-      // Validar o caminho de redirecionamento
-      if (redirectPath.startsWith('/admin') && !isAdmin) {
-        router.replace('/client');
-      } else if (redirectPath.startsWith('/client') && isAdmin) {
-        router.replace('/admin');
-      } else {
-        router.replace(redirectPath);
+        // Determina a página de destino
+        let targetPath = isAdmin ? '/admin' : '/client';
+        
+        // Se houver um redirect_url nos parâmetros, use-o (se apropriado)
+        const redirectUrl = searchParams.get('redirect_url');
+        if (redirectUrl) {
+          if (redirectUrl.startsWith('/admin') && isAdmin) {
+            targetPath = '/admin';
+          } else if (redirectUrl.startsWith('/client') && !isAdmin) {
+            targetPath = '/client';
+          }
+        }
+
+        console.log('SignInPage - Redirecionamento final para:', targetPath);
+        
+        try {
+          await router.replace(targetPath);
+          console.log('SignInPage - Redirecionamento executado com sucesso');
+        } catch (error) {
+          console.error('SignInPage - Erro no redirecionamento:', error);
+        }
       }
-    } else {
-      console.log('SignInPage - Usuário não está autenticado ou ainda carregando');
-    }
+    };
+
+    handleRedirect();
   }, [isLoaded, userId, user, router, searchParams]);
 
-  // Se estiver carregando ou já autenticado, não mostra nada
   if (!isLoaded || userId) {
-    console.log('SignInPage - Retornando null (carregando ou autenticado)');
+    console.log('SignInPage - Aguardando carregamento ou já autenticado');
     return null;
   }
 
-  console.log('SignInPage - Mostrando componente de login');
+  console.log('SignInPage - Renderizando formulário de login');
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="p-8 bg-white rounded-lg shadow-md">
@@ -62,7 +73,6 @@ export default function SignInPage() {
               footerActionLink: 'text-blue-500 hover:text-blue-600'
             }
           }}
-          redirectUrl={searchParams.get('redirect_url')}
         />
       </div>
     </div>
