@@ -2,65 +2,82 @@
 
 import { useAuth } from '@clerk/nextjs';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 export function AuthProvider({ children }) {
-  const { isLoaded, isSignedIn, sessionId } = useAuth();
+  const { isLoaded, isSignedIn, sessionId, userId } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [lastRedirect, setLastRedirect] = useState('');
 
-  useEffect(() => {
-    if (!isLoaded) return;
+  const handleRedirect = useCallback(async () => {
+    if (!isLoaded || isRedirecting) return;
 
-    const handleRedirect = async () => {
-      const redirectUrl = searchParams.get('redirect_url');
-      
-      if (isRedirecting) return;
+    const redirectUrl = searchParams.get('redirect_url');
+    const currentUrl = pathname + searchParams.toString();
 
-      // Verifica se está em um processo de autenticação OAuth
-      if (pathname.includes('oauth') || pathname.includes('sso-callback')) {
-        console.log('AuthProvider - Processo OAuth em andamento');
-        return;
-      }
+    // Evita loops de redirecionamento
+    if (lastRedirect === currentUrl) {
+      console.log('AuthProvider - Evitando loop de redirecionamento:', currentUrl);
+      return;
+    }
 
+    // Verifica se está em um processo de autenticação OAuth
+    if (pathname.includes('oauth') || pathname.includes('sso-callback')) {
+      console.log('AuthProvider - Processo OAuth em andamento');
+      return;
+    }
+
+    try {
       // Se estiver em uma rota de autenticação e já estiver autenticado
       if ((pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) && isSignedIn) {
         setIsRedirecting(true);
-        const targetPath = redirectUrl || '/client';
+        setLastRedirect(currentUrl);
+        
+        const targetPath = redirectUrl || (userId ? '/admin' : '/client');
         console.log('AuthProvider - Redirecionando após login:', targetPath);
         
         // Pequeno delay antes do redirecionamento
-        await new Promise(resolve => setTimeout(resolve, 500));
-        router.push(targetPath);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        window.location.href = targetPath; // Usando window.location para forçar recarga completa
         return;
       }
 
       // Se não estiver autenticado e tentar acessar uma rota protegida
       if (!isSignedIn && (pathname.startsWith('/admin') || pathname.startsWith('/client'))) {
         setIsRedirecting(true);
+        setLastRedirect(currentUrl);
+        
         const signInPath = `/sign-in?redirect_url=${encodeURIComponent(pathname)}`;
         console.log('AuthProvider - Redirecionando para login:', signInPath);
-        router.push(signInPath);
+        window.location.href = signInPath; // Usando window.location para forçar recarga completa
         return;
       }
-    };
+    } catch (error) {
+      console.error('AuthProvider - Erro durante redirecionamento:', error);
+      setIsRedirecting(false);
+    }
+  }, [isLoaded, isSignedIn, pathname, searchParams, userId, lastRedirect, isRedirecting]);
 
+  useEffect(() => {
     handleRedirect();
-  }, [isLoaded, isSignedIn, pathname, router, searchParams, isRedirecting, sessionId]);
+  }, [handleRedirect]);
 
-  // Adiciona logs para debug
+  // Logs para debug
   useEffect(() => {
     if (isLoaded) {
       console.log('AuthProvider - Estado:', {
         isSignedIn,
         pathname,
         sessionId,
-        isRedirecting
+        userId,
+        isRedirecting,
+        lastRedirect
       });
     }
-  }, [isLoaded, isSignedIn, pathname, sessionId, isRedirecting]);
+  }, [isLoaded, isSignedIn, pathname, sessionId, userId, isRedirecting, lastRedirect]);
 
   if (!isLoaded) {
     return <div>Carregando...</div>;
