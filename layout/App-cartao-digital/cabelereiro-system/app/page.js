@@ -19,6 +19,6 @@ export default async function HomePage() {
   if (isAdmin) {
     redirect("/admin");
   } else {
-    redirect("/cliente");
+    redirect("/client");
   }
 }
