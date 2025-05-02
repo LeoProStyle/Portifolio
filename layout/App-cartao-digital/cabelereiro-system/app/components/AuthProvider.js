@@ -12,6 +12,12 @@ export function AuthProvider({ children }) {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [lastRedirect, setLastRedirect] = useState('');
 
+  // Função para verificar se o usuário é admin
+  const isAdmin = useCallback(() => {
+    const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAILS?.split(',') || [];
+    return adminEmails.includes(user?.emailAddresses?.[0]?.emailAddress);
+  }, [user]);
+
   const handleRedirect = useCallback(async () => {
     if (!isLoaded || isRedirecting) return;
 
@@ -24,24 +30,17 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    // Verifica se está em um processo de autenticação OAuth
-    if (pathname.includes('oauth') || pathname.includes('sso-callback')) {
-      console.log('AuthProvider - Processo OAuth em andamento');
-      return;
-    }
-
     try {
       // Se estiver em uma rota de autenticação e já estiver autenticado
-      if ((pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) && isSignedIn) {
+      if ((pathname === '/' || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) && isSignedIn) {
         setIsRedirecting(true);
         setLastRedirect(currentUrl);
         
-        const targetPath = redirectUrl || (userId ? '/admin' : '/client');
+        // Redireciona baseado no tipo de usuário
+        const targetPath = isAdmin() ? process.env.NEXT_PUBLIC_ADMIN_URL : process.env.NEXT_PUBLIC_CLIENT_URL;
         console.log('AuthProvider - Redirecionando após login:', targetPath);
         
-        // Pequeno delay antes do redirecionamento
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        window.location.href = targetPath; // Usando window.location para forçar recarga completa
+        window.location.href = targetPath;
         return;
       }
 
@@ -52,14 +51,26 @@ export function AuthProvider({ children }) {
         
         const signInPath = `/sign-in?redirect_url=${encodeURIComponent(pathname)}`;
         console.log('AuthProvider - Redirecionando para login:', signInPath);
-        window.location.href = signInPath; // Usando window.location para forçar recarga completa
+        window.location.href = signInPath;
         return;
+      }
+
+      // Se estiver autenticado mas tentar acessar área errada
+      if (isSignedIn) {
+        if (pathname.startsWith('/admin') && !isAdmin()) {
+          window.location.href = process.env.NEXT_PUBLIC_CLIENT_URL;
+          return;
+        }
+        if (pathname.startsWith('/client') && isAdmin()) {
+          window.location.href = process.env.NEXT_PUBLIC_ADMIN_URL;
+          return;
+        }
       }
     } catch (error) {
       console.error('AuthProvider - Erro durante redirecionamento:', error);
       setIsRedirecting(false);
     }
-  }, [isLoaded, isSignedIn, pathname, searchParams, userId, lastRedirect, isRedirecting]);
+  }, [isLoaded, isSignedIn, pathname, searchParams, isAdmin, lastRedirect, isRedirecting]);
 
   useEffect(() => {
     handleRedirect();
@@ -74,10 +85,11 @@ export function AuthProvider({ children }) {
         sessionId,
         userId,
         isRedirecting,
-        lastRedirect
+        lastRedirect,
+        isAdmin: isAdmin()
       });
     }
-  }, [isLoaded, isSignedIn, pathname, sessionId, userId, isRedirecting, lastRedirect]);
+  }, [isLoaded, isSignedIn, pathname, sessionId, userId, isRedirecting, lastRedirect, isAdmin]);
 
   if (!isLoaded) {
     return <div>Carregando...</div>;
