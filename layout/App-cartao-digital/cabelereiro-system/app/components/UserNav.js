@@ -3,15 +3,14 @@
 import { useUser, SignedIn, SignedOut, SignInButton, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL;
+import { getUserRole } from "@/lib/auth";
 
 export default function UserNav() {
   const { user } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
 
-  const isAdmin = user?.emailAddresses?.[0]?.emailAddress === ADMIN_EMAIL;
+  const isAdmin = user ? getUserRole(user) === 'admin' : false;
 
   const handleSignOut = async () => {
     await signOut();

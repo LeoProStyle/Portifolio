@@ -1,77 +1,126 @@
 import { authMiddleware, clerkClient } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import { PUBLIC_ROUTES, isAdmin } from "./lib/clerk.config";
 
-export default authMiddleware({
-  publicRoutes: PUBLIC_ROUTES,
-  debug: process.env.NODE_ENV === 'development',
+// Rotas públicas que não requerem autenticação
+const publicRoutes = [
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+  "/api/webhooks(.*)",
+  "/_next(.*)",
+  "/favicon.ico",
+];
 
-  async afterAuth(auth, req) {
-    const path = req.nextUrl.pathname;
+async function isAdmin(userId) {
+  try {
+    console.log('DEBUG [Vercel] - Verificando admin para userId:', userId);
     
-    // Log da requisição
-    console.log('Middleware - Request:', { 
-      path, 
-      isAuthenticated: !!auth.userId,
-      isPublicRoute: auth.isPublicRoute,
-      hasSession: !!auth.sessionId
+    if (!userId) {
+      console.log('DEBUG [Vercel] - userId não fornecido');
+      return false;
+    }
+    
+    const user = await clerkClient.users.getUser(userId);
+    if (!user) {
+      console.log('DEBUG [Vercel] - Usuário não encontrado');
+      return false;
+    }
+
+    const userEmail = user.emailAddresses[0]?.emailAddress;
+    if (!userEmail) {
+      console.log('DEBUG [Vercel] - Email não encontrado');
+      return false;
+    }
+
+    const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',')
+      .map(e => e.trim())
+      .filter(Boolean);
+
+    console.log('DEBUG [Vercel] - Verificação de admin:', {
+      userEmail,
+      adminEmails,
+      isAdmin: adminEmails.includes(userEmail)
     });
 
-    // Permite rotas de autenticação e OAuth
-    if (path.match(/\/(sign-in|sign-up|sso-callback|oauth|verify|api\/auth)/)) {
-      console.log('Middleware - Permitindo rota de autenticação:', path);
+    return adminEmails.includes(userEmail);
+  } catch (error) {
+    console.error('DEBUG [Vercel] - Erro ao verificar admin:', error);
+    return false;
+  }
+}
+
+export default authMiddleware({
+  publicRoutes,
+  
+  async afterAuth(auth, req) {
+    const url = new URL(req.url);
+    const path = url.pathname;
+
+    console.log('DEBUG [Vercel] - Middleware iniciado:', {
+      path,
+      auth: {
+        userId: auth.userId,
+        isPublicRoute: auth.isPublicRoute,
+        sessionId: auth.sessionId
+      }
+    });
+
+    // Permite acesso a rotas públicas
+    if (publicRoutes.some(pattern => {
+      if (pattern.endsWith('(.*)')) {
+        return path.startsWith(pattern.replace('(.*)', ''));
+      }
+      return path === pattern;
+    })) {
+      console.log('DEBUG [Vercel] - Rota pública permitida:', path);
       return NextResponse.next();
     }
 
-    // Redireciona para login se não estiver autenticado
-    if (!auth.userId && !auth.isPublicRoute) {
-      console.log('Middleware - Usuário não autenticado, redirecionando para login');
+    // Redireciona usuários não autenticados para login
+    if (!auth.userId) {
+      console.log('DEBUG [Vercel] - Redirecionando para login:', path);
       const signInUrl = new URL('/sign-in', req.url);
       signInUrl.searchParams.set('redirect_url', path);
       return NextResponse.redirect(signInUrl);
     }
 
-    // Verifica permissões para rotas protegidas
-    if (auth.userId && (path.startsWith('/admin') || path.startsWith('/client'))) {
-      try {
-        const user = await clerkClient.users.getUser(auth.userId);
-        const userEmail = user.emailAddresses[0]?.emailAddress;
+    try {
+      const adminStatus = await isAdmin(auth.userId);
+      console.log('DEBUG [Vercel] - Status do usuário:', {
+        path,
+        userId: auth.userId,
+        isAdmin: adminStatus,
+        currentUrl: req.url
+      });
 
-        if (!userEmail) {
-          console.error('Middleware - Email não encontrado para usuário:', auth.userId);
-          return NextResponse.redirect(new URL('/client', req.url));
-        }
+      // Redireciona admin tentando acessar área de cliente
+      if (adminStatus && path.startsWith('/client')) {
+        console.log('DEBUG [Vercel] - Redirecionando admin para área administrativa');
+        return NextResponse.redirect(new URL('/admin', req.url));
+      }
 
-        const adminStatus = isAdmin(userEmail);
-        console.log('Middleware - Verificação:', { 
-          path, 
-          userEmail, 
-          isAdmin: adminStatus,
-          sessionId: auth.sessionId 
-        });
-
-        if (path.startsWith('/admin') && !adminStatus) {
-          return NextResponse.redirect(new URL('/client', req.url));
-        }
-
-        if (path.startsWith('/client') && adminStatus) {
-          return NextResponse.redirect(new URL('/admin', req.url));
-        }
-      } catch (error) {
-        console.error('Middleware - Erro ao verificar usuário:', error);
+      // Redireciona cliente tentando acessar área de admin
+      if (!adminStatus && path.startsWith('/admin')) {
+        console.log('DEBUG [Vercel] - Redirecionando cliente para sua área');
         return NextResponse.redirect(new URL('/client', req.url));
       }
-    }
 
-    return NextResponse.next();
+      // Se estiver na raiz, redireciona para a área apropriada
+      if (path === '/') {
+        const redirectUrl = new URL(adminStatus ? '/admin' : '/client', req.url);
+        console.log('DEBUG [Vercel] - Redirecionando da raiz para:', redirectUrl.pathname);
+        return NextResponse.redirect(redirectUrl);
+      }
+
+      console.log('DEBUG [Vercel] - Acesso permitido para:', path);
+      return NextResponse.next();
+    } catch (error) {
+      console.error('DEBUG [Vercel] - Erro no middleware:', error);
+      return NextResponse.next();
+    }
   }
 });
 
-// Configuração do matcher para o middleware
 export const config = {
-  matcher: [
-    "/((?!.*\\..*|_next).*)",
-    "/",
-    "/(api|trpc)(.*)"
-  ]
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 }; 

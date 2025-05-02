@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { SignedIn, SignedOut, useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { getUserRole } from "@/lib/auth";
 
 export default function AdminPage() {
   const [clients, setClients] = useState([]);
@@ -23,12 +24,10 @@ export default function AdminPage() {
   useEffect(() => {
     console.log('AdminPage - useEffect de verificação de admin');
     if (user) {
-      const userEmail = user.emailAddresses[0].emailAddress;
-      console.log('AdminPage - Email do usuário:', userEmail);
-      const isAdmin = ADMIN_EMAILS.includes(userEmail);
-      console.log('AdminPage - É admin?', isAdmin);
+      const userRole = getUserRole(user);
+      console.log('AdminPage - Role do usuário:', userRole);
       
-      if (!isAdmin) {
+      if (userRole !== 'admin') {
         console.log('AdminPage - Não é admin, redirecionando para /client');
         router.push("/client");
       } else {

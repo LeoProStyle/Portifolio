@@ -13,7 +13,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <body className="min-h-screen bg-gray-50">
-        <ClerkProvider>
+        <ClerkProvider 
+          appearance={{
+            baseTheme: undefined,
+            variables: { colorPrimary: '#1a56db' },
+            elements: {
+              formButtonPrimary: 
+                "bg-blue-600 hover:bg-blue-700 text-sm normal-case",
+              card: "shadow-none",
+            },
+          }}
+        >
           <AuthProvider>
             <nav className="bg-gray-800 p-4 text-white flex justify-between items-center">
               <h1 className="font-bold text-xl">Sistema de Check-ins</h1>
