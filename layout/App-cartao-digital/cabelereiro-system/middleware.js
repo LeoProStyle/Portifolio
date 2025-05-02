@@ -37,6 +37,12 @@ export default authMiddleware({
     const url = new URL(req.url);
     const path = url.pathname;
 
+    // Se já estiver autenticado e tentar acessar páginas de auth, redireciona
+    if (auth.userId && (path === '/sign-in' || path === '/sign-up')) {
+      const adminStatus = await isAdmin(auth.userId);
+      return NextResponse.redirect(new URL(adminStatus ? '/admin' : '/client', req.url));
+    }
+
     // Permite acesso a rotas públicas
     if (publicRoutes.includes(path)) {
       return NextResponse.next();
