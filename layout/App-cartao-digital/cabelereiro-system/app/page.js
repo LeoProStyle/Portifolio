@@ -11,7 +11,7 @@ export default async function HomePage() {
   const user = await currentUser();
 
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-
+  console.log("ADMIN EMAIL:", process.env.NEXT_PUBLIC_ADMIN_EMAIL);
   const isAdmin = user.emailAddresses.some(
     (email) => email.emailAddress === ADMIN_EMAIL
   );
