@@ -1,29 +1,29 @@
 'use client';
 
 import { SignUp, useAuth, useUser } from "@clerk/nextjs";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { getUserRole } from "@/lib/auth";
 
 export default function SignUpPage() {
   const { isSignedIn, isLoaded } = useAuth();
   const { user } = useUser();
-  const router = useRouter();
+  const redirectAttempted = useRef(false);
 
   useEffect(() => {
     console.log('[SignUp Debug] Estado inicial:', {
       isLoaded,
       isSignedIn,
       hasUser: !!user,
-      userEmail: user?.primaryEmailAddress?.emailAddress
+      userEmail: user?.primaryEmailAddress?.emailAddress,
+      redirectAttempted: redirectAttempted.current
     });
 
-    if (!isLoaded) {
-      console.log('[SignUp Debug] Clerk ainda carregando...');
+    if (!isLoaded || redirectAttempted.current) {
       return;
     }
 
     if (isSignedIn && user) {
+      redirectAttempted.current = true;
       console.log('[SignUp Debug] Usuário autenticado, verificando papel...');
       
       const userRole = getUserRole(user);
@@ -35,17 +35,19 @@ export default function SignUpPage() {
       const redirectPath = userRole === 'admin' ? '/admin' : '/client';
       console.log('[SignUp Debug] Redirecionando para:', redirectPath);
       
-      // Usando window.location para evitar problemas com o router do Next.js
-      window.location.href = redirectPath;
+      // Adicionando um pequeno delay para garantir que o estado foi atualizado
+      setTimeout(() => {
+        window.location.replace(redirectPath);
+      }, 100);
     }
   }, [isLoaded, isSignedIn, user]);
 
-  if (!isLoaded || (isSignedIn && user)) {
+  if (!isLoaded || (isSignedIn && user && redirectAttempted.current)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          Carregando...
+          <p>Redirecionando...</p>
         </div>
       </div>
     );
@@ -62,7 +64,8 @@ export default function SignUpPage() {
             },
           }}
           redirectUrl={null}
-          afterSignUpUrl={null}
+          routing="path"
+          path="/sign-up"
           signInUrl="/sign-in"
         />
       </div>
