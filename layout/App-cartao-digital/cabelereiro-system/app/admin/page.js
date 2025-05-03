@@ -1,7 +1,7 @@
 // app/admin/page.js
 "use client";
 import { useEffect, useState } from "react";
-import { SignedIn, SignedOut, useUser, useClerk } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { getUserRole } from "@/lib/auth";
 
@@ -22,105 +22,103 @@ export default function AdminPage() {
   console.log('AdminPage - ADMIN_EMAILS:', ADMIN_EMAILS);
 
   useEffect(() => {
-    if (!isLoaded) return;
+    let mounted = true;
 
-    if (!user) {
-      router.replace('/sign-in');
-      return;
-    }
+    async function checkAuth() {
+      if (!isLoaded) return;
 
-    const userRole = getUserRole(user);
-    if (userRole !== 'admin') {
-      router.replace('/client');
-      return;
-    }
-
-    loadClients();
-  }, [isLoaded, user, router]);
-
-  const loadClients = async () => {
-    try {
-      console.log('AdminPage - Iniciando carregamento de clientes');
-      setLoading(true);
-      const response = await fetch("/api/clients");
-      console.log('AdminPage - Resposta da API:', response.status);
-      
-      if (!response.ok) {
-        throw new Error('Falha ao carregar clientes');
+      if (!user) {
+        window.location.href = '/sign-in';
+        return;
       }
-      
-      const data = await response.json();
-      console.log('AdminPage - Dados recebidos:', data);
-      setClients(data);
-      setError(null);
-    } catch (err) {
-      console.error('AdminPage - Erro ao carregar clientes:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+
+      const userRole = getUserRole(user);
+      if (userRole !== 'admin') {
+        window.location.href = '/client';
+        return;
+      }
+
+      if (mounted) {
+        try {
+          const response = await fetch("/api/clients");
+          if (!response.ok) throw new Error('Falha ao carregar clientes');
+          const data = await response.json();
+          if (mounted) {
+            setClients(data);
+            setLoading(false);
+          }
+        } catch (err) {
+          if (mounted) {
+            setError(err.message);
+            setLoading(false);
+          }
+        }
+      }
     }
-  };
+
+    checkAuth();
+
+    return () => {
+      mounted = false;
+    };
+  }, [isLoaded, user]);
 
   const addClient = async () => {
     try {
-      console.log('AdminPage - Adicionando cliente:', name);
       const response = await fetch("/api/clients", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
 
-      if (!response.ok) {
-        throw new Error('Falha ao adicionar cliente');
-      }
+      if (!response.ok) throw new Error('Falha ao adicionar cliente');
 
+      const updatedResponse = await fetch("/api/clients");
+      if (!updatedResponse.ok) throw new Error('Falha ao atualizar lista');
+      
+      const data = await updatedResponse.json();
+      setClients(data);
       setName("");
-      await loadClients();
     } catch (err) {
-      console.error('AdminPage - Erro ao adicionar cliente:', err);
       setError(err.message);
     }
   };
 
   const checkIn = async (id) => {
     try {
-      console.log('AdminPage - Realizando check-in para cliente:', id);
       const response = await fetch(`/api/clients/${id}/checkin`, { method: "POST" });
+      if (!response.ok) throw new Error('Falha ao realizar check-in');
       
-      if (!response.ok) {
-        throw new Error('Falha ao realizar check-in');
-      }
+      const updatedResponse = await fetch("/api/clients");
+      if (!updatedResponse.ok) throw new Error('Falha ao atualizar lista');
       
-      await loadClients();
+      const data = await updatedResponse.json();
+      setClients(data);
     } catch (err) {
-      console.error('AdminPage - Erro ao realizar check-in:', err);
       setError(err.message);
     }
   };
 
   const useFreeCut = async (id) => {
     try {
-      console.log('AdminPage - Usando corte grátis para cliente:', id);
       const response = await fetch(`/api/clients/${id}/use-free-cut`, { method: "POST" });
+      if (!response.ok) throw new Error('Falha ao usar corte grátis');
       
-      if (!response.ok) {
-        throw new Error('Falha ao usar corte grátis');
-      }
+      const updatedResponse = await fetch("/api/clients");
+      if (!updatedResponse.ok) throw new Error('Falha ao atualizar lista');
       
-      await loadClients();
+      const data = await updatedResponse.json();
+      setClients(data);
     } catch (err) {
-      console.error('AdminPage - Erro ao usar corte grátis:', err);
       setError(err.message);
     }
   };
 
   const handleSignOut = async () => {
     try {
-      console.log('AdminPage - Iniciando logout');
       await signOut();
-      router.push("/");
+      window.location.href = '/sign-in';
     } catch (err) {
-      console.error('AdminPage - Erro ao fazer logout:', err);
       setError('Erro ao fazer logout');
     }
   };
