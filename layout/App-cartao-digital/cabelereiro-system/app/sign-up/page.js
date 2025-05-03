@@ -10,39 +10,44 @@ export default function SignUpPage() {
   const redirectAttempted = useRef(false);
 
   useEffect(() => {
-    console.log('[SignUp Debug] Estado inicial:', {
-      isLoaded,
-      isSignedIn,
-      hasUser: !!user,
-      userEmail: user?.primaryEmailAddress?.emailAddress,
-      redirectAttempted: redirectAttempted.current
-    });
-
-    if (!isLoaded || redirectAttempted.current) {
-      return;
-    }
-
-    if (isSignedIn && user) {
-      redirectAttempted.current = true;
-      console.log('[SignUp Debug] Usuário autenticado, verificando papel...');
-      
-      const userRole = getUserRole(user);
-      console.log('[SignUp Debug] Papel do usuário:', {
-        email: user.primaryEmailAddress?.emailAddress,
-        role: userRole
+    const handleRedirect = async () => {
+      console.log('[SignUp Debug] Estado atual:', {
+        isLoaded,
+        isSignedIn,
+        hasUser: !!user,
+        userEmail: user?.primaryEmailAddress?.emailAddress,
+        redirectAttempted: redirectAttempted.current
       });
 
-      const redirectPath = userRole === 'admin' ? '/admin' : '/client';
-      console.log('[SignUp Debug] Redirecionando para:', redirectPath);
-      
-      // Adicionando um pequeno delay para garantir que o estado foi atualizado
-      setTimeout(() => {
+      if (!isLoaded || !isSignedIn || !user || redirectAttempted.current) {
+        return;
+      }
+
+      try {
+        redirectAttempted.current = true;
+        console.log('[SignUp Debug] Verificando papel do usuário...');
+        
+        const userRole = getUserRole(user);
+        const redirectPath = userRole === 'admin' ? '/admin' : '/client';
+        
+        console.log('[SignUp Debug] Redirecionamento:', {
+          email: user.primaryEmailAddress?.emailAddress,
+          role: userRole,
+          path: redirectPath
+        });
+
         window.location.replace(redirectPath);
-      }, 100);
-    }
+      } catch (error) {
+        console.error('[SignUp Error]:', error);
+        redirectAttempted.current = false;
+      }
+    };
+
+    handleRedirect();
   }, [isLoaded, isSignedIn, user]);
 
-  if (!isLoaded || (isSignedIn && user && redirectAttempted.current)) {
+  // Se já estiver autenticado, mostra tela de carregamento
+  if (isSignedIn && user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -52,6 +57,8 @@ export default function SignUpPage() {
       </div>
     );
   }
+
+  const afterSignUpUrl = "/admin"; // Define para onde o Clerk deve redirecionar após registro
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -63,7 +70,7 @@ export default function SignUpPage() {
               card: 'shadow-none',
             },
           }}
-          redirectUrl={null}
+          redirectUrl={afterSignUpUrl}
           routing="path"
           path="/sign-up"
           signInUrl="/sign-in"
