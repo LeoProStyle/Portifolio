@@ -8,7 +8,7 @@ export const clerkConfig = {
   },
   
   // Configurações de roteamento
-  routing: "hash",
+  routing: "path",
   path: "/",
   
   // URLs de redirecionamento
@@ -20,4 +20,15 @@ export const clerkConfig = {
   // Configurações de ambiente
   publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
   secretKey: process.env.CLERK_SECRET_KEY,
+  
+  // Configurações adicionais
+  signIn: {
+    redirectUrl: '/',
+    firstFactorVerification: {
+      strategy: 'code',
+    }
+  },
+  signUp: {
+    redirectUrl: '/',
+  }
 }; 
