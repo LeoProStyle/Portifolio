@@ -13,7 +13,9 @@ export default function SignUpPage() {
               card: 'shadow-none',
             },
           }}
-          routing="path"
+          redirectUrl={null}
+          afterSignUpUrl={null}
+          routing="hash"
           path="/sign-up"
           signInUrl="/sign-in"
         />
