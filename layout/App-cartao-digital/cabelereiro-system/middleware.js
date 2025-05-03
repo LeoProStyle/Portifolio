@@ -25,17 +25,12 @@ async function isAdmin(userId) {
     }
 
     const userEmail = user.emailAddresses[0].emailAddress;
-    const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || '').split(',')
-      .map(e => e.trim())
-      .filter(Boolean);
-
     console.log('[Auth Debug] isAdmin - Verificação:', {
       userEmail,
-      adminEmails,
-      isAdmin: adminEmails.includes(userEmail)
+      isAdmin: userEmail === "leoprostyle@gmail.com"
     });
 
-    return adminEmails.includes(userEmail);
+    return userEmail === "leoprostyle@gmail.com";
   } catch (error) {
     console.error('[Auth Debug] isAdmin - Erro:', error);
     return false;
@@ -121,9 +116,5 @@ export default authMiddleware({
 });
 
 export const config = {
-  matcher: [
-    "/((?!.+\\.[\\w]+$|_next).*)",
-    "/",
-    "/(api|trpc)(.*)"
-  ]
+  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 }; 
