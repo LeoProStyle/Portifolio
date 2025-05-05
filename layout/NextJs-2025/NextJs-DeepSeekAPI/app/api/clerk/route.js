@@ -32,7 +32,7 @@ export async function POST(req) {
   const userData = {
     _id: data.id,
     email: data.email_addresses[0]?.email_address || "sem-email@exemplo.com",
-    name: `${data.first_name || ""} ${data.last_name || ""}`.trim() || "Usuário",
+    name: `${data.first_name || ""} ${data.last_name || ""}`.trim() || "Usuário", //tratamento realizado para aceitar sem nome e sobrenome
     image: data.image_url || data.profile_image_url || "",
   };
 
