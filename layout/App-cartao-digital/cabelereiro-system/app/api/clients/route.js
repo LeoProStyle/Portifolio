@@ -43,10 +43,15 @@ export async function POST(request) {
     if (!body.name || typeof body.name !== 'string' || !body.name.trim()) {
       return new NextResponse("Nome inválido", { status: 400 });
     }
+    if (!body.nickname || typeof body.nickname !== 'string' || !body.nickname.trim()) {
+      return new NextResponse("Apelido inválido", { status: 400 });
+    }
 
     // Cria o cliente
     const newClient = await Client.create({ 
       name: body.name.trim(),
+      nickname: body.nickname.trim(),
+      userId: userId,  // usando o userId da autenticação
       checkIns: 0,
       freeCuts: 0
     });

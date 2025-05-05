@@ -101,8 +101,11 @@ export default function AdminPage() {
 
   // Função para filtrar clientes com verificação para evitar erros
   const filteredClients = clients.filter(client => {
-    const nameMatch = client.name && client.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const nicknameMatch = client.nickname && client.nickname.toLowerCase().includes(searchTerm.toLowerCase());
+    if (!searchTerm) return true;
+    
+    const searchTermLower = searchTerm.toLowerCase();
+    const nameMatch = client.name ? client.name.toLowerCase().includes(searchTermLower) : false;
+    const nicknameMatch = client.nickname ? client.nickname.toLowerCase().includes(searchTermLower) : false;
     return nameMatch || nicknameMatch;
   });
 
@@ -189,10 +192,10 @@ export default function AdminPage() {
                     <div className="text-sm text-gray-900">{client.nickname || "N/A"}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{client.checkIns}</div>
+                    <div className="text-sm text-gray-900">{client.checkIns || 0}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{client.freeCuts}</div>
+                    <div className="text-sm text-gray-900">{client.freeCuts || 0}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <button

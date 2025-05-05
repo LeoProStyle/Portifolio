@@ -11,7 +11,7 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    if (!body.nickname || !body.userId || body.userId !== userId) {
+    if (!body.nickname || !body.userId || body.userId !== userId || !body.name) {
       return new NextResponse("Dados inválidos", { status: 400 });
     }
 
@@ -23,11 +23,11 @@ export async function POST(request) {
       return new NextResponse("Cliente já existe", { status: 409 });
     }
 
-    // Cria novo cliente
+    // Cria novo cliente com os campos corretos
     const client = await Client.create({
       userId: body.userId,
-      name: body.name,
-      nickname: body.nickname,
+      name: body.name.trim(),  // Nome completo do usuário
+      nickname: body.nickname.trim(),  // Apelido do usuário
       checkIns: 0,
       freeCuts: 0
     });
@@ -43,12 +43,12 @@ export async function PUT(request) {
   try {
     const { userId } = auth();
     if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
     const body = await request.json();
     if (!body.nickname || !body.userId || body.userId !== userId) {
-      return new NextResponse("Dados inválidos", { status: 400 });
+      return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
     }
 
     await connectDB();
@@ -58,20 +58,29 @@ export async function PUT(request) {
       { userId: body.userId },
       { 
         $set: { 
-          nickname: body.nickname,
-          name: body.name
+          nickname: body.nickname.trim(),
+          name: body.name || undefined // Só atualiza o nome se for fornecido
         }
       },
-      { new: true }
+      { 
+        new: true,
+        runValidators: true
+      }
     );
 
     if (!client) {
-      return new NextResponse("Cliente não encontrado", { status: 404 });
+      return NextResponse.json({ error: "Cliente não encontrado" }, { status: 404 });
     }
 
-    return NextResponse.json(client);
+    return NextResponse.json({
+      success: true,
+      message: "Apelido atualizado com sucesso",
+      client
+    });
   } catch (error) {
     console.error('Error in PUT /api/clients/profile:', error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json({ 
+      error: "Erro ao atualizar o apelido" 
+    }, { status: 500 });
   }
 } 

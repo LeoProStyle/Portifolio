@@ -1,26 +1,59 @@
 import { connectDB } from "@/lib/mongoose";
 import { Client } from "@/models/Client";
+import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs";
 
 export async function POST(request, context) {
-  const { params } = context;
-  await connectDB();
-  const client = await Client.findById(params.id);
+  try {
+    const { userId } = auth();
+    if (!userId) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
 
-  if (!client) {
-    return Response.json({ error: "Cliente não encontrado" }, { status: 404 });
+    const { params } = context;
+    if (!params.id) {
+      return NextResponse.json({ error: "ID do cliente não fornecido" }, { status: 400 });
+    }
+
+    await connectDB();
+    
+    // Busca o cliente e seleciona todos os campos
+    const client = await Client.findById(params.id).select('+userId +name +nickname +checkIns +freeCuts');
+    
+    if (!client) {
+      return NextResponse.json({ error: "Cliente não encontrado" }, { status: 404 });
+    }
+
+    try {
+      // Atualiza os campos numéricos
+      const checkIns = (client.checkIns || 0) + 1;
+      const freeCuts = client.freeCuts || 0;
+
+      // Atualiza o cliente usando findByIdAndUpdate para evitar problemas de validação
+      const updatedClient = await Client.findByIdAndUpdate(
+        params.id,
+        {
+          $set: {
+            checkIns: checkIns >= 10 ? 0 : checkIns,
+            freeCuts: checkIns >= 10 ? freeCuts + 1 : freeCuts,
+            name: client.name || "N/A",
+            nickname: client.nickname || "N/A"
+          }
+        },
+        { new: true, runValidators: false }
+      );
+
+      if (!updatedClient) {
+        return NextResponse.json({ error: "Erro ao atualizar cliente" }, { status: 500 });
+      }
+
+      return NextResponse.json(updatedClient);
+    } catch (updateError) {
+      console.error('Erro ao atualizar cliente:', updateError);
+      return NextResponse.json({ error: "Erro ao atualizar cliente" }, { status: 500 });
+    }
+  } catch (error) {
+    console.error('Error in POST /api/clients/[id]/checkin:', error);
+    return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 });
   }
-
-  // Incrementa o check-in
-  client.checkIns += 1;
-
-  // Verifica se atingiu 10 cortes
-  if (client.checkIns >= 10) {
-    client.checkIns = 0; // Zera os check-ins
-    client.freeCuts = (client.freeCuts || 0) + 1; // Incrementa o corte grátis
-  }
-
-  // Salva as mudanças no cliente
-  await client.save();
-
-  return Response.json(client);
 }
