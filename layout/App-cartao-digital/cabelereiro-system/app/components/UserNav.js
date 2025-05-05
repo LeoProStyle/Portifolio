@@ -25,7 +25,7 @@ export default function UserNav() {
             <Link href="/admin" className="text-white hover:text-gray-200">
               Área Administrativa
             </Link>
-            <span className="text-gray-300 text-sm">(Admin)</span>
+            <span className="text-gray-300 text-sm">({user?.firstName})</span>
           </>
         ) : (
           <>
@@ -33,7 +33,7 @@ export default function UserNav() {
               Minha Área
             </Link>
             <span className="text-gray-300 text-sm">
-              ({user?.emailAddresses?.[0]?.emailAddress})
+              ({user?.firstName})
             </span>
           </>
         )}

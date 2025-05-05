@@ -62,7 +62,8 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">        
+      <h1>salão do Rafinha</h1>
       <div className="p-8 bg-white rounded-lg shadow-md">
         <SignIn
           appearance={{
@@ -77,6 +78,7 @@ export default function SignInPage() {
           signUpUrl="/sign-up"
         />
       </div>
+      
     </div>
   );
 } 

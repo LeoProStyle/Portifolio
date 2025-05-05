@@ -9,6 +9,7 @@ export default function AdminPage() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const { isLoaded, user } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
@@ -98,6 +99,13 @@ export default function AdminPage() {
     }
   };
 
+  // Função para filtrar clientes com verificação para evitar erros
+  const filteredClients = clients.filter(client => {
+    const nameMatch = client.name && client.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const nicknameMatch = client.nickname && client.nickname.toLowerCase().includes(searchTerm.toLowerCase());
+    return nameMatch || nicknameMatch;
+  });
+
   if (!isLoaded || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -112,7 +120,7 @@ export default function AdminPage() {
         <h1 className="text-2xl font-bold">Área Administrativa</h1>
         <button 
           onClick={handleSignOut} 
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors"
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors cursor-pointer"
         >
           Sair
         </button>
@@ -124,9 +132,30 @@ export default function AdminPage() {
         </div>
       )}
 
-      {clients.length === 0 ? (
+      {/* Campo de pesquisa */}
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Pesquisar por nome ou apelido..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        />
+        {searchTerm && (
+          <button
+            onClick={() => setSearchTerm("")}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+
+      {filteredClients.length === 0 ? (
         <div className="text-center py-10 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">Nenhum cliente cadastrado.</p>
+          <p className="text-gray-500">
+            {clients.length === 0 ? "Nenhum cliente cadastrado." : "Nenhum cliente encontrado com esse termo."}
+          </p>
         </div>
       ) : (
         <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -151,13 +180,13 @@ export default function AdminPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {clients.map(client => (
+              {filteredClients.map(client => (
                 <tr key={client._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{client.name}</div>
+                    <div className="text-sm text-gray-900">{client.name || "N/A"}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{client.nickname}</div>
+                    <div className="text-sm text-gray-900">{client.nickname || "N/A"}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{client.checkIns}</div>
@@ -168,14 +197,14 @@ export default function AdminPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     <button
                       onClick={() => checkIn(client._id)}
-                      className="text-white bg-green-500 hover:bg-green-600 px-3 py-1 rounded transition-colors"
+                      className="text-white bg-green-500 hover:bg-green-600 px-3 py-1 rounded transition-colors cursor-pointer"
                     >
                       Check-in
                     </button>
                     {client.freeCuts > 0 && (
                       <button
                         onClick={() => useFreeCut(client._id)}
-                        className="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded transition-colors"
+                        className="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1 rounded transition-colors cursor-pointer" 
                       >
                         Usar Corte Grátis
                       </button>
