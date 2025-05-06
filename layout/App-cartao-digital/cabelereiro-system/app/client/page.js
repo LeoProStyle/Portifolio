@@ -3,6 +3,9 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
+import { FaCheckCircle } from 'react-icons/fa';
+import { BiCut } from 'react-icons/bi';
+import { IoGift } from 'react-icons/io5';
 
 export default function ClientPage() {
   const { user, isLoaded } = useUser();
@@ -88,95 +91,152 @@ export default function ClientPage() {
   if (!isLoaded || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">Carregando...</div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p>Carregando...</p>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">
-        Área do Cliente
-      </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 bg-white rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-2">
-            Meus Agendamentos
-          </h2>
-          {/* Conteúdo dos agendamentos */}
+  if (isNewUser || !clientData?.nickname) {
+    return (
+      <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold text-center mb-6">
+          {isNewUser ? "Bem-vindo!" : "Complete seu perfil"}
+        </h2>
+        
+        <div className="mb-6 p-4 bg-blue-50 text-blue-700 rounded-md">
+          <p>Para começar, escolha como quer ser chamado.</p>
+          <p className="text-sm mt-1">Este será seu nome no cartão de fidelidade.</p>
         </div>
-        <div className="p-4 bg-white rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-2">
-            Meu Perfil
-          </h2>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl mb-4">
-              {isNewUser ? (
-                <>Bem-vindo ao nosso sistema, {user?.firstName || user?.emailAddresses[0].emailAddress}!</>
-              ) : (
-                <>Bem-vindo de volta, {user?.firstName || user?.emailAddresses[0].emailAddress}!</>
-              )}
-            </h2>
 
-            {isNewUser && (
-              <div className="mb-4 p-4 bg-blue-50 text-blue-700 rounded-md">
-                <p>É seu primeiro acesso! Por favor, escolha um apelido para continuar.</p>
-                <p className="text-sm mt-1">O apelido será usado para identificar você no sistema.</p>
-              </div>
-            )}
+        {feedback.message && (
+          <div className={`mb-4 p-4 rounded-md ${
+            feedback.type === 'error' 
+              ? 'bg-red-50 text-red-700' 
+              : 'bg-green-50 text-green-700'
+          }`}>
+            {feedback.message}
+          </div>
+        )}
 
-            {feedback.message && (
-              <div className={`mb-4 p-4 rounded-md ${
-                feedback.type === 'error' 
-                  ? 'bg-red-50 text-red-700' 
-                  : 'bg-green-50 text-green-700'
-              }`}>
-                {feedback.message}
-              </div>
-            )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="nickname" className="block text-sm font-medium text-gray-700">
+              Seu Apelido
+            </label>
+            <input
+              type="text"
+              id="nickname"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              placeholder="Como quer ser chamado?"
+              required
+              disabled={isSubmitting}
+            />
+          </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full py-2 px-4 rounded-md text-white transition-colors ${
+              isSubmitting
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-600'
+            }`}
+          >
+            {isSubmitting ? 'Salvando...' : 'Salvar Apelido'}
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // Calcula o número de quadrados preenchidos baseado nos check-ins
+  const filledSquares = (clientData?.checkIns || 0) % 10;
+  const totalSquares = 10;
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        {/* Cartão de Fidelidade */}
+        <div className="bg-gradient-to-r from-black to-orange-600 rounded-xl shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
+          <div className="p-6 sm:p-10">
+            {/* Cabeçalho do Cartão */}
+            <div className="flex justify-between items-center mb-8">
               <div>
-                <label htmlFor="nickname" className="block text-sm font-medium text-gray-700">
-                  {isNewUser ? "Escolha seu Apelido" : "Seu Apelido"}
-                </label>
-                <input
-                  type="text"
-                  id="nickname"
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Como você quer ser chamado?"
-                  required
-                  disabled={isSubmitting}
-                />
+                <h3 className="text-xl sm:text-2xl font-bold text-white">Cartão Fidelidade</h3>
+                <p className="text-blue-200 mt-1">Salão do Rafinha</p>
               </div>
+              <FaCheckCircle className="text-white text-3xl sm:text-4xl opacity-80" />
+            </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full py-2 px-4 rounded-md transition-colors ${
-                  isSubmitting
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-blue-500 hover:bg-blue-600 text-white'
-                }`}
-              >
-                {isSubmitting 
-                  ? 'Salvando...' 
-                  : isNewUser 
-                    ? "Salvar Apelido" 
-                    : "Atualizar Apelido"
-                }
-              </button>
-            </form>
+            {/* Nome do Cliente */}
+            <div className="mb-8">
+              <p className="text-blue-200 text-sm">Bem-vindo</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white">{clientData.nickname}</h2>
+            </div>
 
-            {clientData && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-md">
-                <h3 className="text-lg font-medium mb-2">Seus Check-ins</h3>
-                <p>Total de check-ins: {clientData.checkIns || 0}</p>
-                <p>Cortes grátis disponíveis: {clientData.freeCuts || 0}</p>
+            {/* Grid de Quadrados */}
+            <div className="grid grid-cols-5 gap-2 sm:gap-4 mb-8">
+              {[...Array(totalSquares)].map((_, index) => (
+                <div
+                  key={index}
+                  className={`aspect-square rounded-lg flex items-center justify-center transition-all duration-300 ${
+                    index < filledSquares
+                      ? 'bg-white text-blue-600'
+                      : 'bg-blue-500/30 text-white/30'
+                  }`}
+                >
+                  <FaCheckCircle className="text-xl sm:text-2xl" />
+                </div>
+              ))}
+            </div>
+
+            {/* Informações */}
+            <div className="flex justify-between items-center text-white">
+              <div>
+                <p className="text-blue-200 text-sm">Total de Cortes</p>
+                <p className="text-2xl font-bold">{clientData.checkIns || 0}</p>
               </div>
-            )}
+              <div className="text-right">
+                <p className="text-blue-200 text-sm">Brindes Disponíveis</p>
+                <p className="text-2xl font-bold">{clientData.freeCuts || 0}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Estatísticas e Informações Adicionais */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center space-x-4">
+              <div className="bg-blue-100 p-3 rounded-full">
+                <BiCut className="text-blue-600 text-xl" />
+              </div>
+              <div>
+                <p className="text-gray-500">Próximo Corte Grátis</p>
+                <p className="text-lg font-semibold">
+                  Faltam {10 - filledSquares} cortes
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex items-center space-x-4">
+              <div className="bg-purple-100 p-3 rounded-full">
+                <IoGift className="text-purple-600 text-xl" />
+              </div>
+              <div>
+                <p className="text-gray-500">Brindes Acumulados</p>
+                <p className="text-lg font-semibold">
+                  {clientData.freeCuts || 0} cortes grátis
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
