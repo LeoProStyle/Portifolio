@@ -1,12 +1,11 @@
 import { authMiddleware, clerkClient } from "@clerk/nextjs";
-import { NextResponse } from "next/server";
 
 // Rotas públicas que não requerem autenticação
 const publicRoutes = [
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
-  "/api/webhooks(.*)",
+  "/api(.*)",
   "/_next(.*)",
   "/favicon.ico",
   "/clerk(.*)",
@@ -30,63 +29,44 @@ async function isAdmin(userId) {
 
 export default authMiddleware({
   publicRoutes,
-  debug: true,
-  
   async afterAuth(auth, req) {
-    const url = new URL(req.url);
-    const path = url.pathname;
-
-    // Debug para ambiente Vercel
-    console.log('[Vercel Debug] Request:', {
-      path,
-      isAuth: !!auth.userId,
-      host: req.headers.get('host'),
-      origin: req.headers.get('origin'),
-      session: auth.sessionId ? 'presente' : 'ausente'
-    });
-
-    // Se não estiver autenticado e tentar acessar rota protegida
-    if (!auth.userId && !publicRoutes.some(route => 
-      route.endsWith("(.*)") 
-        ? path.startsWith(route.slice(0, -4))
-        : path === route
-    )) {
-      if (path === '/sign-in' || path === '/sign-up') {
-        return NextResponse.next();
+    // Sempre permitir requisições para rotas públicas
+    if (publicRoutes.some(pattern => {
+      if (pattern.endsWith("(.*)")) {
+        return req.nextUrl.pathname.startsWith(pattern.slice(0, -4));
       }
-      return NextResponse.redirect(new URL('/sign-in', req.url));
+      return req.nextUrl.pathname === pattern;
+    })) {
+      return;
     }
 
-    // Se estiver autenticado
-    if (auth.userId) {
-      const adminStatus = await isAdmin(auth.userId);
-      const userPath = adminStatus ? '/admin' : '/client';
-
-      // Se tentar acessar sign-in/sign-up quando já autenticado
-      if (path === '/sign-in' || path === '/sign-up' || path === '/') {
-        return NextResponse.redirect(new URL(userPath, req.url));
-      }
-
-      // Proteção de rotas por tipo de usuário
-      if (adminStatus && path.startsWith('/client')) {
-        return NextResponse.redirect(new URL('/admin', req.url));
-      }
-
-      if (!adminStatus && path.startsWith('/admin')) {
-        return NextResponse.redirect(new URL('/client', req.url));
-      }
+    // Se não estiver autenticado, redirecionar para login
+    if (!auth.userId) {
+      return Response.redirect(new URL("/sign-in", req.url));
     }
 
-    return NextResponse.next();
+    // Se estiver autenticado, verificar permissões
+    const adminStatus = await isAdmin(auth.userId);
+    const path = req.nextUrl.pathname;
+
+    // Redirecionar da raiz para a página apropriada
+    if (path === '/') {
+      const targetPath = adminStatus ? '/admin' : '/client';
+      return Response.redirect(new URL(targetPath, req.url));
+    }
+
+    // Proteção de rotas administrativas
+    if (path.startsWith('/admin') && !adminStatus) {
+      return Response.redirect(new URL('/client', req.url));
+    }
+
+    // Proteção de rotas de cliente para admin
+    if (path.startsWith('/client') && adminStatus) {
+      return Response.redirect(new URL('/admin', req.url));
+    }
   }
 });
 
-// Configuração do matcher para incluir todas as rotas necessárias
 export const config = {
-  matcher: [
-    '/((?!.*\\..*|_next).*)',
-    '/',
-    '/(api|trpc)(.*)',
-    '/api/(.*)',
-  ],
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 }; 
