@@ -4,10 +4,9 @@ import { assets } from "@/assets/assets";
 import { SignIn, useAuth } from "@clerk/nextjs";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-
+import { ptBR } from "@clerk/localizations";
 
 export default function SignInPage() {
-
   const { isSignedIn, isLoaded } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
   const redirectAttempted = useRef(false);
@@ -67,8 +66,6 @@ export default function SignInPage() {
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white px-4 py-6 sm:px-6 lg:px-8 overflow-hidden">
-     
-
       {/* Imagem de fundo com efeito de marca d'água */}
       <div className="absolute inset-0 z-0">
         <div className="relative w-full h-full">
@@ -91,6 +88,7 @@ export default function SignInPage() {
       
       <div className="relative z-10  p-4 sm:p-6 md:p-8 bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg border border-gray-700">
         <SignIn
+          localization={ptBR}
           appearance={{
             layout: {
               socialButtonsPlacement: "bottom",
@@ -125,20 +123,11 @@ export default function SignInPage() {
           routing="hash"
           path="/sign-in"
           signUpUrl="/sign-up"
-          localization={{
-            signIn: {
-              title: ('signIn.title'),
-              subtitle: ('signIn.subtitle'),
-              primaryButtonText: ('signIn.primaryButton'),
-              actionText: ('signIn.noAccount'),
-              actionLink: ('signIn.signUp'),
-            }
-          }}
         />
       </div>
       
       <div className="relative z-10 mt-6 sm:mt-8 text-center">
-        <p className="text-xs sm:text-sm text-gray-400">{('2025 Leonardo A. Albuquerque, Todos os direitos reservados')}</p>
+        <p className="text-xs sm:text-sm text-gray-400">2025 Leonardo A. Albuquerque, Todos os direitos reservados</p>
       </div>
     </div>
   );
