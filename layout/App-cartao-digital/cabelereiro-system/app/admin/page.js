@@ -1,4 +1,3 @@
-// app/admin/page.js
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
@@ -10,6 +9,9 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  // Adicionar estados para controlar o carregamento de cada botão por cliente
+  const [loadingCheckins, setLoadingCheckins] = useState({});
+  const [loadingFreeCuts, setLoadingFreeCuts] = useState({});
   const { isLoaded, user } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
@@ -65,6 +67,9 @@ export default function AdminPage() {
   }, [isLoaded, user, loadClients]);
 
   const checkIn = async (id) => {
+    // Atualizar estado para mostrar loading apenas para este cliente específico
+    setLoadingCheckins(prev => ({ ...prev, [id]: true }));
+    
     try {
       console.log('[Admin Debug] Realizando check-in');
       const response = await fetch(`/api/clients/${id}/checkin`, { method: "POST" });
@@ -74,10 +79,16 @@ export default function AdminPage() {
     } catch (err) {
       console.error('[Admin Debug] Erro no check-in:', err);
       setError(err.message);
+    } finally {
+      // Remover estado de loading apenas para este cliente
+      setLoadingCheckins(prev => ({ ...prev, [id]: false }));
     }
   };
 
   const useFreeCut = async (id) => {
+    // Atualizar estado para mostrar loading apenas para este cliente específico
+    setLoadingFreeCuts(prev => ({ ...prev, [id]: true }));
+    
     try {
       console.log('[Admin Debug] Usando corte grátis');
       const response = await fetch(`/api/clients/${id}/use-free-cut`, { method: "POST" });
@@ -87,6 +98,9 @@ export default function AdminPage() {
     } catch (err) {
       console.error('[Admin Debug] Erro ao usar corte grátis:', err);
       setError(err.message);
+    } finally {
+      // Remover estado de loading apenas para este cliente
+      setLoadingFreeCuts(prev => ({ ...prev, [id]: false }));
     }
   };
 
@@ -232,22 +246,48 @@ export default function AdminPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                         <button
                           onClick={() => checkIn(client._id)}
-                          className="text-white bg-blue-500 hover:bg-blue-600 px-3 py-1.5 rounded-md transition-colors cursor-pointer inline-flex items-center gap-1"
+                          className={`text-white bg-blue-500 hover:bg-blue-600 px-3 py-1.5 rounded-md transition-colors cursor-pointer inline-flex items-center gap-1 ${loadingCheckins[client._id] ? 'opacity-75 cursor-not-allowed' : ''}`}
+                          disabled={loadingCheckins[client._id]}
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          Check-in
+                          {loadingCheckins[client._id] ? (
+                            <>
+                              <svg className="h-4 w-4 mr-1 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Processando...
+                            </>
+                          ) : (
+                            <>
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              Check-in
+                            </>
+                          )}
                         </button>
                         {client.freeCuts > 0 && (
                           <button
                             onClick={() => useFreeCut(client._id)}
-                            className="text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-md transition-colors cursor-pointer inline-flex items-center gap-1" 
+                            className={`text-white bg-green-500 hover:bg-green-600 px-3 py-1.5 rounded-md transition-colors cursor-pointer inline-flex items-center gap-1 ${loadingFreeCuts[client._id] ? 'opacity-75 cursor-not-allowed' : ''}`}
+                            disabled={loadingFreeCuts[client._id]}
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
-                            </svg>
-                            Usar Corte
+                            {loadingFreeCuts[client._id] ? (
+                              <>
+                                <svg className="h-4 w-4 mr-1 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Processando...
+                              </>
+                            ) : (
+                              <>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                                </svg>
+                                Usar Corte
+                              </>
+                            )}
                           </button>
                         )}
                       </td>
@@ -278,22 +318,48 @@ export default function AdminPage() {
                   <div className="flex flex-wrap gap-2 mt-3">
                     <button
                       onClick={() => checkIn(client._id)}
-                      className="flex-1 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md transition-colors cursor-pointer text-sm font-medium flex items-center justify-center gap-1"
+                      className={`flex-1 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md transition-colors cursor-pointer text-sm font-medium flex items-center justify-center gap-1 ${loadingCheckins[client._id] ? 'opacity-75 cursor-not-allowed' : ''}`}
+                      disabled={loadingCheckins[client._id]}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      Check-in
+                      {loadingCheckins[client._id] ? (
+                        <>
+                          <svg className="h-4 w-4 mr-1 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Processando...
+                        </>
+                      ) : (
+                        <>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          Check-in
+                        </>
+                      )}
                     </button>
                     {client.freeCuts > 0 && (
                       <button
                         onClick={() => useFreeCut(client._id)}
-                        className="flex-1 text-white bg-green-500 hover:bg-green-600 px-3 py-2 rounded-md transition-colors cursor-pointer text-sm font-medium flex items-center justify-center gap-1" 
+                        className={`flex-1 text-white bg-green-500 hover:bg-green-600 px-3 py-2 rounded-md transition-colors cursor-pointer text-sm font-medium flex items-center justify-center gap-1 ${loadingFreeCuts[client._id] ? 'opacity-75 cursor-not-allowed' : ''}`}
+                        disabled={loadingFreeCuts[client._id]}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
-                        </svg>
-                        Usar Corte
+                        {loadingFreeCuts[client._id] ? (
+                          <>
+                            <svg className="h-4 w-4 mr-1 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processando...
+                          </>
+                        ) : (
+                          <>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                            </svg>
+                            Usar Corte
+                          </>
+                        )}
                       </button>
                     )}
                   </div>
