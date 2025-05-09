@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { FaCheckCircle } from 'react-icons/fa';
 import { BiCut } from 'react-icons/bi';
 import { IoGift } from 'react-icons/io5';
+import { Tooltip } from 'react-tooltip';
 
 export default function ClientPage() {
   const { user, isLoaded } = useUser();
@@ -88,6 +89,22 @@ export default function ClientPage() {
     }
   };
 
+  // Função para formatar a data em formato brasileiro
+  const formatDate = (dateString) => {
+    if (!dateString) return "Data não disponível";
+    
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch (e) {
+      return "Data inválida";
+    }
+  };
+
   if (!isLoaded || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -157,6 +174,9 @@ export default function ClientPage() {
   // Calcula o número de quadrados preenchidos baseado nos check-ins
   const filledSquares = (clientData?.checkIns || 0) % 10;
   const totalSquares = 10;
+  
+  // Obtém as datas dos check-ins ou cria um array vazio se não houver
+  const checkinDates = clientData?.checkinDates || [];
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4 sm:px-6 lg:px-8">
@@ -179,20 +199,31 @@ export default function ClientPage() {
               <h2 className="text-2xl sm:text-3xl font-bold text-white">{clientData.nickname}</h2>
             </div>
 
-            {/* Grid de Quadrados */}
+            {/* Grid de Quadrados com Tooltips */}
             <div className="grid grid-cols-5 gap-2 sm:gap-4 mb-8">
-              {[...Array(totalSquares)].map((_, index) => (
-                <div
-                  key={index}
-                  className={`aspect-square rounded-lg flex items-center justify-center transition-all duration-300 ${
-                    index < filledSquares
-                      ? 'bg-white text-blue-600'
-                      : 'bg-blue-500/30 text-white/30'
-                  }`}
-                >
-                  <FaCheckCircle className="text-xl sm:text-2xl" />
-                </div>
-              ))}
+              {[...Array(totalSquares)].map((_, index) => {
+                const isFilled = index < filledSquares;
+                const dateIndex = checkinDates.length - filledSquares + index;
+                const checkDate = isFilled && dateIndex >= 0 ? checkinDates[dateIndex] : null;
+                
+                return (
+                  <div
+                    key={index}
+                    data-tooltip-id={`check-tooltip-${index}`}
+                    data-tooltip-content={checkDate ? `Check-in em: ${formatDate(checkDate)}` : ''}
+                    className={`aspect-square rounded-lg flex items-center justify-center transition-all duration-300 ${
+                      isFilled
+                        ? 'bg-white text-blue-600 cursor-help'
+                        : 'bg-blue-500/30 text-white/30'
+                    }`}
+                  >
+                    <FaCheckCircle className="text-xl sm:text-2xl" />
+                    {isFilled && checkDate && (
+                      <Tooltip id={`check-tooltip-${index}`} place="top" />
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Informações */}

@@ -22,6 +22,10 @@ const ClientSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  checkinDates: { // Array de datas
+    type: [String],
+    default: []
   }
 });
 

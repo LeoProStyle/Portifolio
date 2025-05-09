@@ -53,7 +53,8 @@ export async function POST(request) {
       nickname: body.nickname.trim(),
       userId: userId,  // usando o userId da autenticação
       checkIns: 0,
-      freeCuts: 0
+      freeCuts: 0,
+      checkinDates: [] // Inicializa como um array vazio
     });
 
     return NextResponse.json(newClient);
