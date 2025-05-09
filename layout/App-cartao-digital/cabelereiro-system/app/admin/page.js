@@ -23,13 +23,13 @@ export default function AdminPage() {
 
   const loadClients = useCallback(async () => {
     try {
-      console.log('[Admin Debug] Carregando lista de clientes');
+      //console.log('[Admin Debug] Carregando lista de clientes');
       const response = await fetch("/api/clients");
       if (!response.ok) throw new Error('Falha ao carregar clientes');
       const data = await response.json();
       setClients(data);
       setLoading(false);
-      console.log('[Admin Debug] Clientes carregados com sucesso');
+      //console.log('[Admin Debug] Clientes carregados com sucesso');
     } catch (err) {
       console.error('[Admin Debug] Erro ao carregar clientes:', err);
       setError(err.message);
@@ -42,19 +42,19 @@ export default function AdminPage() {
 
     async function checkAuth() {
       if (!isLoaded) {
-        console.log('[Admin Debug] Aguardando Clerk carregar...');
+        //console.log('[Admin Debug] Aguardando Clerk carregar...');
         return;
       }
 
       if (!user) {
-        console.log('[Admin Debug] Usuário não autenticado, redirecionando...');
+        //console.log('[Admin Debug] Usuário não autenticado, redirecionando...');
         window.location.href = '/sign-in';
         return;
       }
 
       const userRole = getUserRole(user);
       if (userRole !== 'admin') {
-        console.log('[Admin Debug] Acesso negado, redirecionando para área de cliente');
+        //console.log('[Admin Debug] Acesso negado, redirecionando para área de cliente');
         window.location.href = '/client';
         return;
       }
@@ -75,7 +75,7 @@ export default function AdminPage() {
     setLoadingCheckins(prev => ({ ...prev, [id]: true }));
 
     try {
-      console.log('[Admin Debug] Realizando check-in');
+      //console.log('[Admin Debug] Realizando check-in');
       const response = await fetch(`/api/clients/${id}/checkin`, { method: "POST" });
 
       if (!response.ok) {
@@ -89,7 +89,7 @@ export default function AdminPage() {
       } else {
         await loadClients();
         toast.success('Check-in realizado com sucesso!'); // Exibe o toast de sucesso
-        console.log('[Admin Debug] Check-in realizado com sucesso');
+        //console.log('[Admin Debug] Check-in realizado com sucesso');
       }
     } catch (err) {
       console.error('[Admin Debug] Erro no check-in:', err);
@@ -104,12 +104,12 @@ export default function AdminPage() {
     setLoadingFreeCuts(prev => ({ ...prev, [id]: true }));
 
     try {
-      console.log('[Admin Debug] Usando corte grátis');
+      //console.log('[Admin Debug] Usando corte grátis');
       const response = await fetch(`/api/clients/${id}/use-free-cut`, { method: "POST" });
       if (!response.ok) throw new Error('Falha ao usar corte grátis');
       await loadClients();
       toast.success('Corte grátis usado com sucesso!'); // Exibe o toast de sucesso
-      console.log('[Admin Debug] Corte grátis usado com sucesso');
+      //console.log('[Admin Debug] Corte grátis usado com sucesso');
     } catch (err) {
       console.error('[Admin Debug] Erro ao usar corte grátis:', err);
       setError(err.message);
@@ -186,9 +186,9 @@ export default function AdminPage() {
       <main className="bg-gray-50 min-h-screen">
         {/* Header fixed no topo */}
         <header className="bg-white shadow-md sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-start items-center">
             <h1 className="text-xl md:text-2xl font-bold text-gray-800">Área Administrativa</h1>
-            <button
+            {/* <button
               onClick={handleSignOut}
               className="bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors cursor-pointer flex items-center gap-2"
             >
@@ -197,7 +197,7 @@ export default function AdminPage() {
                 <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V3zm1 0v14h12V3H4z" clipRule="evenodd" />
                 <path fillRule="evenodd" d="M13.707 8.707a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L10.586 10 9.293 8.707a1 1 0 011.414-1.414l3 3z" clipRule="evenodd" />
               </svg>
-            </button>
+            </button> */}
           </div>
         </header>
 

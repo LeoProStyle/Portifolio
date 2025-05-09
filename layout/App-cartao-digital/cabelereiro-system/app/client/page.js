@@ -1,4 +1,3 @@
-// app/client/page.js
 'use client';
 
 import { useUser } from "@clerk/nextjs";
@@ -6,6 +5,7 @@ import { useState, useEffect } from "react";
 import { FaCheckCircle } from 'react-icons/fa';
 import { BiCut } from 'react-icons/bi';
 import { IoGift } from 'react-icons/io5';
+import { AiOutlineInfoCircle } from 'react-icons/ai'; // Importando o ícone de informação
 import { Tooltip } from 'react-tooltip';
 
 export default function ClientPage() {
@@ -217,7 +217,19 @@ export default function ClientPage() {
                         : 'bg-blue-500/30 text-white/30'
                     }`}
                   >
-                    <FaCheckCircle className="text-xl sm:text-2xl" />
+                    {isFilled ? (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        <FaCheckCircle className="text-xl sm:text-2xl" />
+                        {checkDate && (
+                          <AiOutlineInfoCircle 
+                            className="absolute top-0 right-0 text-sm sm:text-2xl text-gray-600 bg-white rounded-full" 
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <FaCheckCircle className="text-xl sm:text-2xl" />
+                    )}
+                    
                     {isFilled && checkDate && (
                       <Tooltip id={`check-tooltip-${index}`} place="top" />
                     )}

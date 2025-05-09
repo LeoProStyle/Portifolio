@@ -23,14 +23,14 @@ export default function UserNav() {
         {isAdmin ? (
           <>
             <Link href="/admin" className="text-white hover:text-gray-200 text-sm">
-              Área Administrativa
+              
             </Link>
             <span className="text-gray-300 text-sm">({user?.firstName})</span>
           </>
         ) : (
           <>
             <Link href="/client" className="text-white hover:text-gray-200 text-sm">
-              Minha Área
+             
             </Link>
             <span className="text-gray-300 text-sm">
               ({user?.firstName})
