@@ -3,8 +3,8 @@ import "./globals.css";
 import ClientLayout from './components/ClientLayout';
 
 export const metadata = {
-  title: "Sistema de Check-ins",
-  description: "Controle de clientes para cabeleireiros",
+  title: "Salão do Rafinha",
+  description: "Cartão Digital Salão do Rafinha",
 };
 
 export default function RootLayout({ children }) {
