@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Treino</title>
+  <style>
+    :root {
+      --primary: #2d89ef;
+      --background: #f4f6fa;
+      --card-bg: #fff;
+      --text: #222;
+      --border: #e0e0e0;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+    .container {
+      max-width: 600px;
+      margin: 32px auto;
+      padding: 16px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: var(--primary);
+    }
+    .tabs, .subtabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .tab-btn, .subtab-btn {
+      padding: 10px 24px;
+      border: none;
+      background: var(--border);
+      color: var(--text);
+      border-radius: 8px 8px 0 0;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .tab-btn.active, .subtab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      font-weight: bold;
+    }
+    .treino {
+      display: none;
+      animation: fadeIn 0.3s;
+    }
+    .treino.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .grupo-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+    }
+    .grupo {
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 160px;
+      min-width: 120px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    .grupo:hover {
+      box-shadow: 0 4px 16px rgba(45,137,239,0.10);
+    }
+    .grupo img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background: #eaeaea;
+    }
+    .grupo-nome {
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .exercicios {
+      display: none;
+      margin-bottom: 16px;
+    }
+    .exercicios.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    .ex-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+    }
+    .ex {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 150px;
+      min-width: 110px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      margin-bottom: 8px;
+    }
+    .ex img {
+      width: 150px;
+      height: 106px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #eaeaea;
+      cursor: pointer;
+    }
+    .ex-nome {
+      font-weight: 500;
+      margin-bottom: 2px;
+      text-align: center;
+    }
+    .ex-series {
+      font-size: 0.95rem;
+      color: #555;
+      margin-bottom: 2px;
+    }
+    @media (max-width: 700px) {
+      .container {
+        max-width: 98vw;
+        margin: 8px;
+        padding: 6vw 2vw;
+      }
+      .grupo, .ex {
+        width: 44vw;
+        min-width: 110px;
+        padding: 4vw 2vw;
+      }
+      .grupo img, .ex img {
+        width: 18vw;
+        height: 18vw;
+        min-width: 50px;
+        min-height: 50px;
+      }
+    }
+    /* Overlay para fullscreen */
+    .img-fullscreen-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .img-fullscreen-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+    .img-fullscreen-img {
+      max-width: 90vw;
+      max-height: 80vh;
+      border-radius: 12px;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.25);
+      background: #fff;
+      padding: 8px;
+      display: block;
+    }
+    .img-fullscreen-close {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      font-size: 2.2rem;
+      color: #fff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 10000;
+      font-weight: bold;
+      transition: color 0.2s;
+    }
+    .img-fullscreen-close:hover {
+      color: #2d89ef;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sistema de Treino</h1>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="mostrarTreino('A')">Treino A</button>
+      <button class="tab-btn" onclick="mostrarTreino('B')">Treino B</button>
+      <button class="tab-btn" onclick="mostrarTreino('C')">Treino C</button>
+    </div>
+    <!-- Treino A -->
+    <div id="treinoA" class="treino active">
+      <div class="subtabs" id="subtabsA">
+        <button class="subtab-btn active" onclick="mostrarExercicios('A','Costas')">Costas</button>
+        <button class="subtab-btn" onclick="mostrarExercicios('A','Bíceps')">Bíceps</button>
+        <button class="subtab-btn" onclick="mostrarExercicios('A','Ombro')">Ombro</button>
+        <button class="subtab-btn" onclick="mostrarExercicios('A','Antebraço')">Antebraço</button>
+        <button class="subtab-btn" onclick="mostrarExercicios('A','Prancha')">Prancha</button>
+      </div>
+      <!-- COSTAS -->
+    <div id="exA-Costas" class="exercicios active">
+        <div class="ex-lista">
+            <div class="ex">
+                <img src="./img/costas/01.gif" alt="Remada">
+                <div class="ex-nome">Remada Curvada</div>
+                <div class="ex-series">3x12</div>
+            </div>
+            <div class="ex">
+                <img src="./img/costas/02.gif" alt="Pulldown">
+                <div class="ex-nome">Pulldown</div>
+                <div class="ex-series">3x10</div>
+            </div>
+            <div class="ex">
+                <img src="./img/costas/03.gif" alt="Pulldown">
+                <div class="ex-nome">Pulldown</div>
+                <div class="ex-series">3x10</div>
+            </div>
+            <div class="ex">
+                <img src="./img/costas/04.gif" alt="Pulldown">
+                <div class="ex-nome">Pulldown</div>
+                <div class="ex-series">3x10</div>
+            </div>
+        </div>
+    </div>
+      <!-- BICEPS -->
+      <div id="exA-Bíceps" class="exercicios">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="./img/biceps/01.gif" alt="Rosca Direta">
+            <div class="ex-nome">Rosca Direta</div>
+            <div class="ex-series">3x10</div>
+          </div>
+          <div class="ex">
+            <img src="./img/biceps/02.gif" alt="Martelo">
+            <div class="ex-nome">Rosca Martelo</div>
+            <div class="ex-series">3x10</div>
+          </div>
+          <div class="ex">
+            <img src="./img/biceps/03.gif" alt="Rosca Direta">
+            <div class="ex-nome">Rosca Direta</div>
+            <div class="ex-series">3x10</div>
+          </div>
+        </div>
+      </div>
+      <!-- OMBRO -->
+      <div id="exA-Ombro" class="exercicios">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="./img/ombro/03.gif" alt="Desenvolvimento">
+            <div class="ex-nome">Desenvolvimento</div>
+            <div class="ex-series">3x12</div>
+          </div>
+          <div class="ex">
+            <img src="./img/ombro/04.gif" alt="Desenvolvimento">
+            <div class="ex-nome">Desenvolvimento</div>
+            <div class="ex-series">3x12</div>
+          </div>
+        </div>
+      </div>
+      <!-- ANTEBRACO -->
+      <div id="exA-Antebraço" class="exercicios">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="https://via.placeholder.com/60x60?text=Flexora" alt="Flexora">
+            <div class="ex-nome">Flexora de Punho</div>
+            <div class="ex-series">2x15</div>
+          </div>
+        </div>
+      </div>
+      <!-- PRANCHA -->
+      <div id="exA-Prancha" class="exercicios">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="https://via.placeholder.com/60x60?text=Prancha" alt="Prancha">
+            <div class="ex-nome">Prancha</div>
+            <div class="ex-series">3x30s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Treino B -->
+    <div id="treinoB" class="treino">
+      <div class="subtabs" id="subtabsB">
+        <button class="subtab-btn active" onclick="mostrarExercicios('B','Pernas')">Pernas</button>
+        <button class="subtab-btn" onclick="mostrarExercicios('B','Ombro')">Ombro</button>
+      </div>
+      <!-- PERNAS -->
+      <div id="exB-Pernas" class="exercicios active">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="https://via.placeholder.com/60x60?text=Agachamento" alt="Agachamento">
+            <div class="ex-nome">Agachamento</div>
+            <div class="ex-series">4x10</div>
+          </div>
+          <div class="ex">
+            <img src="https://via.placeholder.com/60x60?text=Leg+Press" alt="Leg Press">
+            <div class="ex-nome">Leg Press</div>
+            <div class="ex-series">3x12</div>
+          </div>
+        </div>
+      </div>
+      <!-- OMBRO -->
+      <div id="exB-Ombro" class="exercicios">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="./img/ombro/05.gif" alt="Elevação Lateral">
+            <div class="ex-nome">Elevação Lateral</div>
+            <div class="ex-series">3x12</div>
+          </div>
+          <div class="ex">
+            <img src="./img/ombro/06.gif" alt="Elevação Lateral">
+            <div class="ex-nome">Elevação Lateral</div>
+            <div class="ex-series">3x12</div>
+          </div>
+          <div class="ex">
+            <img src="./img/ombro/07.gif" alt="Elevação Lateral">
+            <div class="ex-nome">Elevação Lateral</div>
+            <div class="ex-series">3x12</div>
+          </div>
+        </div>
+    </div>
+    </div>
+    <!-- Treino C -->   
+    <div id="treinoC" class="treino">
+      <div class="subtabs" id="subtabsC">
+        <button class="subtab-btn active" onclick="mostrarExercicios('C','Peito')">Peito</button>
+        <button class="subtab-btn" onclick="mostrarExercicios('C','Tríceps')">Tríceps</button>
+        <button class="subtab-btn" onclick="mostrarExercicios('C','Ombro')">Ombro</button>
+        <button class="subtab-btn" onclick="mostrarExercicios('C','Prancha')">Prancha</button>
+      </div>
+      <!-- PEITO -->
+      <div id="exC-Peito" class="exercicios active">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="./img/peito/01.gif" alt="Supino">
+            <div class="ex-nome">Supino Reto</div>
+            <div class="ex-series">3x12</div>
+          </div>
+          <div class="ex">
+            <img src="./img/peito/02.gif" alt="Crucifixo">
+            <div class="ex-nome">Crucifixo</div>
+            <div class="ex-series">3x12</div>
+          </div>
+          <div class="ex">
+            <img src="./img/peito/03.gif" alt="Crucifixo">
+            <div class="ex-nome">Crucifixo</div>
+            <div class="ex-series">3x12</div>
+          </div>
+          <div class="ex">
+            <img src="./img/peito/04.gif" alt="Crucifixo">
+            <div class="ex-nome">Crucifixo</div>
+            <div class="ex-series">3x12</div>
+          </div>
+        </div>
+      </div>
+      <!-- TRICEPS -->
+      <div id="exC-Tríceps" class="exercicios">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="./img/triceps/01.gif" alt="Tríceps Pulley">
+            <div class="ex-nome">Tríceps Pulley</div>
+            <div class="ex-series">3x10</div>
+          </div>
+          <div class="ex">
+            <img src="./img/triceps/02.gif" alt="Tríceps Pulley">
+            <div class="ex-nome">Tríceps Pulley</div>
+            <div class="ex-series">3x10</div>
+          </div>
+          <div class="ex">
+            <img src="./img/triceps/03.gif" alt="Tríceps Pulley">
+            <div class="ex-nome">Tríceps Pulley</div>
+            <div class="ex-series">3x10</div>
+          </div>                    
+        </div>
+      </div>
+      <!-- OMBRO -->
+      <div id="exC-Ombro" class="exercicios">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="./img/ombro/01.gif" alt="Desenvolvimento">
+            <div class="ex-nome">Desenvolvimento</div>
+            <div class="ex-series">3x12</div>
+          </div>
+          <div class="ex">
+            <img src="./img/ombro/02.gif" alt="Desenvolvimento">
+            <div class="ex-nome">Desenvolvimento</div>
+            <div class="ex-series">3x12</div>
+          </div>
+        </div>
+      </div>
+      <!-- PRANCHA -->
+      <div id="exC-Prancha" class="exercicios">
+        <div class="ex-lista">
+          <div class="ex">
+            <img src="https://via.placeholder.com/60x60?text=Prancha" alt="Prancha">
+            <div class="ex-nome">Prancha</div>
+            <div class="ex-series">3x30s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="imgFullscreenOverlay" class="img-fullscreen-overlay" onclick="fecharFullscreen(event)">
+    <button class="img-fullscreen-close" onclick="fecharFullscreen(event)">&times;</button>
+    <img id="imgFullscreenImg" class="img-fullscreen-img" src="" alt="Imagem Ampliada">
+  </div>
+  <script>
+    function mostrarTreino(treino) {
+      const treinos = ['A', 'B', 'C'];
+      treinos.forEach(t => {
+        document.getElementById('treino'+t).classList.remove('active');
+      });
+      document.getElementById('treino'+treino).classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', treinos[idx] === treino);
+      });
+      // Reset subtabs para o primeiro grupo de cada treino
+      const subtabMap = {A: 'Costas', B: 'Pernas', C: 'Peito'};
+      mostrarExercicios(treino, subtabMap[treino]);
+    }
+    function mostrarExercicios(treino, grupo) {
+      // Esconde todos os exercicios do treino
+      document.querySelectorAll('#treino'+treino+' .exercicios').forEach(div => {
+        div.classList.remove('active');
+      });
+      document.getElementById('ex'+treino+'-'+grupo).classList.add('active');
+      // Atualiza subtabs
+      document.querySelectorAll('#subtabs'+treino+' .subtab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === grupo);
+      });
+      // Fullscreen de imagem
+      document.querySelectorAll('.ex img').forEach(img => {
+        img.addEventListener('click', function(e) {
+          e.stopPropagation();
+          abrirFullscreen(this.src, this.alt);
+        });
+      });
+    }
+    function abrirFullscreen(src, alt) {
+      const overlay = document.getElementById('imgFullscreenOverlay');
+      const img = document.getElementById('imgFullscreenImg');
+      img.src = src;
+      img.alt = alt;
+      overlay.classList.add('active');
+    }
+    function fecharFullscreen(e) {
+      // Fecha se clicar no overlay ou no botão de fechar
+      if (e.target.classList.contains('img-fullscreen-overlay') || e.target.classList.contains('img-fullscreen-close')) {
+        document.getElementById('imgFullscreenOverlay').classList.remove('active');
+      }
+    }
+    // Atualizar eventos ao trocar de treino/aba
+    function atualizarEventosImagens() {
+      document.querySelectorAll('.ex img').forEach(img => {
+        img.onclick = function(e) {
+          e.stopPropagation();
+          abrirFullscreen(this.src, this.alt);
+        };
+      });
+    }
+    // Chama ao trocar de treino/aba
+    const oldMostrarExercicios = mostrarExercicios;
+    mostrarExercicios = function(treino, grupo) {
+      oldMostrarExercicios(treino, grupo);
+      atualizarEventosImagens();
+    }
+    // Inicializa eventos ao carregar
+    atualizarEventosImagens();
+  </script>
+</body>
+</html>
