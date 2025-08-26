@@ -1,7 +1,7 @@
 import { MongoClient, Db, Collection, Document } from "mongodb";
 
 declare global {
-	// eslint-disable-next-line no-var
+	
 	var __mongoClient: MongoClient | undefined;
 }
 

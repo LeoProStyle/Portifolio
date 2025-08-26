@@ -84,8 +84,12 @@ export default function Home() {
 			alert(`Upload ok: ${data.insertedCount} chunks inseridos.`);
 			// Recarrega a lista de documentos após upload
 			await loadDocuments();
-		} catch (e: any) {
-			alert(e?.message || "Erro ao fazer upload");
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				alert(e.message);
+			} else {
+				alert("Erro ao fazer upload");
+			}
 		} finally {
 			setIsUploading(false);
 		}
@@ -111,8 +115,12 @@ export default function Home() {
 			// Limpa o formulário
 			setSelectedFile(null);
 			setFileSource("");
-		} catch (e: any) {
-			alert(e?.message || "Erro ao processar arquivo");
+		} catch (e: unknown) {
+			if (e instanceof Error) {
+				alert(e.message);
+			} else {
+				alert("Erro ao processar arquivo");
+			}
 		} finally {
 			setIsUploadingFile(false);
 		}
