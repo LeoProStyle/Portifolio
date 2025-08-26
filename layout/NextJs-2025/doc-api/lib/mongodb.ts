@@ -1,4 +1,4 @@
-import { MongoClient, Db, Collection } from "mongodb";
+import { MongoClient, Db, Collection, Document } from "mongodb";
 
 declare global {
 	// eslint-disable-next-line no-var
@@ -16,7 +16,7 @@ let cachedClient: MongoClient | undefined = global.__mongoClient;
 
 export async function getMongoClient(): Promise<MongoClient> {
 	if (cachedClient) return cachedClient;
-	const client = new MongoClient(mongodbUri, {
+	const client = new MongoClient(mongodbUri!, {
 		// Ajustes padrão para ambiente serverless/Vercel
 		// bufferCommands não se aplica ao driver oficial, mantemos simples
 	});
@@ -31,7 +31,8 @@ export async function getDb(): Promise<Db> {
 	return client.db(mongodbDbName);
 }
 
-export async function getCollection<T = any>(name = "documents"): Promise<Collection<T>> {
+
+export async function getCollection<T extends Document = Document>(name = "documents"): Promise<Collection<T>> {
 	const db = await getDb();
 	return db.collection<T>(name);
 }
@@ -42,4 +43,4 @@ export type DocumentChunk = {
 	embedding: number[];
 };
 
-
+console.log('MONGODB_URI?', !!process.env.MONGODB_URI)

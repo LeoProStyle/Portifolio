@@ -5,15 +5,20 @@ import { openai, CHAT_MODEL, EMBEDDING_MODEL } from "@/lib/openai";
 type ChatBody = {
 	question: string;
 	topK?: number;
+	source?: string;
 };
 
-async function searchSimilar(embedding: number[], topK: number) {
+async function searchSimilar(embedding: number[], topK: number, source?: string) {
 	const collection = await getCollection<DocumentChunk>("documents");
+
+	// Filtro por source se especificado
+	const matchStage = source ? [{ $match: { source } }] : [];
 
 	// Tenta usar Atlas Vector Search ($vectorSearch). Requer índice chamado "vector_index".
 	try {
 		const results = (await collection
 			.aggregate([
+				...matchStage,
 				{
 					$vectorSearch: {
 						index: "vector_index",
@@ -28,17 +33,37 @@ async function searchSimilar(embedding: number[], topK: number) {
 			.toArray()) as Array<DocumentChunk & { score?: number }>;
 		return results;
 	} catch {
-		// Fallback: similaridade via $cosineSimilarity (MongoDB 7.0+)
-		const results = (await collection
+		// Fallback: busca com similaridade calculada em JavaScript (para MongoDB < 7.0)
+		const allDocs = (await collection
 			.aggregate([
-				{ $addFields: { score: { $cosineSimilarity: ["$embedding", embedding] } } },
-				{ $sort: { score: -1 } },
-				{ $limit: topK },
-				{ $project: { content: 1, source: 1, score: 1 } },
+				...matchStage,
+				{ $project: { content: 1, source: 1, embedding: 1 } },
 			])
-			.toArray()) as Array<DocumentChunk & { score?: number }>;
-		return results;
+			.toArray()) as Array<DocumentChunk>;
+		
+		// Calcula similaridade cosseno para cada documento
+		const docsWithScore = allDocs.map(doc => {
+			const score = cosineSimilarity(embedding, doc.embedding);
+			return { ...doc, score };
+		});
+		
+		// Ordena por score e retorna topK
+		return docsWithScore
+			.sort((a, b) => (b.score || 0) - (a.score || 0))
+			.slice(0, topK);
 	}
+}
+
+// Função para calcular similaridade cosseno
+function cosineSimilarity(vecA: number[], vecB: number[]): number {
+	if (vecA.length !== vecB.length) return 0;
+	
+	const dotProduct = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+	const magnitudeA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+	const magnitudeB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+	
+	if (magnitudeA === 0 || magnitudeB === 0) return 0;
+	return dotProduct / (magnitudeA * magnitudeB);
 }
 
 export async function POST(req: Request) {
@@ -46,6 +71,7 @@ export async function POST(req: Request) {
 		const body = (await req.json()) as ChatBody;
 		const question = (body.question || "").toString();
 		const topK = Math.min(Math.max(body.topK || 4, 1), 10);
+		const source = body.source;
 
 		if (!question || question.trim().length < 3) {
 			return NextResponse.json({ error: "Pergunta vazia ou muito curta." }, { status: 400 });
@@ -54,7 +80,7 @@ export async function POST(req: Request) {
 		const embed = await openai.embeddings.create({ model: EMBEDDING_MODEL, input: question });
 		const queryVector = embed.data[0].embedding as unknown as number[];
 
-		const matches = await searchSimilar(queryVector, topK);
+		const matches = await searchSimilar(queryVector, topK, source);
 		const context = matches
 			.map((m, i) => `Fonte ${i + 1} (${m.source}):\n${m.content}`)
 			.join("\n\n");

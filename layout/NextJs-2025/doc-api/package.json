@@ -9,9 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/multer": "^2.0.0",
+    "mammoth": "^1.10.0",
     "mongodb": "^6.18.0",
+    "multer": "^2.0.2",
     "next": "15.5.0",
     "openai": "^5.15.0",
+    "pdf-parse": "^1.1.1",
+    "pdf2pic": "^3.2.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
@@ -19,6 +24,7 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
