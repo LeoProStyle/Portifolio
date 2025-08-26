@@ -29,14 +29,13 @@ export default function Home() {
 
 	const [documents, setDocuments] = useState<DocumentSource[]>([]);
 	const [selectedSource, setSelectedSource] = useState<string>("");
-	const [isLoadingDocs, setIsLoadingDocs] = useState(false);
+
 	const [showDocumentList, setShowDocumentList] = useState(false);
 
 	const uploadChars = useMemo(() => uploadContent.trim().length, [uploadContent]);
 
 	// Carrega documentos existentes
 	async function loadDocuments() {
-		setIsLoadingDocs(true);
 		try {
 			const resp = await fetch("/api/documents");
 			const data = await resp.json();
@@ -45,8 +44,6 @@ export default function Home() {
 			}
 		} catch (e) {
 			console.error("Erro ao carregar documentos:", e);
-		} finally {
-			setIsLoadingDocs(false);
 		}
 	}
 

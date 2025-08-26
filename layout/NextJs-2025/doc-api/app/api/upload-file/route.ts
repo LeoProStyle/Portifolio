@@ -6,11 +6,7 @@ import mammoth from "mammoth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type UploadFileBody = {
-	content: string;
-	source?: string;
-	chunkSizeChars?: number;
-};
+
 
 function chunkText(text: string, chunkSizeChars = 1800): string[] {
 	const sentences = text
@@ -107,7 +103,8 @@ export async function POST(req: NextRequest) {
 			source,
 			extractedTextLength: extractedText.length,
 		});
-	} catch (err: any) {
-		return NextResponse.json({ error: err?.message || "Erro inesperado" }, { status: 500 });
+	} catch (err: unknown) {
+		const errorMessage = err instanceof Error ? err.message : "Erro inesperado";
+		return NextResponse.json({ error: errorMessage }, { status: 500 });
 	}
 }

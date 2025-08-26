@@ -25,8 +25,9 @@ export async function GET() {
     ]).toArray();
 
     return NextResponse.json({ sources });
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message || "Erro ao buscar documentos" }, { status: 500 });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Erro ao buscar documentos";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -46,7 +47,8 @@ export async function DELETE(req: Request) {
       deleted: result.deletedCount,
       source 
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message || "Erro ao deletar documentos" }, { status: 500 });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Erro ao deletar documentos";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

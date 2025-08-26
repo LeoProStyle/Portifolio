@@ -3,12 +3,14 @@ import { getDb } from "@/lib/mongodb";
 import { openai, EMBEDDING_MODEL } from "@/lib/openai";
 
 export async function GET() {
-  const results: Record<string, any> = { env: {}, checks: {} };
+  const results: { env: Record<string, unknown>; checks: Record<string, unknown> } = { env: {}, checks: {} };
 
   try {
-    results.env.OPENAI_API_KEY = Boolean(process.env.OPENAI_API_KEY);
-    results.env.MONGODB_URI = Boolean(process.env.MONGODB_URI);
-    results.env.MONGODB_DB = process.env.MONGODB_DB || "chat-with-docs";
+    results.env = {
+      OPENAI_API_KEY: Boolean(process.env.OPENAI_API_KEY),
+      MONGODB_URI: Boolean(process.env.MONGODB_URI),
+      MONGODB_DB: process.env.MONGODB_DB || "chat-with-docs"
+    };
   } catch {}
 
   // MongoDB check
@@ -30,19 +32,22 @@ export async function GET() {
     }
 
     results.checks.mongodb = { ok: true, ping, documents: { count, sample, vectorIndexExists } };
-  } catch (err: any) {
-    results.checks.mongodb = { ok: false, error: err?.message || String(err) };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    results.checks.mongodb = { ok: false, error: errorMessage };
   }
 
   // OpenAI check (very small embedding request)
   try {
     const emb = await openai.embeddings.create({ model: EMBEDDING_MODEL, input: "ok" });
     results.checks.openai = { ok: true, dim: emb.data?.[0]?.embedding?.length };
-  } catch (err: any) {
-    results.checks.openai = { ok: false, error: err?.message || String(err) };
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    results.checks.openai = { ok: false, error: errorMessage };
   }
 
-  const status = Object.values(results.checks).every((c: any) => c?.ok) ? 200 : 500;
+  const checks = results.checks as Record<string, { ok: boolean }>;
+  const status = Object.values(checks).every((c) => c?.ok) ? 200 : 500;
   return NextResponse.json(results, { status });
 }
 

@@ -107,10 +107,11 @@ export async function POST(req: Request) {
 
 		return NextResponse.json({
 			answer,
-			sources: matches.map((m) => ({ content: m.content, source: m.source, score: (m as any).score })),
+			sources: matches.map((m) => ({ content: m.content, source: m.source, score: (m as { score?: number }).score })),
 		});
-	} catch (err: any) {
-		return NextResponse.json({ error: err?.message || "Erro inesperado" }, { status: 500 });
+	} catch (err: unknown) {
+		const errorMessage = err instanceof Error ? err.message : "Erro inesperado";
+		return NextResponse.json({ error: errorMessage }, { status: 500 });
 	}
 }
 
