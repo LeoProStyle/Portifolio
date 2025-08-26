@@ -149,10 +149,19 @@ export default function Home() {
 				sources: data.sources || [],
 			};
 			setMessages((prev) => [...prev, assistantMsg]);
-		} catch (e: any) {
-			const assistantMsg: ChatMessage = { role: "assistant", content: e?.message || "Erro" };
+		} catch (e: unknown) {
+			let errorMessage = "Erro";
+	
+			if (e instanceof Error) {
+				errorMessage = e.message;
+			}
+	
+			const assistantMsg: ChatMessage = {
+				role: "assistant",
+				content: errorMessage,
+			};
 			setMessages((prev) => [...prev, assistantMsg]);
-		} finally {
+		}finally {
 			setIsAsking(false);
 		}
 	}
