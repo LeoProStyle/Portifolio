@@ -1,0 +1,10 @@
+{
+  "mapImage": "colina-bifrost.png",
+  "items": [
+    {
+      "tipo": "aco",
+      "x": 804,
+      "y": 567
+    }
+  ]
+}

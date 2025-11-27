@@ -73,6 +73,7 @@
         <label class="section-title">Mapa</label>
         <select id="mapSelect" class="form-select mb-3">
             <option value="mirantepenhasco">Mirante do Penhasco</option>
+            <option value="colinabifrost">Colina de Biofrost</option>
         </select>
 
         <!-- MINÉRIOS -->
@@ -120,6 +121,10 @@ const mapas = {
     mirantepenhasco: {
         imagem: "../maps/mirante-penhasco.jpg",
         json: "../mapas-prontos/mirante-penhasco.json"
+    },
+    colinabifrost: {
+        imagem: "../maps/colina-bifrost.png",
+        json: "../mapas-prontos/colinabifrost.json"
     }
 };
 
@@ -151,21 +156,33 @@ function carregarMapa(nome) {
 
     if (!conf) return console.error("Mapa não encontrado:", nome);
 
-    if (overlay) map.removeLayer(overlay);
+    // criar nova imagem pra descobrir o tamanho real
+    const img = new Image();
+    img.src = conf.imagem;
 
-    overlay = L.imageOverlay(conf.imagem, bounds).addTo(map);
-    map.fitBounds(bounds);
+    img.onload = () => {
+        const w = img.width;
+        const h = img.height;
 
-    marcadores.forEach(m => map.removeLayer(m));
-    marcadores = [];
+        const newBounds = [[0,0], [h, w]];
 
-    fetch(conf.json)
-        .then(r => r.json())
-        .then(json => {
-            const lista = json.items || json; // compatível com JSON antigo
-            lista.forEach(addMarcadorExistente);
-        })
-        .catch(() => console.warn("JSON não encontrado:", conf.json));
+        if (overlay) map.removeLayer(overlay);
+
+        overlay = L.imageOverlay(conf.imagem, newBounds).addTo(map);
+        map.fitBounds(newBounds);
+
+        // limpar marcadores antigos
+        marcadores.forEach(m => map.removeLayer(m));
+        marcadores = [];
+
+        // carregar JSON correspondente
+        fetch(conf.json)
+            .then(r => r.json())
+            .then(json => {
+                const lista = json.items || json;
+                lista.forEach(addMarcadorExistente);
+            });
+    };
 }
 
 /* ------------------------------------------
@@ -275,6 +292,10 @@ function importarJSON(event) {
 
 /* Inicializar Mapa */
 carregarMapa("mirantepenhasco");
+
+document.getElementById("mapSelect").addEventListener("change", function(){
+    carregarMapa(this.value);
+});
 </script>
 
 </body>
