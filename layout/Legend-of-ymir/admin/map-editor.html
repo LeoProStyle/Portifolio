@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editor de Mapas - Minérios</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #0a0f17;
+            color: #d7e0ff;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        #sidePanel {
+            width: 310px;
+            height: 100vh;
+            background: rgba(10, 15, 30, 0.92);
+            border-right: 2px solid #1e2a40;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        h3 {
+            color: #7ab7ff;
+            border-bottom: 1px solid #304263;
+            padding-bottom: 6px;
+        }
+
+        #map {
+            width: calc(100vw - 310px);
+            height: 100vh;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .section-title {
+            margin-top: 20px;
+            color: #8ab4ff;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .futuristic-btn {
+            background: linear-gradient(135deg, #1a263d, #0f1622);
+            border: 1px solid #38527d;
+            color: #9fc7ff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 100%;
+        }
+        .futuristic-btn:hover {
+            background: #23304a;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidePanel">
+        <h3>Editor de Minérios</h3>
+
+        <!-- MAPA -->
+        <label class="section-title">Mapa</label>
+        <select id="mapSelect" class="form-select mb-3">
+            <option value="mirantepenhasco">Mirante do Penhasco</option>
+        </select>
+
+        <!-- MINÉRIOS -->
+        <label class="section-title">Minério</label>
+        <select id="tipoMinerio" class="form-select mb-3">
+            <option value="aco">Aço</option>
+            <option value="linho">Linho</option>
+            <option value="cristal">Cristal</option>
+            <option value="bau">Baú</option>
+            <option value="baudourado">Baú Dourado</option>
+        </select>
+
+        <!-- FILTROS -->
+        <label class="section-title">Filtros</label>
+        <div id="filterArea">
+            <div><input type="checkbox" value="aco" checked onchange="filtrar(this)"> Aço</div>
+            <div><input type="checkbox" value="linho" checked onchange="filtrar(this)"> Linho</div>
+            <div><input type="checkbox" value="cristal" checked onchange="filtrar(this)"> Cristal</div>
+            <div><input type="checkbox" value="bau" checked onchange="filtrar(this)"> Baú</div>
+            <div><input type="checkbox" value="baudourado" checked onchange="filtrar(this)"> Baú Dourado</div>
+        </div>
+
+        <!-- MODO -->
+        <label class="section-title">Modo</label>
+        <div class="form-check form-switch mb-3">
+            <input id="viewMode" type="checkbox" class="form-check-input">
+            <label>Somente visualizar</label>
+        </div>
+
+        <!-- AÇÕES -->
+        <label class="section-title">Ações</label>
+        <button class="futuristic-btn mb-2" onclick="salvarJSON()">Salvar JSON</button>
+        <button class="futuristic-btn mb-2" onclick="exportarJSON()">Exportar JSON</button>
+        <button class="futuristic-btn mb-2" onclick="document.getElementById('importFile').click()">Importar JSON</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importarJSON(event)">
+    </div>
+
+    <div id="map"></div>
+
+<script>
+/* ------------------------------------------
+      CONFIG MAPAS
+------------------------------------------- */
+const mapas = {
+    mirantepenhasco: {
+        imagem: "../maps/mirante-penhasco.jpg",
+        json: "../mapas-prontos/mirante-penhasco.json"
+    }
+};
+
+let mapaAtual = "mirantepenhasco";
+let marcadores = [];
+let overlay = null;
+
+/* ------------------------------------------
+      MAPA LEAFLET
+------------------------------------------- */
+let map = L.map("map", { crs: L.CRS.Simple, minZoom: -4 });
+const bounds = [[0,0], [2000,4000]];
+
+/* Ícones */
+const icons = {
+    aco: L.icon({ iconUrl: "../icons/aco.png", iconSize:[32,32] }),
+    linho: L.icon({ iconUrl: "../icons/linho.png", iconSize:[32,32] }),
+    cristal: L.icon({ iconUrl: "../icons/cristal.png", iconSize:[32,32] }),
+    bau: L.icon({ iconUrl: "../icons/bau.png", iconSize:[32,32] }),
+    baudourado: L.icon({ iconUrl: "../icons/baudourado.png", iconSize:[32,32] })
+};
+
+/* ------------------------------------------
+      CARREGAR MAPA
+------------------------------------------- */
+function carregarMapa(nome) {
+    mapaAtual = nome;
+    const conf = mapas[nome];
+
+    if (!conf) return console.error("Mapa não encontrado:", nome);
+
+    if (overlay) map.removeLayer(overlay);
+
+    overlay = L.imageOverlay(conf.imagem, bounds).addTo(map);
+    map.fitBounds(bounds);
+
+    marcadores.forEach(m => map.removeLayer(m));
+    marcadores = [];
+
+    fetch(conf.json)
+        .then(r => r.json())
+        .then(json => {
+            const lista = json.items || json; // compatível com JSON antigo
+            lista.forEach(addMarcadorExistente);
+        })
+        .catch(() => console.warn("JSON não encontrado:", conf.json));
+}
+
+/* ------------------------------------------
+      ADICIONAR MARCADOR EXISTENTE
+------------------------------------------- */
+function addMarcadorExistente(entry) {
+    const m = L.marker([entry.y, entry.x], { icon: icons[entry.tipo] }).addTo(map);
+    m.tipo = entry.tipo;
+
+    // --- REMOVER AO CLICAR ---
+    m.on("click", () => removerMarcador(m));
+
+    marcadores.push(m);
+}
+
+/* ------------------------------------------
+      ADICIONAR MARCADOR NOVO (POR CLIQUE)
+------------------------------------------- */
+map.on("click", e => {
+    if (document.getElementById("viewMode").checked) return;
+
+    const tipo = document.getElementById("tipoMinerio").value;
+
+    const m = L.marker([e.latlng.lat, e.latlng.lng], { icon: icons[tipo] }).addTo(map);
+    m.tipo = tipo;
+
+    m.on("click", () => removerMarcador(m));
+
+    marcadores.push(m);
+});
+
+/* ------------------------------------------
+      REMOVER MARCADOR
+------------------------------------------- */
+function removerMarcador(marker) {
+    map.removeLayer(marker);
+    marcadores = marcadores.filter(m => m !== marker);
+}
+
+/* ------------------------------------------
+      FILTRAR
+------------------------------------------- */
+function filtrar(chk) {
+    marcadores.forEach(m => {
+        if (m.tipo === chk.value) {
+            chk.checked ? m.addTo(map) : map.removeLayer(m);
+        }
+    });
+}
+
+/* ------------------------------------------
+      SALVAR JSON LOCAL
+------------------------------------------- */
+function salvarJSON() {
+    const dados = marcadores.map(m => ({
+        tipo: m.tipo,
+        x: m.getLatLng().lng,
+        y: m.getLatLng().lat
+    }));
+
+    localStorage.setItem("minerios_" + mapaAtual, JSON.stringify(dados));
+    alert("Salvo localmente!");
+}
+
+/* ------------------------------------------
+      EXPORTAR JSON
+------------------------------------------- */
+function exportarJSON() {
+    const dados = {
+        mapImage: mapas[mapaAtual].imagem.replace("../maps/", ""),
+        items: marcadores.map(m => ({
+            tipo: m.tipo,
+            x: m.getLatLng().lng,
+            y: m.getLatLng().lat
+        }))
+    };
+
+    const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+
+    a.href = URL.createObjectURL(blob);
+    a.download = mapaAtual + ".json";
+    a.click();
+}
+
+/* ------------------------------------------
+      IMPORTAR JSON
+------------------------------------------- */
+function importarJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = e => {
+        const json = JSON.parse(e.target.result);
+        const lista = json.items || json;
+
+        marcadores.forEach(m => map.removeLayer(m));
+        marcadores = [];
+
+        lista.forEach(addMarcadorExistente);
+    };
+
+    reader.readAsText(file);
+}
+
+/* Inicializar Mapa */
+carregarMapa("mirantepenhasco");
+</script>
+
+</body>
+</html>

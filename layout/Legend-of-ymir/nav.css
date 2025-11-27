@@ -1,0 +1,23 @@
+.nav-dark {
+    background: #3a2100;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.nav-dark a {
+    color: #d9c7a1 !important;
+    font-weight: 500;
+}
+.nav-dark a:hover {
+    color: #f3e3bd !important;
+}
+
+/* Título */
+.section-title {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 1.4rem;
+    color: #cfa85f;
+    margin-top: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding-bottom: 8px;
+}

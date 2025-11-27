@@ -1,0 +1,95 @@
+{
+  "mapImage": "mirante-penhasco.jpg",
+  "items": [
+    {
+      "tipo": "aco",
+      "x": 1744,
+      "y": 1164
+    },
+    {
+      "tipo": "aco",
+      "x": 1504,
+      "y": 1412
+    },
+    {
+      "tipo": "aco",
+      "x": 1324,
+      "y": 1356
+    },
+    {
+      "tipo": "baudourado",
+      "x": 860,
+      "y": 1692
+    },
+    {
+      "tipo": "baudourado",
+      "x": 1240,
+      "y": 1728
+    },
+    {
+      "tipo": "aco",
+      "x": 740,
+      "y": 1136
+    },
+    {
+      "tipo": "aco",
+      "x": 1740,
+      "y": 760
+    },
+    {
+      "tipo": "aco",
+      "x": 2000,
+      "y": 576
+    },
+    {
+      "tipo": "aco",
+      "x": 1928,
+      "y": 324
+    },
+    {
+      "tipo": "linho",
+      "x": 2320,
+      "y": 1044
+    },
+    {
+      "tipo": "linho",
+      "x": 2724,
+      "y": 868
+    },
+    {
+      "tipo": "linho",
+      "x": 2512,
+      "y": 1084
+    },
+    {
+      "tipo": "linho",
+      "x": 2476,
+      "y": 932
+    },
+    {
+      "tipo": "cristal",
+      "x": 2816,
+      "y": 1016
+    },
+    {
+      "tipo": "cristal",
+      "x": 2136,
+      "y": 1216
+    },
+    {
+      "tipo": "cristal",
+      "x": 2232,
+      "y": 1356
+    },
+    {
+      "tipo": "cristal",
+      "x": 2260,
+      "y": 1180
+    },
+    {
+      "tipo": "cristal",
+      "x": 2036,
+      "y": 1372
+    }
+  ]
+}

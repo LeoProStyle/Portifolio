@@ -1,0 +1,27 @@
+body {
+    background: #0e0d0c;
+    color: #178009;
+    font-family: "Segoe UI", sans-serif;
+}
+
+#mapContainer {
+    position: relative;
+    flex-grow: 1;
+    overflow: hidden;
+    background: #000;
+    cursor: grab;
+}
+
+#mapContainer img {
+    position: absolute;
+    transform-origin: top left;
+    user-select: none;
+}
+
+.marker {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
