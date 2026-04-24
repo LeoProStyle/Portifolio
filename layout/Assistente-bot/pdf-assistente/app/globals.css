@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #070b14;
+  --foreground: #e6edf7;
 }
 
 @theme inline {
@@ -12,15 +12,199 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.18) 0%, transparent 42%),
+    radial-gradient(circle at 85% 10%, rgba(56, 189, 248, 0.14) 0%, transparent 38%),
+    radial-gradient(circle at 45% 90%, rgba(168, 85, 247, 0.12) 0%, transparent 45%),
+    var(--background);
+  color: var(--foreground);
+  font-family: Inter, "Segoe UI", Arial, Helvetica, sans-serif;
 }
 
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color-scheme: dark !important;
+  background-color: #070b14 !important;
+  color: #e6edf7 !important;
+}
+
+.page-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.assistant-card {
+  width: min(920px, 100%);
+  background: linear-gradient(165deg, rgba(17, 24, 39, 0.88), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 28px 90px rgba(2, 6, 23, 0.65);
+  backdrop-filter: blur(10px);
+  padding: 28px;
+}
+
+.card-header h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 2.5vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #a5b4fc;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.subtitle {
+  margin: 8px 0 0;
+  color: #94a3b8;
+}
+
+.input-group {
+  margin-top: 24px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.question-input {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.98rem;
+  color: #e2e8f0;
+  background: rgba(15, 23, 42, 0.7);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.question-input:focus {
+  outline: none;
+  border-color: #818cf8;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.22);
+}
+
+.question-input::placeholder {
+  color: #64748b;
+}
+
+.actions-row {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #1e293b;
+  color: #fff;
+}
+
+.btn-danger {
+  background: #b91c1c;
+  color: #fff;
+}
+
+.btn-ghost {
+  background: rgba(51, 65, 85, 0.45);
+  color: #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.status-badge {
+  margin-top: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(15, 23, 42, 0.62);
+  color: #cbd5e1;
+}
+
+.status-badge .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #64748b;
+}
+
+.status-badge.ready .dot {
+  background: #16a34a;
+}
+
+.status-badge.processing .dot {
+  background: #ca8a04;
+}
+
+.status-badge.error .dot {
+  background: #dc2626;
+}
+
+.error-text {
+  margin-top: 14px;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.answer-box {
+  margin-top: 18px;
+  background: rgba(2, 6, 23, 0.45);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.answer-title {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.answer-content {
+  margin: 10px 0 0;
+  line-height: 1.65;
+  color: #e2e8f0;
+  white-space: pre-wrap;
 }

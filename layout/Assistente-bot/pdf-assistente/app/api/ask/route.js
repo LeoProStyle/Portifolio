@@ -1,21 +1,24 @@
-import path from "path";
-import { loadPDF } from "@/lib/pdfLoader";
-import { chunkText } from "@/lib/textChunker";
 import { search } from "@/lib/search";
 import { askOllama } from "@/lib/ollama";
-
-let cachedChunks = null;
+import { getChunks, studyDocument } from "@/lib/knowledgeBase";
 
 export async function POST(req) {
   const { question } = await req.json();
 
-  if (!cachedChunks) {
-    const filePath = path.join(process.cwd(), "data/documento.pdf");
-    const text = await loadPDF(filePath);
-    cachedChunks = chunkText(text);
+  if (!question?.trim()) {
+    return Response.json({ error: "Pergunta inválida." }, { status: 400 });
   }
 
-  const results = search(question, cachedChunks);
+  const chunks = getChunks() || (await studyDocument());
+  const results = search(question, chunks);
+  const bestScore = results[0]?.score ?? 0;
+
+  if (bestScore <= 0) {
+    return Response.json({
+      answer: "este conteudo nao esta no meu banco de dados no momento",
+    });
+  }
+
   const context = results.map(r => r.chunk).join("\n\n");
 
   const prompt = `
