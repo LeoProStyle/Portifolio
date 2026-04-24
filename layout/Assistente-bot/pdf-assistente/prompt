@@ -1,0 +1,18 @@
+Estou criando um assistente local com Next.js + Node.js que:
+
+Lê arquivos PDF de uma pasta local
+Quebra o conteúdo em chunks
+Usa embeddings para busca semântica (RAG)
+Usa uma IA local (Ollama) para gerar respostas
+Recebe perguntas por texto e voz
+Responde por texto e voz
+
+Stack atual:
+
+Next.js (Pages Router)
+pdf-parse
+Sistema de chunk + busca manual
+Ollama rodando localmente (modelo llama3 ou mistral)
+Web Speech API (voz no navegador)
+
+Quero que você continue o projeto exatamente nesse padrão, mantendo tudo local, simples e funcional.
