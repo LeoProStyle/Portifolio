@@ -3,21 +3,40 @@ import path from "path";
 import { loadPDF } from "@/lib/pdfLoader";
 import { chunkText } from "@/lib/textChunker";
 
+/**
+ * Caminhos principais usados para leitura do PDF e persistencia de cache.
+ * @type {string}
+ */
 const DOCUMENT_PATH = path.join(process.cwd(), "data/documento.pdf");
 const CACHE_DIR = path.join(process.cwd(), ".cache");
 const CACHE_PATH = path.join(CACHE_DIR, "documento-knowledge.json");
 
+/** @type {string[] | null} */
 let cachedChunks = null;
+/** @type {Promise<string[]> | null} */
 let studyPromise = null;
+/** @type {"idle" | "processing" | "ready" | "error"} */
 let studyStatus = "idle";
+/** @type {string} */
 let studyMessage = "Aguardando comando de estudo.";
+/** @type {string | null} */
 let lastStudiedAt = null;
 
+/**
+ * Gera uma assinatura do PDF para validar o cache.
+ *
+ * @returns {{ size: number, mtimeMs: number }} Metadados atuais do arquivo.
+ */
 function getDocumentSignature() {
   const stat = fs.statSync(DOCUMENT_PATH);
   return { size: stat.size, mtimeMs: stat.mtimeMs };
 }
 
+/**
+ * Tenta carregar o cache em disco quando o PDF nao mudou.
+ *
+ * @returns {string[] | null} Chunks validos ou null quando invalido.
+ */
 function readCacheIfValid() {
   if (!fs.existsSync(CACHE_PATH)) return null;
 
@@ -38,6 +57,12 @@ function readCacheIfValid() {
   return null;
 }
 
+/**
+ * Persiste os chunks gerados para reaproveitamento em novas inicializacoes.
+ *
+ * @param {string[]} chunks Chunks derivados do texto do PDF.
+ * @returns {void}
+ */
 function writeCache(chunks) {
   const payload = {
     signature: getDocumentSignature(),
@@ -53,6 +78,11 @@ function writeCache(chunks) {
   lastStudiedAt = payload.lastStudiedAt;
 }
 
+/**
+ * Retorna o status atual do processo de estudo do documento.
+ *
+ * @returns {{ status: "idle" | "processing" | "ready" | "error", message: string, lastStudiedAt: string | null }}
+ */
 export function getStudyStatus() {
   return {
     status: studyStatus,
@@ -61,10 +91,21 @@ export function getStudyStatus() {
   };
 }
 
+/**
+ * Retorna os chunks mantidos em memoria, quando disponiveis.
+ *
+ * @returns {string[] | null}
+ */
 export function getChunks() {
   return cachedChunks;
 }
 
+/**
+ * Estuda o PDF para gerar base de consulta e atualiza cache/memoria.
+ *
+ * @param {{ force?: boolean }} [options] Opcoes de execucao.
+ * @returns {Promise<string[]>} Chunks prontos para busca.
+ */
 export async function studyDocument({ force = false } = {}) {
   if (studyPromise) return studyPromise;
   if (!force && cachedChunks?.length) return cachedChunks;

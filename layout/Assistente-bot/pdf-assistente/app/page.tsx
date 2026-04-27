@@ -12,6 +12,11 @@ export default function Home() {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
 
+  /**
+   * Consulta o status de estudo do documento na API.
+   *
+   * @returns {Promise<void>}
+   */
   async function refreshStudyStatus() {
     const res = await fetch("/api/study");
     const data = await res.json();
@@ -19,6 +24,12 @@ export default function Home() {
     setStudyMessage(data.message || "Sem status de estudo.");
   }
 
+  /**
+   * Solicita o estudo do PDF e atualiza o status exibido.
+   *
+   * @param {boolean} [force=false] Forca reconstruir a base, ignorando cache.
+   * @returns {Promise<void>}
+   */
   async function startStudy(force = false) {
     setStudyStatus("processing");
     setStudyMessage("Atualizando...");
@@ -48,6 +59,12 @@ export default function Home() {
     };
   }, []);
 
+  /**
+   * Envia uma pergunta para a API e atualiza resposta/feedback da interface.
+   *
+   * @param {string} [overrideQuestion] Pergunta alternativa (ex.: capturada por voz).
+   * @returns {Promise<void>}
+   */
   async function ask(overrideQuestion?: string) {
     const currentQuestion = (overrideQuestion ?? question).trim();
 
@@ -89,6 +106,11 @@ export default function Home() {
     }
   }
 
+  /**
+   * Interrompe o reconhecimento de voz em andamento.
+   *
+   * @returns {void}
+   */
   function stopListening() {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
@@ -97,6 +119,11 @@ export default function Home() {
     setIsListening(false);
   }
 
+  /**
+   * Inicia reconhecimento de voz no navegador e encaminha a pergunta reconhecida.
+   *
+   * @returns {void}
+   */
   function startListening() {
     if (typeof window === "undefined") return;
 
@@ -135,6 +162,12 @@ export default function Home() {
     recognition.start();
   }
 
+  /**
+   * Reproduz a resposta em audio usando a Web Speech API.
+   *
+   * @param {string} text Texto que sera sintetizado em voz.
+   * @returns {void}
+   */
   function speak(text: string) {
     if (!text || typeof window === "undefined" || !("speechSynthesis" in window)) {
       return;

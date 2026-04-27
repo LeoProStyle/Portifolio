@@ -2,6 +2,13 @@ import { search } from "@/lib/search";
 import { askOllama } from "@/lib/ollama";
 import { getChunks, studyDocument } from "@/lib/knowledgeBase";
 
+/**
+ * Recebe uma pergunta, busca os melhores trechos do documento
+ * e gera a resposta final via Ollama.
+ *
+ * @param {Request} req Requisicao HTTP contendo `{ question }`.
+ * @returns {Promise<Response>} Resposta JSON com `answer` ou erro validado.
+ */
 export async function POST(req) {
   const { question } = await req.json();
 
