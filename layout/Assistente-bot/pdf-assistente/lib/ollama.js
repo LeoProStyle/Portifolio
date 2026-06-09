@@ -6,9 +6,9 @@ import axios from "axios";
  * @param {string} prompt Contexto e pergunta montados pela API.
  * @returns {Promise<string>} Resposta textual retornada pelo modelo.
  */
-export async function askOllama(prompt) {
+export async function askOllama(prompt, model = "phi3") {
   const response = await axios.post("http://localhost:11434/api/generate", {
-    model: "llama3",
+    model,
     prompt,
     stream: false,
   });
