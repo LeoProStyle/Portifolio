@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { LogOut, ReceiptText, Wallet, ListChecks, SquarePen } from "lucide-react";
+import { ReceiptText, Wallet, ListChecks, SquarePen, BarChart3 } from "lucide-react";
+import UserMenu from "./UserMenu";
 
 function NavItem({
   href,
@@ -34,8 +34,6 @@ function NavItem({
 }
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { role, signOut, session } = useAuth();
-
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
       <header className="sticky top-0 z-10 bg-zinc-50/80 dark:bg-black/80 backdrop-blur border-b border-zinc-200 dark:border-zinc-900">
@@ -46,19 +44,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div>
               <div className="text-sm font-semibold leading-4">Caixa Fácil</div>
-              <div className="text-xs text-zinc-600 dark:text-zinc-300">{role ? role : "—"}</div>
+              <div className="text-xs text-zinc-600 dark:text-zinc-300">MVP</div>
             </div>
           </div>
 
-          {session && (
-            <button
-              onClick={signOut}
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium bg-zinc-900 text-white dark:bg-white dark:text-black"
-            >
-              <LogOut className="h-4 w-4" />
-              Sair
-            </button>
-          )}
+          <UserMenu />
         </div>
       </header>
 
@@ -68,7 +58,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <NavItem href="/dashboard" label="Dashboard" icon={<SquarePen className="h-4 w-4" />} />
             <NavItem href="/fechamentos" label="Fechamentos" icon={<ListChecks className="h-4 w-4" />} />
             <NavItem href="/despesas" label="Despesas" icon={<Wallet className="h-4 w-4" />} />
-            <NavItem href="/relatorios" label="Relatórios" icon={<ReceiptText className="h-4 w-4" />} />
+            <NavItem href="/relatorios" label="Relatórios" icon={<BarChart3 className="h-4 w-4" />} />
           </div>
         </aside>
 
@@ -81,7 +71,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <NavItem href="/dashboard" label="" icon={<SquarePen className="mx-auto h-4 w-4" />} />
           <NavItem href="/fechamentos" label="" icon={<ListChecks className="mx-auto h-4 w-4" />} />
           <NavItem href="/despesas" label="" icon={<Wallet className="mx-auto h-4 w-4" />} />
-          <NavItem href="/relatorios" label="" icon={<ReceiptText className="mx-auto h-4 w-4" />} />
+          <NavItem href="/relatorios" label="" icon={<BarChart3 className="mx-auto h-4 w-4" />} />
         </div>
       </nav>
     </div>

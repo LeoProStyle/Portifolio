@@ -1,45 +1,56 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import Swal from "sweetalert2";
 
 export default function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const isValid = useMemo(() => {
-    return email.trim().length > 3 && senha.trim().length >= 4;
-  }, [email, senha]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
-    if (!isValid) {
-      setError("Informe um email válido e uma senha.");
+    if (!email.trim() || !password.trim()) {
+      Swal.fire({
+        icon: "warning",
+        title: "Atenção",
+        text: "Email e senha são obrigatórios",
+      });
       return;
     }
 
-    // MVP: validação mock (sem banco ainda) apenas para telas ficarem prontas.
-    // Estrutura preparada para substituir por API + Mongo.
     setLoading(true);
     try {
-      // Regra simples: se email terminar com @admin.com => admin; senão operador
-      const role = email.toLowerCase().endsWith("@admin.com") ? "admin" : "operador";
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-      localStorage.setItem(
-        "caixaFacil.session",
-        JSON.stringify({
-          email,
-          role,
-          at: new Date().toISOString(),
-        })
-      );
+      if (result?.error) {
+        Swal.fire({
+          icon: "error",
+          title: "Erro no Login",
+          text: result.error,
+        });
+        return;
+      }
 
-      router.push(role === "admin" ? "/dashboard" : "/dashboard");
+      if (result?.ok) {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao fazer login";
+      Swal.fire({
+        icon: "error",
+        title: "Erro",
+        text: message,
+      });
     } finally {
       setLoading(false);
     }
@@ -62,28 +73,25 @@ export default function LoginForm() {
       <div className="space-y-2">
         <label className="block text-sm font-medium">Senha</label>
         <input
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           type="password"
           autoComplete="current-password"
           className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-300"
           placeholder="••••••••"
-          minLength={4}
         />
       </div>
 
-      {error && <div className="text-sm text-red-600 dark:text-red-400">{error}</div>}
-
       <button
-        disabled={!isValid || loading}
+        disabled={loading}
         type="submit"
         className="w-full rounded-xl bg-zinc-900 text-white px-4 py-2.5 text-sm font-medium disabled:opacity-60 dark:bg-white dark:text-black"
       >
         {loading ? "Entrando..." : "Entrar"}
       </button>
 
-      <div className="text-xs text-zinc-500 dark:text-zinc-400">
-        Dica do MVP: use qualquer email + senha (min 4). Email terminando com <b>@admin.com</b> vira admin.
+      <div className="text-xs text-zinc-500 dark:text-zinc-400 text-center">
+        Autenticação segura com NextAuth.js
       </div>
     </form>
   );

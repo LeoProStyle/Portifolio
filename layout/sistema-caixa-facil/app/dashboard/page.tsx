@@ -36,11 +36,10 @@ export default function DashboardPage() {
       setError(null);
 
       try {
-        // Usa o endpoint /api/export como MVP de consolidação
-        const res = await fetch("/api/export", {
-          method: "POST",
+        // Usa o endpoint /api/dashboard para consolidação
+        const res = await fetch(`/api/dashboard?month=${month}&year=${year}`, {
+          method: "GET",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ month, year, kind: "XML" }),
         });
 
         const json = await res.json();
