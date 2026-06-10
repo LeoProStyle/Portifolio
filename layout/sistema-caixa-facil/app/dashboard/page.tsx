@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import DashboardCharts from "@/components/dashboard/DashboardCharts";
 
 function formatBRL(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -118,6 +119,7 @@ export default function DashboardPage() {
           Gerar gráficos com Recharts (receita diária/semanal/mensal, formas de pagamento e fechamento diário).
         </div>
       </div>
+      {payload && <DashboardCharts payload={payload} />}
     </div>
   );
 }

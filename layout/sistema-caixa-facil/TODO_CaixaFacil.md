@@ -13,6 +13,7 @@
 - [x] Implementar telas (MVP skeleton com mock):
   - [x] Login (email/senha)
   - [x] Dashboard (com dados reais do Mongo)
+    - [ ] Gerar gráficos com Recharts no dashboard
   - [x] Fechamentos diários (lista com dados reais)
   - [x] Despesas (lista com dados reais)
   - [x] Relatórios/Exportação mensal (PDF, Excel, XML)
