@@ -192,6 +192,7 @@ export async function POST(req: Request) {
     month: string;
     year: string;
     kind: "PDF" | "Excel" | "XML";
+    types?: string[]; // e.g. ["fechamentos","despesas"]
   };
 
   const month = body?.month?.toString();
@@ -207,23 +208,27 @@ export async function POST(req: Request) {
   const m = month.padStart(2, "0");
   const dateRegex = `^${year}-${m}-`;
 
-  const closures = (await CashClosureModel.find({ date: { $regex: dateRegex } })
-    .sort({ date: 1 })
-    .lean()) as CashClosureDoc[];
+  const requestedTypes = body.types;
+  const includeClosures = !requestedTypes || requestedTypes.length === 0 || requestedTypes.includes("fechamentos");
+  const includeExpenses = !requestedTypes || requestedTypes.length === 0 || requestedTypes.includes("despesas");
 
-  const expenses = (await ExpenseModel.find({ date: { $regex: dateRegex } })
-    .sort({ date: 1 })
-    .lean()) as ExpenseDoc[];
+  const closures = includeClosures
+    ? ((await CashClosureModel.find({ date: { $regex: dateRegex } }).sort({ date: 1 }).lean()) as CashClosureDoc[])
+    : ([] as CashClosureDoc[]);
+
+  const expenses = includeExpenses
+    ? ((await ExpenseModel.find({ date: { $regex: dateRegex } }).sort({ date: 1 }).lean()) as ExpenseDoc[])
+    : ([] as ExpenseDoc[]);
 
   const totalsByPayment = {
-    dinheiro: closures.reduce((s: number, c: CashClosureDoc) => s + (c.dinheiro ?? 0), 0),
-    pix: closures.reduce((s: number, c: CashClosureDoc) => s + (c.pix ?? 0), 0),
-    cartao_credito: closures.reduce((s: number, c: CashClosureDoc) => s + (c.cartao_credito ?? 0), 0),
-    cartao_debito: closures.reduce((s: number, c: CashClosureDoc) => s + (c.cartao_debito ?? 0), 0),
+    dinheiro: includeClosures ? closures.reduce((s: number, c: CashClosureDoc) => s + (c.dinheiro ?? 0), 0) : 0,
+    pix: includeClosures ? closures.reduce((s: number, c: CashClosureDoc) => s + (c.pix ?? 0), 0) : 0,
+    cartao_credito: includeClosures ? closures.reduce((s: number, c: CashClosureDoc) => s + (c.cartao_credito ?? 0), 0) : 0,
+    cartao_debito: includeClosures ? closures.reduce((s: number, c: CashClosureDoc) => s + (c.cartao_debito ?? 0), 0) : 0,
   };
 
-  const totalEntrada = closures.reduce((s: number, c: CashClosureDoc) => s + (c.total ?? 0), 0);
-  const totalDespesas = expenses.reduce((s: number, e: ExpenseDoc) => s + (e.amount ?? 0), 0);
+  const totalEntrada = includeClosures ? closures.reduce((s: number, c: CashClosureDoc) => s + (c.total ?? 0), 0) : 0;
+  const totalDespesas = includeExpenses ? expenses.reduce((s: number, e: ExpenseDoc) => s + (e.amount ?? 0), 0) : 0;
   const lucroEstimado = totalEntrada - totalDespesas;
 
   const summary = {

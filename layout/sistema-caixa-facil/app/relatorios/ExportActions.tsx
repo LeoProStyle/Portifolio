@@ -10,14 +10,25 @@ export default function ExportActions() {
 
   const [month, setMonth] = useState(() => String(new Date().getMonth() + 1).padStart(2, "0"));
   const [year, setYear] = useState(() => String(new Date().getFullYear()));
+  const [includeClosures, setIncludeClosures] = useState(true);
+  const [includeExpenses, setIncludeExpenses] = useState(true);
 
   const onExport = async (kind: ExportKind) => {
     setLoading(kind);
     try {
+      if (!includeClosures && !includeExpenses) {
+        Swal.fire({ icon: "warning", title: "Selecione pelo menos um item", text: "Marque 'Fechamentos' ou 'Despesas' antes de exportar." });
+        setLoading(null);
+        return;
+      }
+
       const res = await fetch("/api/export", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ month, year, kind }),
+        body: JSON.stringify({ month, year, kind, types: [
+          ...(includeClosures ? ["fechamentos"] : []),
+          ...(includeExpenses ? ["despesas"] : []),
+        ] }),
       });
 
       if (!res.ok) {
@@ -117,6 +128,18 @@ export default function ExportActions() {
             })}
           </select>
         </div>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <label className="inline-flex items-center gap-2">
+          <input type="checkbox" checked={includeClosures} onChange={(e) => setIncludeClosures(e.target.checked)} className="h-4 w-4" />
+          <span className="text-sm">Fechamentos</span>
+        </label>
+
+        <label className="inline-flex items-center gap-2">
+          <input type="checkbox" checked={includeExpenses} onChange={(e) => setIncludeExpenses(e.target.checked)} className="h-4 w-4" />
+          <span className="text-sm">Despesas</span>
+        </label>
       </div>
 
       <div className="flex gap-2">
