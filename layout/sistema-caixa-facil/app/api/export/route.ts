@@ -125,6 +125,7 @@ function generateExcel(
   year: string,
   closures: CashClosureDoc[],
   expenses: ExpenseDoc[],
+  purchaseNotes: PurchaseNoteDoc[],
   summary: {
     totalsByPayment: Record<string, number>;
     totalEntrada: number;
@@ -134,23 +135,7 @@ function generateExcel(
 ): Buffer {
   const workbook = XLSX.utils.book_new();
 
-  // Resumo
-  const resumoData = [
-    ["RESUMO DO PERÍODO", `${month}/${year}`],
-    ["", ""],
-    ["Conceito", "Valor"],
-    ["Dinheiro", summary.totalsByPayment.dinheiro ?? 0],
-    ["PIX", summary.totalsByPayment.pix ?? 0],
-    ["Cartão Crédito", summary.totalsByPayment.cartao_credito ?? 0],
-    ["Cartão Débito", summary.totalsByPayment.cartao_debito ?? 0],
-    ["", ""],
-    ["Total Entrada", summary.totalEntrada],
-    ["Total Despesas", summary.totalDespesas],
-    ["Lucro Estimado", summary.lucroEstimado],
-  ];
-
-  const resumoSheet = XLSX.utils.aoa_to_sheet(resumoData);
-  XLSX.utils.book_append_sheet(workbook, resumoSheet, "Resumo");
+  // Nota: o usuário solicitou remover a aba Resumo — permanecem apenas as abas geradas conforme dados retornados (Fechamentos/Despesas/Notas)
 
   // Fechamentos
   if (closures.length > 0) {
@@ -165,7 +150,26 @@ function generateExcel(
         c.total ?? 0,
       ]),
     ];
+    // total geral dos fechamentos (somente os itens retornados)
+    const totalFechamentos = closures.reduce((s: number, c) => s + (c.total ?? 0), 0);
+    closuresData.push(["", "", "", "", "Total Geral", totalFechamentos]);
     const closuresSheet = XLSX.utils.aoa_to_sheet(closuresData);
+    // formatar colunas de valores como moeda (colunas B..F e Total na coluna F)
+    if (closuresSheet["!ref"]) {
+      const range = XLSX.utils.decode_range(closuresSheet["!ref"]);
+      for (let R = 1; R <= range.e.r; ++R) {
+        // columns: 1=Dinheiro,2=PIX,3=Cartão Crédito,4=Cartão Débito,5=Total
+        for (const C of [1, 2, 3, 4, 5]) {
+          const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+          const cell = closuresSheet[cellAddress];
+          if (cell && (typeof cell.v === "number" || !isNaN(Number(cell.v)))) {
+            cell.t = "n";
+            cell.z = "R$ #,##0.00";
+            cell.v = Number(cell.v);
+          }
+        }
+      }
+    }
     XLSX.utils.book_append_sheet(workbook, closuresSheet, "Fechamentos");
   }
 
@@ -180,8 +184,60 @@ function generateExcel(
         e.amount ?? 0,
       ]),
     ];
+    // total das despesas (somente os itens retornados)
+    const totalDespesasSheet = expenses.reduce((s: number, e) => s + (e.amount ?? 0), 0);
+    expensesData.push(["", "", "TOTAL", totalDespesasSheet]);
     const expensesSheet = XLSX.utils.aoa_to_sheet(expensesData);
+    // formatar coluna Valor (coluna D / index 3) como moeda
+    if (expensesSheet["!ref"]) {
+      const range = XLSX.utils.decode_range(expensesSheet["!ref"]);
+      for (let R = 1; R <= range.e.r; ++R) {
+        const cellAddress = XLSX.utils.encode_cell({ r: R, c: 3 });
+        const cell = expensesSheet[cellAddress];
+        if (cell && (typeof cell.v === "number" || !isNaN(Number(cell.v)))) {
+          cell.t = "n";
+          cell.z = "R$ #,##0.00";
+          cell.v = Number(cell.v);
+        }
+      }
+    }
     XLSX.utils.book_append_sheet(workbook, expensesSheet, "Despesas");
+  }
+
+  // Notas de compras
+  if (purchaseNotes.length > 0) {
+    const notesData = [
+      ["Data", "Categoria", "Descrição", "Fornecedor", "Forma de Pagamento", "Documento Fiscal", "Número Documento", "Observação", "Valor"],
+      ...purchaseNotes.map((n) => [
+        new Date(n.date + "T00:00:00").toLocaleDateString("pt-BR"),
+        n.category ?? "",
+        n.description ?? "",
+        n.supplier ?? "",
+        n.paymentMethod ?? "",
+        n.hasFiscalDocument ? "Sim" : "Não",
+        n.documentNumber ?? "",
+        n.note ?? "",
+        n.amount ?? 0,
+      ]),
+    ];
+    // total das notas de compras (somente os itens retornados)
+    const totalNotasSheet = purchaseNotes.reduce((s: number, n) => s + (n.amount ?? 0), 0);
+    notesData.push(["", "", "", "", "", "", "", "TOTAL NOTAS", totalNotasSheet]);
+    const notesSheet = XLSX.utils.aoa_to_sheet(notesData);
+    // formatar coluna Valor (coluna I / index 8) como moeda
+    if (notesSheet["!ref"]) {
+      const range = XLSX.utils.decode_range(notesSheet["!ref"]);
+      for (let R = 1; R <= range.e.r; ++R) {
+        const cellAddress = XLSX.utils.encode_cell({ r: R, c: 8 });
+        const cell = notesSheet[cellAddress];
+        if (cell && (typeof cell.v === "number" || !isNaN(Number(cell.v)))) {
+          cell.t = "n";
+          cell.z = "R$ #,##0.00";
+          cell.v = Number(cell.v);
+        }
+      }
+    }
+    XLSX.utils.book_append_sheet(workbook, notesSheet, "Notas de compras");
   }
 
   const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
@@ -269,7 +325,7 @@ export async function POST(req: Request) {
   }
 
   if (kind === "Excel") {
-    const excelBuffer = generateExcel(month, year, closures, expenses, summary);
+    const excelBuffer = generateExcel(month, year, closures, expenses, purchaseNotes, summary);
     return new NextResponse(new Uint8Array(excelBuffer), {
       status: 200,
       headers: {
