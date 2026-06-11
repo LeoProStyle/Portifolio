@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Expense } from "@/types";
 import Swal from "sweetalert2";
+import { useExportSelection } from "@/lib/useExportSelection";
 
 const formatBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -16,6 +17,7 @@ export default function DespesasTable() {
   const [endDate, setEndDate] = useState<string>("");
 
   const [items, setItems] = useState<Expense[]>([]);
+  const sel = useExportSelection("despesas");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -149,6 +151,7 @@ export default function DespesasTable() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950/50 dark:text-zinc-400">
+              <th className="px-4 py-3 font-medium"> </th>
               <th className="px-4 py-3 font-medium">Data</th>
               <th className="px-4 py-3 font-medium">Descrição</th>
               <th className="px-4 py-3 font-medium">Categoria</th>
@@ -162,23 +165,24 @@ export default function DespesasTable() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-zinc-500">
+                <td colSpan={9} className="px-4 py-6 text-center text-zinc-500">
                   Carregando...
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-red-600">
+                <td colSpan={9} className="px-4 py-6 text-center text-red-600">
                   {error}
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-6 text-center text-zinc-500">Nenhuma despesa encontrada.</td>
+                <td colSpan={9} className="px-4 py-6 text-center text-zinc-500">Nenhuma despesa encontrada.</td>
               </tr>
             ) : (
               items.map((item) => (
                 <tr key={item.id} className="border-b border-zinc-100 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-950/50">
+                  <td className="px-4 py-3"><input type="checkbox" checked={sel.selected.includes(item.id)} onChange={(e) => sel.toggle(item.id, e.target.checked)} /></td>
                   <td className="px-4 py-3">{new Date(item.date + "T00:00:00").toLocaleDateString("pt-BR")}</td>
                   <td className="px-4 py-3">{item.description}</td>
                   <td className="px-4 py-3 font-medium">{item.category}</td>

@@ -13,6 +13,10 @@ export default function ExportActions() {
   const [includeClosures, setIncludeClosures] = useState(true);
   const [includeExpenses, setIncludeExpenses] = useState(true);
   const [includePurchaseNotes, setIncludePurchaseNotes] = useState(false);
+  // load selections from localStorage
+  const selClosures = typeof window !== 'undefined' ? (JSON.parse(localStorage.getItem('export:selected:fechamentos') || '[]') as string[]) : [];
+  const selExpenses = typeof window !== 'undefined' ? (JSON.parse(localStorage.getItem('export:selected:despesas') || '[]') as string[]) : [];
+  const selNotes = typeof window !== 'undefined' ? (JSON.parse(localStorage.getItem('export:selected:notas') || '[]') as string[]) : [];
 
   const onExport = async (kind: ExportKind) => {
     setLoading(kind);
@@ -30,7 +34,12 @@ export default function ExportActions() {
           ...(includeClosures ? ["fechamentos"] : []),
           ...(includeExpenses ? ["despesas"] : []),
           ...(includePurchaseNotes ? ["notas"] : []),
-        ] }),
+        ],
+        selected: {
+          fechamentos: selClosures,
+          despesas: selExpenses,
+          notas: selNotes,
+        } }),
       });
 
       if (!res.ok) {

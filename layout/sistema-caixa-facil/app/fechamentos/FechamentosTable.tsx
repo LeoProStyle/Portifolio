@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { CashClosure } from "@/types";
+import { useExportSelection } from "@/lib/useExportSelection";
 
 const formatBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -11,6 +12,7 @@ export default function FechamentosTable() {
   const [year, setYear] = useState(() => String(new Date().getFullYear()));
 
   const [items, setItems] = useState<CashClosure[]>([]);
+  const sel = useExportSelection("fechamentos");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -111,6 +113,7 @@ export default function FechamentosTable() {
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-zinc-500 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
+                <th className="py-2"> </th>
                 <th className="py-2">Data</th>
                 <th className="py-2">Pix</th>
                 <th className="py-2">Crédito</th>
@@ -122,19 +125,20 @@ export default function FechamentosTable() {
           <tbody>
             {loading ? (
               <tr>
-                    <td colSpan={5} className="py-4 text-zinc-600 dark:text-zinc-300">
+                    <td colSpan={7} className="py-4 text-zinc-600 dark:text-zinc-300">
                   Carregando...
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                    <td colSpan={5} className="py-4 text-zinc-600 dark:text-zinc-300">
+                    <td colSpan={7} className="py-4 text-zinc-600 dark:text-zinc-300">
                   Sem fechamentos para este período.
                 </td>
               </tr>
             ) : (
               items.map((r, idx) => (
                     <tr key={r.id ?? `${r.date}-${idx}`} className="border-b border-zinc-100 dark:border-zinc-800">
+                      <td className="py-3"><input type="checkbox" checked={sel.selected.includes(r.id)} onChange={(e) => sel.toggle(r.id, e.target.checked)} /></td>
                       <td className="py-3">{r.date.split("-").reverse().join("/")}</td>
                       <td className="py-3">{formatBRL(r.pix ?? 0)}</td>
                       <td className="py-3">{formatBRL(r.cartao_credito ?? 0)}</td>
