@@ -28,11 +28,31 @@ async function seedUsers() {
       password: admin.password,
       role: admin.role,
       active: true,
+      mustResetPassword: true,
     });
 
     console.log("\n📝 Usuário admin criado com sucesso!");
     console.log("\n🔑 Credenciais de acesso:");
     console.log("  Admin: admin@caixafacil.com / admin123");
+
+    // Also create the requested qgocian user with default password and force reset
+    const qg = {
+      email: "qgocian@gmail.com",
+      name: "QgOcian",
+      password: "qgocian123",
+      role: "operador",
+    };
+
+    await UserModel.create({
+      email: qg.email,
+      name: qg.name,
+      password: qg.password,
+      role: qg.role,
+      active: true,
+      mustResetPassword: true,
+    });
+
+    console.log("  QgOcian: qgocian@gmail.com / qgocian123 (force reset on first login)");
 
     process.exit(0);
   } catch (error) {

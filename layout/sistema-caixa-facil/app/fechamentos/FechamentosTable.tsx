@@ -27,7 +27,10 @@ export default function FechamentosTable() {
         if (!res.ok || !json?.ok) {
           throw new Error(json?.error || "Falha ao carregar fechamentos");
         }
-        if (!cancelled) setItems(json.data || []);
+        if (!cancelled) {
+          const data = (json.data || []).map((d: any) => ({ ...d, id: d.id ?? d._id }));
+          setItems(data);
+        }
       } catch (e) {
         if (!cancelled) {
           const message = e instanceof Error ? e.message : "Erro inesperado";
@@ -113,6 +116,7 @@ export default function FechamentosTable() {
                 <th className="py-2">Crédito</th>
                 <th className="py-2">Débito</th>
                 <th className="py-2">Total</th>
+                <th className="py-2">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -136,6 +140,30 @@ export default function FechamentosTable() {
                       <td className="py-3">{formatBRL(r.cartao_credito ?? 0)}</td>
                       <td className="py-3">{formatBRL(r.cartao_debito ?? 0)}</td>
                       <td className="py-3 font-semibold">{formatBRL(r.total ?? 0)}</td>
+                      <td className="py-3">
+                        <div className="flex gap-2">
+                          <button onClick={() => alert(JSON.stringify(r, null, 2))} className="text-sm text-zinc-600">Visualizar</button>
+                          <a href={`/fechamentos/novo?edit=${r.id ?? ''}`} className="text-sm text-blue-600">Editar</a>
+                          <button onClick={async () => {
+                            const Swal = (await import('sweetalert2')).default;
+                            const res = await Swal.fire({ title: 'Confirma excluir este fechamento?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sim, excluir', cancelButtonText: 'Cancelar' });
+                            if (!res.isConfirmed) return;
+                            Swal.fire({ title: 'Excluindo...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                            try {
+                              const del = await fetch('/api/closures', { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: r.id }) });
+                              const json = await del.json();
+                              if (!del.ok || !json?.ok) throw new Error(json?.error || 'Erro ao excluir');
+                              Swal.close();
+                              Swal.fire({ icon: 'success', title: 'Excluído' });
+                              setItems((s) => s.filter((x) => (x.id) !== (r.id)));
+                            } catch (err) {
+                              Swal.close();
+                              const message = err instanceof Error ? err.message : 'Erro inesperado';
+                              (await import('sweetalert2')).default.fire({ icon: 'error', title: 'Erro', text: message });
+                            }
+                          }} className="text-sm text-red-600">Excluir</button>
+                        </div>
+                      </td>
                     </tr>
               ))
             )}

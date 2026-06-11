@@ -9,6 +9,7 @@ export default function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -72,14 +73,20 @@ export default function LoginForm() {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium">Senha</label>
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          autoComplete="current-password"
-          className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-300"
-          placeholder="••••••••"
-        />
+        <div className="relative">
+          <input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-zinc-300"
+            placeholder="••••••••"
+          />
+          <button type="button" onClick={() => setShowPassword((s) => !s)} className="absolute right-2 top-2 text-xs text-zinc-500">
+            {showPassword ? "Ocultar" : "Ver"}
+          </button>
+        </div>
+        
       </div>
 
       <button

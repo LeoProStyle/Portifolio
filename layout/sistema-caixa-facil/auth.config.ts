@@ -38,6 +38,7 @@ export const authConfig = {
             email: user.email,
             name: user.name,
             role: user.role,
+            mustResetPassword: !!user.mustResetPassword,
           };
         } catch (error) {
           console.error("[Auth] Error:", error);
@@ -55,6 +56,7 @@ export const authConfig = {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
+        token.mustResetPassword = (user as any).mustResetPassword ?? false;
       }
       return token;
     },
@@ -62,6 +64,7 @@ export const authConfig = {
       if (session.user) {
         session.user.id = token.id as string;
         (session.user as any).role = token.role;
+        (session.user as any).mustResetPassword = token.mustResetPassword ?? false;
       }
       return session;
     },

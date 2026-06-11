@@ -7,6 +7,9 @@ export type UserDoc = Document & {
   password: string;
   role: "admin" | "operador";
   active: boolean;
+  mustResetPassword?: boolean;
+  resetToken?: string;
+  resetTokenExpires?: Date;
   comparePassword(plainPassword: string): Promise<boolean>;
 };
 
@@ -16,7 +19,10 @@ const UserSchema = new Schema<UserDoc>(
     name: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["admin", "operador"], default: "operador" },
-    active: { type: Boolean, default: true },
+      active: { type: Boolean, default: true },
+      mustResetPassword: { type: Boolean, default: false },
+      resetToken: { type: String, default: "" },
+      resetTokenExpires: { type: Date },
   },
   { timestamps: true }
 );

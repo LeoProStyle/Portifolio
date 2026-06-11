@@ -86,3 +86,21 @@ export async function POST(req: Request) {
   }
 }
 
+export async function DELETE(req: Request) {
+  try {
+    const body = (await req.json().catch(() => ({}))) as { id?: string };
+    const id = body.id;
+    if (!id) return NextResponse.json({ ok: false, error: "ID obrigatório" }, { status: 400 });
+
+    await connectToMongo();
+    const doc = await CashClosureModel.findByIdAndDelete(id);
+    if (!doc) return NextResponse.json({ ok: false, error: "Fechamento não encontrado" }, { status: 404 });
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("[DELETE /closures] Error:", error);
+    const message = error instanceof Error ? error.message : "Erro inesperado";
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
+  }
+}
+
