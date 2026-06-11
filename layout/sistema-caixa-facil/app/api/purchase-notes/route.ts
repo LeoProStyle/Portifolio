@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
-import { ExpenseModel } from "@/models/Expense";
+import { PurchaseNoteModel } from "@/models/PurchaseNote";
 
 export const runtime = "nodejs";
 
@@ -15,13 +15,10 @@ export async function GET(req: Request) {
     const start = url.searchParams.get("start");
     const end = url.searchParams.get("end");
 
-    console.log("[GET /expenses] month:", month, "year:", year);
-
     await connectToMongo();
 
-    // If id provided, return single document
     if (id) {
-      const doc = await ExpenseModel.findById(id).lean();
+      const doc = await PurchaseNoteModel.findById(id).lean();
       return NextResponse.json({ ok: true, data: doc });
     }
 
@@ -37,22 +34,13 @@ export async function GET(req: Request) {
     }
     if (category) filter.category = category;
     if (supplier) filter.supplier = supplier;
-    // only active by default
     filter.active = { $ne: false };
 
-    console.log("[GET /expenses] Filter:", filter);
-
-    const docs = await ExpenseModel.find(filter).sort({ date: 1 }).lean();
-    console.log("[GET /expenses] Found", docs.length, "documents");
-
+    const docs = await PurchaseNoteModel.find(filter).sort({ date: 1 }).lean();
     return NextResponse.json({ ok: true, data: docs });
   } catch (error) {
-    console.error("[GET /expenses] Error:", error);
     const message = error instanceof Error ? error.message : "Erro inesperado";
-    return NextResponse.json(
-      { ok: false, error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
 
@@ -72,15 +60,13 @@ export async function POST(req: Request) {
       createdBy?: string;
     };
 
-    console.log("[POST /expenses] Body:", body);
-
     if (!body?.date || !body?.category || typeof body?.amount !== "number") {
       return NextResponse.json({ ok: false, error: "Campos obrigatórios" }, { status: 400 });
     }
 
     await connectToMongo();
 
-    const doc = await ExpenseModel.create({
+    const doc = await PurchaseNoteModel.create({
       date: body.date,
       category: body.category,
       description: body.description ?? "",
@@ -94,15 +80,10 @@ export async function POST(req: Request) {
       createdBy: body.createdBy ?? "",
     });
 
-    console.log("[POST /expenses] Created:", doc._id);
     return NextResponse.json({ ok: true, data: doc });
   } catch (error) {
-    console.error("[POST /expenses] Error:", error);
-    const message = error instanceof Error ? error.message : "Erro ao criar despesa";
-    return NextResponse.json(
-      { ok: false, error: message },
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : "Erro ao criar";
+    return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
 
@@ -122,10 +103,7 @@ export async function PATCH(req: Request) {
       active?: boolean;
     };
 
-    if (!body?.id) {
-      return NextResponse.json({ ok: false, error: "ID obrigatório" }, { status: 400 });
-    }
-
+    if (!body?.id) return NextResponse.json({ ok: false, error: "ID obrigatório" }, { status: 400 });
     await connectToMongo();
 
     const update: Record<string, any> = {};
@@ -144,10 +122,9 @@ export async function PATCH(req: Request) {
       if ((body as any)[k] !== undefined) update[k] = (body as any)[k];
     });
 
-    const doc = await ExpenseModel.findByIdAndUpdate(body.id, update, { new: true }).lean();
+    const doc = await PurchaseNoteModel.findByIdAndUpdate(body.id, update, { new: true }).lean();
     return NextResponse.json({ ok: true, data: doc });
   } catch (error) {
-    console.error("[PATCH /expenses] Error:", error);
     const message = error instanceof Error ? error.message : "Erro ao atualizar";
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
@@ -158,13 +135,10 @@ export async function DELETE(req: Request) {
     const body = (await req.json().catch(() => ({}))) as { id?: string };
     if (!body?.id) return NextResponse.json({ ok: false, error: "ID obrigatório" }, { status: 400 });
     await connectToMongo();
-    // hard delete
-    const doc = await ExpenseModel.findByIdAndDelete(body.id).lean();
+    const doc = await PurchaseNoteModel.findByIdAndDelete(body.id).lean();
     return NextResponse.json({ ok: true, data: doc });
   } catch (error) {
-    console.error("[DELETE /expenses] Error:", error);
     const message = error instanceof Error ? error.message : "Erro ao excluir";
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
 }
-

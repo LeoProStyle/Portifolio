@@ -1,7 +1,6 @@
 import { Schema, model, models } from "mongoose";
 
-
-export type ExpenseDoc = {
+export type PurchaseNoteDoc = {
   date: string; // YYYY-MM-DD
   category: string;
   description: string;
@@ -15,7 +14,7 @@ export type ExpenseDoc = {
   createdBy?: string;
 };
 
-const ExpenseSchema = new Schema<ExpenseDoc>(
+const PurchaseNoteSchema = new Schema<PurchaseNoteDoc>(
   {
     date: { type: String, required: true, index: true },
     category: { type: String, required: true },
@@ -32,5 +31,4 @@ const ExpenseSchema = new Schema<ExpenseDoc>(
   { timestamps: true }
 );
 
-export const ExpenseModel = models.Expense || model("Expense", ExpenseSchema);
-
+export const PurchaseNoteModel = models.PurchaseNote || model("PurchaseNote", PurchaseNoteSchema);

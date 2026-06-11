@@ -12,12 +12,13 @@ export default function ExportActions() {
   const [year, setYear] = useState(() => String(new Date().getFullYear()));
   const [includeClosures, setIncludeClosures] = useState(true);
   const [includeExpenses, setIncludeExpenses] = useState(true);
+  const [includePurchaseNotes, setIncludePurchaseNotes] = useState(false);
 
   const onExport = async (kind: ExportKind) => {
     setLoading(kind);
     try {
-      if (!includeClosures && !includeExpenses) {
-        Swal.fire({ icon: "warning", title: "Selecione pelo menos um item", text: "Marque 'Fechamentos' ou 'Despesas' antes de exportar." });
+      if (!includeClosures && !includeExpenses && !includePurchaseNotes) {
+        Swal.fire({ icon: "warning", title: "Selecione pelo menos um item", text: "Marque 'Fechamentos', 'Despesas' ou 'Notas de compras' antes de exportar." });
         setLoading(null);
         return;
       }
@@ -28,6 +29,7 @@ export default function ExportActions() {
         body: JSON.stringify({ month, year, kind, types: [
           ...(includeClosures ? ["fechamentos"] : []),
           ...(includeExpenses ? ["despesas"] : []),
+          ...(includePurchaseNotes ? ["notas"] : []),
         ] }),
       });
 
@@ -139,6 +141,11 @@ export default function ExportActions() {
         <label className="inline-flex items-center gap-2">
           <input type="checkbox" checked={includeExpenses} onChange={(e) => setIncludeExpenses(e.target.checked)} className="h-4 w-4" />
           <span className="text-sm">Despesas</span>
+        </label>
+
+        <label className="inline-flex items-center gap-2">
+          <input type="checkbox" checked={includePurchaseNotes} onChange={(e) => setIncludePurchaseNotes(e.target.checked)} className="h-4 w-4" />
+          <span className="text-sm">Notas de compras</span>
         </label>
       </div>
 

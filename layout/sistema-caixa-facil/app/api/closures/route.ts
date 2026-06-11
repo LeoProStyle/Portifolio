@@ -40,7 +40,7 @@ export async function POST(req: Request) {
   try {
     const body = (await req.json().catch(() => ({}))) as {
       date: string;
-      dinheiro?: number;
+      // dinheiro removed from client; backend keeps field but will set to 0
       pix?: number;
       cartao_credito?: number;
       cartao_debito?: number;
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
     await connectToMongo();
 
-    const dinheiro = Number(body.dinheiro ?? 0);
+    const dinheiro = 0; // dinheiro field removed from UI, keep 0 for compatibility
     const pix = Number(body.pix ?? 0);
     const cartao_credito = Number(body.cartao_credito ?? 0);
     const cartao_debito = Number(body.cartao_debito ?? 0);

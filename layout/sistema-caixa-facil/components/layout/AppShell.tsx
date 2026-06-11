@@ -58,6 +58,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <NavItem href="/dashboard" label="Dashboard" icon={<SquarePen className="h-4 w-4" />} />
             <NavItem href="/fechamentos" label="Fechamentos" icon={<ListChecks className="h-4 w-4" />} />
             <NavItem href="/despesas" label="Despesas" icon={<Wallet className="h-4 w-4" />} />
+            <NavItem href="/notas-de-compras" label="Notas de compras" icon={<ReceiptText className="h-4 w-4" />} />
             <NavItem href="/relatorios" label="Relatórios" icon={<BarChart3 className="h-4 w-4" />} />
           </div>
         </aside>
@@ -71,6 +72,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <NavItem href="/dashboard" label="" icon={<SquarePen className="mx-auto h-4 w-4" />} />
           <NavItem href="/fechamentos" label="" icon={<ListChecks className="mx-auto h-4 w-4" />} />
           <NavItem href="/despesas" label="" icon={<Wallet className="mx-auto h-4 w-4" />} />
+          <NavItem href="/notas-de-compras" label="" icon={<ReceiptText className="mx-auto h-4 w-4" />} />
           <NavItem href="/relatorios" label="" icon={<BarChart3 className="mx-auto h-4 w-4" />} />
         </div>
       </nav>

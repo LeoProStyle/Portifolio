@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { CashClosureModel, type CashClosureDoc } from "@/models/CashClosure";
 import { ExpenseModel, type ExpenseDoc } from "@/models/Expense";
+import { PurchaseNoteModel, type PurchaseNoteDoc } from "@/models/PurchaseNote";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import * as XLSX from "xlsx";
 
@@ -193,6 +194,8 @@ export async function POST(req: Request) {
     year: string;
     kind: "PDF" | "Excel" | "XML";
     types?: string[]; // e.g. ["fechamentos","despesas"]
+    // for XML only: map of selected ids per type, e.g. { despesas: ["id1"], notas: ["id2"] }
+    selected?: Record<string, string[]>;
   };
 
   const month = body?.month?.toString();
@@ -211,14 +214,28 @@ export async function POST(req: Request) {
   const requestedTypes = body.types;
   const includeClosures = !requestedTypes || requestedTypes.length === 0 || requestedTypes.includes("fechamentos");
   const includeExpenses = !requestedTypes || requestedTypes.length === 0 || requestedTypes.includes("despesas");
+  const includePurchaseNotes = !requestedTypes || requestedTypes.length === 0 || requestedTypes.includes("notas");
 
-  const closures = includeClosures
+  const selected = (body as any).selected as Record<string, string[]> | undefined;
+
+  // honor explicit selection for XML: if selected ids are provided for a type, fetch only those
+  const closures = selected?.fechamentos && selected.fechamentos.length > 0
+    ? ((await CashClosureModel.find({ _id: { $in: selected.fechamentos } }).sort({ date: 1 }).lean()) as CashClosureDoc[])
+    : includeClosures
     ? ((await CashClosureModel.find({ date: { $regex: dateRegex } }).sort({ date: 1 }).lean()) as CashClosureDoc[])
     : ([] as CashClosureDoc[]);
 
-  const expenses = includeExpenses
+  const expenses = selected?.despesas && selected.despesas.length > 0
+    ? ((await ExpenseModel.find({ _id: { $in: selected.despesas } }).sort({ date: 1 }).lean()) as ExpenseDoc[])
+    : includeExpenses
     ? ((await ExpenseModel.find({ date: { $regex: dateRegex } }).sort({ date: 1 }).lean()) as ExpenseDoc[])
     : ([] as ExpenseDoc[]);
+
+  const purchaseNotes = selected?.notas && selected.notas.length > 0
+    ? ((await PurchaseNoteModel.find({ _id: { $in: selected.notas } }).sort({ date: 1 }).lean()) as PurchaseNoteDoc[])
+    : includePurchaseNotes
+    ? ((await PurchaseNoteModel.find({ date: { $regex: dateRegex } }).sort({ date: 1 }).lean()) as PurchaseNoteDoc[])
+    : ([] as PurchaseNoteDoc[]);
 
   const totalsByPayment = {
     dinheiro: includeClosures ? closures.reduce((s: number, c: CashClosureDoc) => s + (c.dinheiro ?? 0), 0) : 0,
@@ -230,6 +247,8 @@ export async function POST(req: Request) {
   const totalEntrada = includeClosures ? closures.reduce((s: number, c: CashClosureDoc) => s + (c.total ?? 0), 0) : 0;
   const totalDespesas = includeExpenses ? expenses.reduce((s: number, e: ExpenseDoc) => s + (e.amount ?? 0), 0) : 0;
   const lucroEstimado = totalEntrada - totalDespesas;
+
+  const totalNotas = purchaseNotes.reduce((s: number, n: PurchaseNoteDoc) => s + (n.amount ?? 0), 0);
 
   const summary = {
     totalsByPayment,
@@ -292,25 +311,65 @@ export async function POST(req: Request) {
       })
       .join("\n");
 
-    const xml =
-      `<?xml version="1.0" encoding="utf-8"?>\n` +
-      `<CaixaFacilConsolidado>\n` +
-      `  <Periodo mes="${escapeXmlText(month)}" ano="${escapeXmlText(year)}" />\n` +
-      `  <Resumo>\n` +
-      paymentXml("Dinheiro", totalsByPayment.dinheiro) +
-      "\n" +
-      paymentXml("Pix", totalsByPayment.pix) +
-      "\n" +
-      paymentXml("CartaoCredito", totalsByPayment.cartao_credito) +
-      "\n" +
-      paymentXml("CartaoDebito", totalsByPayment.cartao_debito) +
-      `\n    <TotalEntrada>${escapeXmlText(totalEntrada)}</TotalEntrada>\n` +
-      `    <TotalDespesas>${escapeXmlText(totalDespesas)}</TotalDespesas>\n` +
-      `    <LucroEstimado>${escapeXmlText(lucroEstimado)}</LucroEstimado>\n` +
-      `  </Resumo>\n` +
-      `  <Fechamentos>\n${closuresXml}\n  </Fechamentos>\n` +
-      `  <Despesas>\n${expensesXml}\n  </Despesas>\n` +
-      `</CaixaFacilConsolidado>`;
+    const purchaseNotesXml = purchaseNotes
+      .map((n) => {
+        return (
+          `  <Nota data="${escapeXmlText(n.date)}">\n` +
+          `    <Categoria>${escapeXmlText(n.category)}</Categoria>\n` +
+          `    <Descricao>${escapeXmlText(n.description ?? "")}</Descricao>\n` +
+          `    <Valor>${escapeXmlText(n.amount ?? 0)}</Valor>\n` +
+          `    <Fornecedor>${escapeXmlText(n.supplier ?? "")}</Fornecedor>\n` +
+          `    <FormaPagamento>${escapeXmlText(n.paymentMethod ?? "")}</FormaPagamento>\n` +
+          `    <TemDocumentoFiscal>${escapeXmlText(n.hasFiscalDocument ?? false)}</TemDocumentoFiscal>\n` +
+          `    <NumeroDocumento>${escapeXmlText(n.documentNumber ?? "")}</NumeroDocumento>\n` +
+          `    <Observacao>${escapeXmlText(n.note ?? "")}</Observacao>\n` +
+          `  </Nota>`
+        );
+      })
+      .join("\n");
+
+    // Build XML sections only for the requested types (or for defaults when none specified)
+    const includeResumo = includeClosures || includeExpenses; // resumo only makes sense when closures or expenses included
+
+    const parts: string[] = [];
+    parts.push(`<?xml version="1.0" encoding="utf-8"?>`);
+    parts.push(`<CaixaFacilConsolidado>`);
+    parts.push(`  <Periodo mes="${escapeXmlText(month)}" ano="${escapeXmlText(year)}" />`);
+
+    if (includeResumo) {
+      parts.push(`  <Resumo>`);
+      parts.push(paymentXml("Dinheiro", totalsByPayment.dinheiro));
+      parts.push(paymentXml("Pix", totalsByPayment.pix));
+      parts.push(paymentXml("CartaoCredito", totalsByPayment.cartao_credito));
+      parts.push(paymentXml("CartaoDebito", totalsByPayment.cartao_debito));
+      parts.push(`    <TotalEntrada>${escapeXmlText(totalEntrada)}</TotalEntrada>`);
+      parts.push(`    <TotalDespesas>${escapeXmlText(totalDespesas)}</TotalDespesas>`);
+      parts.push(`    <LucroEstimado>${escapeXmlText(lucroEstimado)}</LucroEstimado>`);
+      parts.push(`  </Resumo>`);
+    }
+
+    if (includeClosures) {
+      parts.push(`  <Fechamentos>`);
+      parts.push(closuresXml);
+      parts.push(`  </Fechamentos>`);
+    }
+
+    if (includeExpenses) {
+      parts.push(`  <Despesas>`);
+      parts.push(expensesXml);
+      parts.push(`  </Despesas>`);
+    }
+
+    if (includePurchaseNotes) {
+      parts.push(`  <NotasCompras>`);
+      parts.push(purchaseNotesXml);
+      parts.push(`    <TotalNotas>${escapeXmlText(totalNotas)}</TotalNotas>`);
+      parts.push(`  </NotasCompras>`);
+    }
+
+    parts.push(`</CaixaFacilConsolidado>`);
+
+    const xml = parts.join("\n");
 
     return new NextResponse(xml, {
       status: 200,

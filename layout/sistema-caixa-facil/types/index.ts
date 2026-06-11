@@ -5,16 +5,19 @@ export type PaymentMethod = 'dinheiro' | 'pix' | 'cartao_credito' | 'cartao_debi
 export type CashClosureStatus = 'aberto' | 'fechado';
 
 export type ExpenseCategory =
-  | 'Mercadorias'
+  | 'Mercadoria'
   | 'Bebidas'
+  | 'Embalagens'
+  | 'Gás'
   | 'Energia'
   | 'Água'
   | 'Internet'
   | 'Aluguel'
-  | 'Funcionários'
-  | 'Outros'
-  | 'Relatórios'
-  | 'Diário';
+  | 'Marketing'
+  | 'Limpeza'
+  | 'Manutenção'
+  | 'Impostos'
+  | 'Outros';
 
 export type FiscalStatus =
   | 'Pendente'
@@ -54,6 +57,12 @@ export interface Expense {
   category: ExpenseCategory;
   description: string;
   amount: number;
+  supplier?: string;
+  paymentMethod?: string;
+  hasFiscalDocument?: boolean;
+  documentNumber?: string;
+  note?: string;
+  active?: boolean;
   createdBy?: string;
   createdAt?: string;
   updatedAt?: string;

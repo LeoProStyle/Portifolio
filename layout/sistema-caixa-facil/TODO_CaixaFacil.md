@@ -65,3 +65,19 @@
 ## 9. Testes manuais
 - [ ] Fluxo completo: criar fechamento diário + criar despesas + ver dashboard + exportar mês.
 
+
+## Atualizações recentes (2026-06-11)
+- [x] Export XML: incluir apenas seções selecionadas (fechamentos, despesas, notas) — se marcar somente "Notas de compras" o XML conterá apenas a seção <NotasCompras> e o elemento <TotalNotas> com a soma das notas.
+- [x] Server: `app/api/export/route.ts` agora suporta `types` e `selected` (mapa tipo→ids) para exportar somente documentos selecionados.
+- [x] Server: adicionada exportação completa das Notas de compras (todos os campos da nota) em XML.
+- [x] Client: `app/relatorios/ExportActions.tsx` adicionada checkbox "Notas de compras" e passa `types: ["notas"]` quando selecionada.
+
+## Próximos objetivos identificados (a partir do TODO)
+- [ ] Implementar seleção por linha nas tabelas (Despesas / Notas de compras / Fechamentos) com checkbox e controle de seleção.
+- [ ] Fazer o `ExportActions` enviar o objeto `selected` com os ids selecionados ao exportar XML (integração UI → API).
+- [ ] Gerar gráficos com Recharts no `Dashboard` (tarefa já listada em 3. MVP UI/rotas).
+- [ ] Testes manuais: executar fluxo completo (criar fechamentos, adicionar despesas, criar notas de compras, gerar exportações e validar conteúdo XML/Excel/PDF).
+- [ ] NFC-e / Certificado A1: estruturar `FiscalConfig` e `FiscalDocument` (pendente, conforme seção 8).
+
+Observação: não modifiquei o sistema além de documentar as mudanças — se quiser, implemento a seleção por linha e o envio automático de `selected` ao exportar.
+

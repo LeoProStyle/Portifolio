@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Swal from "sweetalert2";
 
 type PaymentState = {
-  dinheiro: number;
   pix: number;
   cartao_credito: number;
   cartao_debito: number;
@@ -46,7 +45,6 @@ export default function ClosureForm({
   const [observacao, setObservacao] = useState("");
 
   const [payment, setPayment] = useState<PaymentState>({
-    dinheiro: 0,
     pix: 0,
     cartao_credito: 0,
     cartao_debito: 0,
@@ -54,7 +52,6 @@ export default function ClosureForm({
 
   const total = useMemo(
     () =>
-      payment.dinheiro +
       payment.pix +
       payment.cartao_credito +
       payment.cartao_debito,
@@ -86,7 +83,6 @@ export default function ClosureForm({
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           date,
-          dinheiro: payment.dinheiro,
           pix: payment.pix,
           cartao_credito: payment.cartao_credito,
           cartao_debito: payment.cartao_debito,
@@ -109,7 +105,6 @@ export default function ClosureForm({
 
       setObservacao("");
       setPayment({
-        dinheiro: 0,
         pix: 0,
         cartao_credito: 0,
         cartao_debito: 0,
@@ -150,11 +145,6 @@ export default function ClosureForm({
         <div className="text-sm font-semibold">Entradas</div>
 
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <AmountInput
-            label="Dinheiro"
-            value={payment.dinheiro}
-            onChange={(v) => update("dinheiro", v)}
-          />
           <AmountInput
             label="Pix"
             value={payment.pix}
