@@ -59,8 +59,8 @@
 
 
 ## 8. NFC-e / Certificado A1 (preparar, sem implementar envio)
-- [ ] Estruturar tela/entidade `FiscalConfig` com upload PFX (metadados / referência)
-- [ ] Estruturar `FiscalDocument` e fluxo futuro em código (stubs)
+- [x] Estruturar tela/entidade `FiscalConfig` com upload PFX (metadados / referência) — implementado: modelo, API (POST/GET/DELETE) e UI em `app/fiscal-config` (upload/listagem)
+- [x] Estruturar `FiscalDocument` e fluxo futuro em código (stubs) — implementado: modelo `FiscalDocument` (schema stub)
 
 ## 9. Testes manuais
 - [ ] Fluxo completo: criar fechamento diário + criar despesas + ver dashboard + exportar mês.
