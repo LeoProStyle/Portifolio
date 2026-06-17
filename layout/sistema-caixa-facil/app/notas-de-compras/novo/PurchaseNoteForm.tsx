@@ -14,6 +14,9 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState<number>(0);
   const [supplier, setSupplier] = useState("");
+  const [supplierCNPJ, setSupplierCNPJ] = useState("");
+  const [emitCNPJ, setEmitCNPJ] = useState("");
+  const [emitName, setEmitName] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [hasFiscalDocument, setHasFiscalDocument] = useState(false);
   const [documentNumber, setDocumentNumber] = useState("");
@@ -41,6 +44,9 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
           setDescription(d.description || "");
           setAmount(Number(d.amount ?? 0));
           setSupplier(d.supplier || "");
+          setSupplierCNPJ(d.supplierCNPJ || d.supplierCnpj || "");
+          setEmitCNPJ(d.emitCNPJ || d.emitCnpj || "");
+          setEmitName(d.emitName || d.emitName || "");
           setPaymentMethod(d.paymentMethod || "");
           setHasFiscalDocument(!!d.hasFiscalDocument);
           setDocumentNumber(d.documentNumber || "");
@@ -68,7 +74,7 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
     setLoading(true);
     Swal.fire({ title: "Salvando nota...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
-      const payload = { date, category, description, amount: Number(amount), supplier, paymentMethod, hasFiscalDocument, documentNumber, note, active } as any;
+      const payload = { date, category, description, amount: Number(amount), supplier, supplierCNPJ, emitCNPJ, emitName, paymentMethod, hasFiscalDocument, documentNumber, note, active } as any;
       const res = await fetch('/api/purchase-notes', { method: noteId ? 'PATCH' : 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(noteId ? { id: noteId, ...payload } : payload) });
       const json = await res.json();
       if (!res.ok || !json?.ok) throw new Error(json?.error || 'Falha ao salvar nota.');
@@ -104,15 +110,30 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
         </div>
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">CNPJ (Emitente)</label>
+          <input value={emitCNPJ} onChange={(e) => setEmitCNPJ(e.target.value)} placeholder="Opcional" className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Nome (Emitente)</label>
+          <input value={emitName} onChange={(e) => setEmitName(e.target.value)} placeholder="Opcional" className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
+        </div>
+      </div>
+
       <div className="space-y-2">
         <label className="text-sm font-medium">Descrição</label>
         <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrição da nota" className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="space-y-2">
           <label className="text-sm font-medium">Fornecedor</label>
           <input value={supplier} onChange={(e) => setSupplier(e.target.value)} placeholder="Opcional" className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">CNPJ (Fornecedor)</label>
+          <input value={supplierCNPJ} onChange={(e) => setSupplierCNPJ(e.target.value)} placeholder="Opcional" className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium">Forma de Pagamento</label>

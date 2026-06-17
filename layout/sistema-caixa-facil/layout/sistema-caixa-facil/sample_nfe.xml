@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NFe xmlns="http://www.portalfiscal.inf.br/nfe">
+<infNFe Id="NFe35260611222333000181550010000001231963510952" versao="4.00">
+<ide>
+<cUF>35</cUF>
+<cNF>96351095</cNF>
+<natOp>VENDA</natOp>
+<mod>55</mod>
+<serie>001</serie>
+<nNF>000000123</nNF>
+<dhEmi>2026-06-17T00:00:00-03:00</dhEmi>
+<tpNF>1</tpNF>
+<idDest>1</idDest>
+<cMunFG>3550308</cMunFG>
+<tpImp>1</tpImp>
+<tpEmis>1</tpEmis>
+<cDV>2</cDV>
+<tpAmb>2</tpAmb>
+<finNFe>1</finNFe>
+<indFinal>1</indFinal>
+<indPres>0</indPres>
+<procEmi>0</procEmi>
+<verProc>caixa-facil-sample</verProc>
+</ide>
+<emit>
+<CNPJ>11222333000181</CNPJ>
+<xNome>Empresa Exemplo LTDA</xNome>
+<enderEmit>
+<xLgr>Av. Exemplo</xLgr>
+<nro>1000</nro>
+<xBairro>Centro</xBairro>
+<cMun>3550308</cMun>
+<xMun>Sao Paulo</xMun>
+<UF>SP</UF>
+<CEP>01001000</CEP>
+<cPais>1058</cPais>
+<xPais>Brasil</xPais>
+<fone>1122223333</fone>
+</enderEmit>
+<IE>123456789123</IE>
+<CRT>3</CRT>
+</emit>
+<dest>
+	<CNPJ>66857779000174</CNPJ>
+	<xNome>QG Ocian</xNome>
+	<enderDest>
+		<xLgr>Rua Consumidor</xLgr>
+		<nro>0</nro>
+		<xBairro>Centro</xBairro>
+		<cMun>3550308</cMun>
+		<xMun>SAO PAULO</xMun>
+		<UF>SP</UF>
+		<CEP>01001000</CEP>
+		<cPais>1058</cPais>
+		<xPais>Brasil</xPais>
+	</enderDest>
+	<indIEDest>9</indIEDest>
+</dest>
+<det nItem="1">
+<prod>
+<cProd>0001</cProd>
+<cEAN></cEAN>
+<xProd>Produto Teste</xProd>
+<NCM>01012100</NCM>
+<CEST>1234567</CEST>
+<CFOP>5102</CFOP>
+<uCom>un</uCom>
+<qCom>1.0000</qCom>
+<vUnCom>100.00</vUnCom>
+<vProd>100.00</vProd>
+<uTrib>un</uTrib>
+<qTrib>1.0000</qTrib>
+<vUnTrib>100.00</vUnTrib>
+<indTot>1</indTot>
+</prod>
+<imposto>
+<vTotTrib>0.00</vTotTrib>
+<ICMS><ICMS00><orig>0</orig><CST>00</CST><vBC>0.00</vBC><pICMS>0.00</pICMS><vICMS>0.00</vICMS></ICMS00></ICMS>
+<PIS><PISAliq><CST>01</CST><vBC>0.00</vBC><pPIS>0.00</pPIS><vPIS>0.00</vPIS></PISAliq></PIS>
+<COFINS><COFINSAliq><CST>01</CST><vBC>0.00</vBC><pCOFINS>0.00</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSAliq></COFINS>
+</imposto>
+</det>
+<total>
+<ICMSTot>
+<vBC>0.00</vBC>
+<vICMS>0.00</vICMS>
+<vICMSDeson>0.00</vICMSDeson>
+<vFCP>0.00</vFCP>
+<vBCST>0.00</vBCST>
+<vST>0.00</vST>
+<vFCPST>0.00</vFCPST>
+<vFCPSTRet>0.00</vFCPSTRet>
+<vProd>100.00</vProd>
+<vFrete>0.00</vFrete>
+<vSeg>0.00</vSeg>
+<vDesc>0.00</vDesc>
+<vII>0.00</vII>
+<vIPI>0.00</vIPI>
+<vIPIDevol>0.00</vIPIDevol>
+<vPIS>0.00</vPIS>
+<vCOFINS>0.00</vCOFINS>
+<vOutro>0.00</vOutro>
+<vNF>100.00</vNF>
+<vTotTrib>0.00</vTotTrib>
+</ICMSTot>
+</total>
+<transp><modFrete>0</modFrete></transp>
+<pag><detPag><tPag>01</tPag><vPag>100.00</vPag></detPag></pag>
+<infAdic><infCpl></infCpl></infAdic>
+<infRespTec><CNPJ>11222333000181</CNPJ><xContato>Suporte</xContato><email>suporte@example.com</email><fone>1122223333</fone></infRespTec>
+</infNFe>
+</NFe>

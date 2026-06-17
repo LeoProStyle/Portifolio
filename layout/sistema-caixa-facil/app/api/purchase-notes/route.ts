@@ -52,6 +52,8 @@ export async function POST(req: Request) {
       description?: string;
       amount: number;
       supplier?: string;
+      emitCNPJ?: string;
+      emitName?: string;
       paymentMethod?: string;
       hasFiscalDocument?: boolean;
       documentNumber?: string;
@@ -72,6 +74,8 @@ export async function POST(req: Request) {
       description: body.description ?? "",
       amount: Number(body.amount),
       supplier: body.supplier ?? "",
+      emitCNPJ: body.emitCNPJ ?? "",
+      emitName: body.emitName ?? "",
       paymentMethod: body.paymentMethod ?? "",
       hasFiscalDocument: !!body.hasFiscalDocument,
       documentNumber: body.documentNumber ?? "",
@@ -96,6 +100,8 @@ export async function PATCH(req: Request) {
       description?: string;
       amount?: number;
       supplier?: string;
+      emitCNPJ?: string;
+      emitName?: string;
       paymentMethod?: string;
       hasFiscalDocument?: boolean;
       documentNumber?: string;
@@ -113,6 +119,8 @@ export async function PATCH(req: Request) {
       "description",
       "amount",
       "supplier",
+      "emitCNPJ",
+      "emitName",
       "paymentMethod",
       "hasFiscalDocument",
       "documentNumber",

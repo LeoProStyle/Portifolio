@@ -6,6 +6,8 @@ export type PurchaseNoteDoc = {
   description: string;
   amount: number;
   supplier?: string;
+  emitCNPJ?: string;
+  emitName?: string;
   paymentMethod?: string;
   hasFiscalDocument?: boolean;
   documentNumber?: string;
@@ -21,6 +23,8 @@ const PurchaseNoteSchema = new Schema<PurchaseNoteDoc>(
     description: { type: String, default: "" },
     amount: { type: Number, required: true },
     supplier: { type: String, default: "" },
+    emitCNPJ: { type: String, default: "" },
+    emitName: { type: String, default: "" },
     paymentMethod: { type: String, default: "" },
     hasFiscalDocument: { type: Boolean, default: false },
     documentNumber: { type: String, default: "" },
