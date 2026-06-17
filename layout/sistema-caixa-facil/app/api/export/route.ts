@@ -5,6 +5,7 @@ import { ExpenseModel, type ExpenseDoc } from "@/models/Expense";
 import { PurchaseNoteModel, type PurchaseNoteDoc } from "@/models/PurchaseNote";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import * as XLSX from "xlsx";
+import Yazl from "yazl";
 
 export const runtime = "nodejs";
 
@@ -386,6 +387,194 @@ export async function POST(req: Request) {
 
     // Build XML sections only for the requested types (or for defaults when none specified)
     const includeResumo = includeClosures || includeExpenses; // resumo only makes sense when closures or expenses included
+
+    // If the export is only purchase notes, either produce a consolidated NF-e XML
+    // or, when `individual: true` is requested, produce a ZIP with one NF-e file per note.
+    if (includePurchaseNotes && !includeClosures && !includeExpenses) {
+      const individual = (body as any)?.individual === true;
+
+      const buildNfeProc = (n: PurchaseNoteDoc, idx: number) => {
+        const id = `NFe${Math.floor(Math.random() * 1e12)}`;
+        const cNF = String(Math.floor(Math.random() * 1e8)).padStart(8, "0");
+        const nNF = escapeXmlText(n.documentNumber ?? String(idx + 1));
+        const dh = `${escapeXmlText(n.date)}T00:00:00-03:00`;
+
+        const EMIT_CNPJ = process.env.FISCAL_CNPJ ?? "00000000000000";
+        const EMIT_xNome = process.env.FISCAL_NAME ?? "Empresa Emitente";
+        const EMIT_UF = process.env.FISCAL_UF ?? "SP";
+        const EMIT_mun = process.env.FISCAL_MUN ?? "3513504";
+        const EMIT_xMun = process.env.FISCAL_MUN_NAME ?? "";
+        const EMIT_IE = process.env.FISCAL_IE ?? "";
+        const EMIT_xLgr = process.env.FISCAL_LOGRADOURO ?? "Endereço Emitente";
+        const EMIT_nro = process.env.FISCAL_NUM ?? "SN";
+        const EMIT_xBairro = process.env.FISCAL_BAIRRO ?? "Bairro";
+        const EMIT_CEP = process.env.FISCAL_CEP ?? "00000000";
+        const EMIT_cPais = process.env.FISCAL_CPais ?? "1058";
+        const EMIT_xPais = process.env.FISCAL_Pais ?? "Brasil";
+        const EMIT_fone = process.env.FISCAL_FONE ?? "";
+
+        const DEST_CPF_CNPJ = n.documentNumber ?? "";
+        const DEST_xNome = n.supplier ?? n.description ?? "Consumidor";
+        const DEST_xLgr = n.supplierAddress ?? "";
+        const DEST_nro = n.supplierNumber ?? "SN";
+        const DEST_xBairro = n.supplierNeighborhood ?? "";
+        const DEST_cMun = n.supplierMun ?? "";
+        const DEST_xMun = n.supplierCity ?? "";
+        const DEST_UF = n.supplierUF ?? "";
+        const DEST_CEP = n.supplierCEP ?? "";
+
+        const chNFe = `${String(Math.floor(Math.random() * 9e43)).padStart(44, "0")}`.slice(0, 44);
+        const protDh = new Date().toISOString().replace(/\.\d+Z$/, "-03:00");
+        const nProt = String(Math.floor(Math.random() * 1e15));
+
+        // Build a fuller NFe structure similar to example (placeholders for signature)
+        return (
+          `<nfeProc xmlns="http://www.portalfiscal.inf.br/nfe" versao="4.00">` +
+          `<NFe xmlns="http://www.portalfiscal.inf.br/nfe">` +
+          `<infNFe Id="${id}" versao="4.00">` +
+          `<ide>` +
+          `<cUF>35</cUF>` +
+          `<cNF>${cNF}</cNF>` +
+          `<natOp>Venda de mercadoria a nao contribuinte</natOp>` +
+          `<mod>55</mod>` +
+          `<serie>1</serie>` +
+          `<nNF>${nNF}</nNF>` +
+          `<dhEmi>${dh}</dhEmi>` +
+          `<dhSaiEnt>${dh}</dhSaiEnt>` +
+          `<tpNF>1</tpNF>` +
+          `<idDest>2</idDest>` +
+          `<cMunFG>${escapeXmlText(EMIT_mun)}</cMunFG>` +
+          `<tpImp>1</tpImp>` +
+          `<tpEmis>1</tpEmis>` +
+          `<cDV>0</cDV>` +
+          `<tpAmb>1</tpAmb>` +
+          `<finNFe>1</finNFe>` +
+          `<indFinal>1</indFinal>` +
+          `<indPres>0</indPres>` +
+          `<procEmi>0</procEmi>` +
+          `<verProc>caixa-facil-1.0</verProc>` +
+          `</ide>` +
+          `<emit>` +
+          `<CNPJ>${escapeXmlText(EMIT_CNPJ)}</CNPJ>` +
+          `<xNome>${escapeXmlText(EMIT_xNome)}</xNome>` +
+          `<enderEmit>` +
+          `<xLgr>${escapeXmlText(EMIT_xLgr)}</xLgr>` +
+          `<nro>${escapeXmlText(EMIT_nro)}</nro>` +
+          `<xBairro>${escapeXmlText(EMIT_xBairro)}</xBairro>` +
+          `<cMun>${escapeXmlText(EMIT_mun)}</cMun>` +
+          `<xMun>${escapeXmlText(EMIT_xMun ?? "")}</xMun>` +
+          `<UF>${escapeXmlText(EMIT_UF)}</UF>` +
+          `<CEP>${escapeXmlText(EMIT_CEP)}</CEP>` +
+          `<cPais>${escapeXmlText(EMIT_cPais)}</cPais>` +
+          `<xPais>${escapeXmlText(EMIT_xPais)}</xPais>` +
+          `<fone>${escapeXmlText(EMIT_fone)}</fone>` +
+          `</enderEmit>` +
+          `<IE>${escapeXmlText(EMIT_IE)}</IE>` +
+          `<CRT>3</CRT>` +
+          `</emit>` +
+          `<dest>` +
+          `${DEST_CPF_CNPJ && DEST_CPF_CNPJ.length === 11 ? `<CPF>${escapeXmlText(DEST_CPF_CNPJ)}</CPF>` : `<CNPJ>${escapeXmlText(DEST_CPF_CNPJ)}</CNPJ>`}` +
+          `<xNome>${escapeXmlText(DEST_xNome)}</xNome>` +
+          `<enderDest>` +
+          `<xLgr>${escapeXmlText(DEST_xLgr)}</xLgr>` +
+          `<nro>${escapeXmlText(DEST_nro)}</nro>` +
+          `<xBairro>${escapeXmlText(DEST_xBairro)}</xBairro>` +
+          `<cMun>${escapeXmlText(DEST_cMun)}</cMun>` +
+          `<xMun>${escapeXmlText(DEST_xMun)}</xMun>` +
+          `<UF>${escapeXmlText(DEST_UF)}</UF>` +
+          `<CEP>${escapeXmlText(DEST_CEP)}</CEP>` +
+          `<cPais>1058</cPais>` +
+          `<xPais>Brasil</xPais>` +
+          `</enderDest>` +
+          `<indIEDest>9</indIEDest>` +
+          `</dest>` +
+          `<det nItem="1">` +
+          `<prod>` +
+          `<cProd>ITEM${idx + 1}</cProd>` +
+          `<cEAN>SEM GTIN</cEAN>` +
+          `<xProd>${escapeXmlText(n.description ?? n.category ?? "Item")}</xProd>` +
+          `<NCM>${escapeXmlText(n.ncm ?? "")}</NCM>` +
+          `<CEST>${escapeXmlText(n.cest ?? "")}</CEST>` +
+          `<indEscala>N</indEscala>` +
+          `<CFOP>6108</CFOP>` +
+          `<uCom>UN</uCom>` +
+          `<qCom>1.0000</qCom>` +
+          `<vUnCom>${escapeXmlText(n.amount ?? 0)}</vUnCom>` +
+          `<vProd>${escapeXmlText(n.amount ?? 0)}</vProd>` +
+          `<cEANTrib>SEM GTIN</cEANTrib>` +
+          `<uTrib>UN</uTrib>` +
+          `<qTrib>1.0000</qTrib>` +
+          `<vUnTrib>${escapeXmlText(n.amount ?? 0)}</vUnTrib>` +
+          `<indTot>1</indTot>` +
+          `</prod>` +
+          `<imposto>` +
+          `<vTotTrib>0.00</vTotTrib>` +
+          `<ICMS>` +
+          `<ICMS00><orig>0</orig><CST>00</CST><modBC>0</modBC><vBC>0.00</vBC><pICMS>0.00</pICMS><vICMS>0.00</vICMS></ICMS00>` +
+          `</ICMS>` +
+          `<PIS><PISOutr><CST>99</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS>` +
+          `<COFINS><COFINSOutr><CST>99</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS>` +
+          `<ICMSUFDest>` +
+          `<vBCUFDest>0.00</vBCUFDest><vBCFCPUFDest>0.00</vBCFCPUFDest><pFCPUFDest>0.0000</pFCPUFDest><pICMSUFDest>0.0000</pICMSUFDest><pICMSInter>0.0000</pICMSInter><pICMSInterPart>0.0000</pICMSInterPart><vFCPUFDest>0.00</vFCPUFDest><vICMSUFDest>0.00</vICMSUFDest><vICMSUFRemet>0.00</vICMSUFRemet>` +
+          `</ICMSUFDest>` +
+          `</imposto>` +
+          `</det>` +
+          `<total>` +
+          `<ICMSTot>` +
+          `<vProd>${escapeXmlText(n.amount ?? 0)}</vProd>` +
+          `<vFrete>0.00</vFrete><vSeg>0.00<\/vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>${escapeXmlText(n.amount ?? 0)}</vNF><vTotTrib>0.00</vTotTrib>` +
+          `</ICMSTot>` +
+          `</total>` +
+          `<transp><modFrete>0</modFrete><vol><pesoL>0.000</pesoL><pesoB>0.000</pesoB></vol></transp>` +
+          `<cobr><fat><nFat>${nNF}</nFat><vOrig>${escapeXmlText(n.amount ?? 0)}</vOrig><vDesc>0</vDesc><vLiq>${escapeXmlText(n.amount ?? 0)}</vLiq></fat></cobr>` +
+          `<pag><detPag><indPag>0</indPag><tPag>15</tPag><vPag>${escapeXmlText(n.amount ?? 0)}</vPag></detPag></pag>` +
+          `<infAdic><infCpl>${escapeXmlText(n.note ?? `Total aproximado de tributos: R$ 0,00`)}</infCpl></infAdic>` +
+          `<infRespTec><CNPJ>00000000000000</CNPJ><xContato>CaixaFacil</xContato><email>fiscal@example.com</email><fone></fone></infRespTec>` +
+          `</infNFe>` +
+          // Placeholder Signature block (structure only)
+          `<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI="#${id}"><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><Transform Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>DIGEST_PLACEHOLDER</DigestValue></Reference></SignedInfo><SignatureValue>SIGNATURE_PLACEHOLDER</SignatureValue><KeyInfo><X509Data><X509Certificate>CERTIFICATE_PLACEHOLDER</X509Certificate></X509Data></KeyInfo></Signature>` +
+          // protNFe
+          `<protNFe versao="4.00"><infProt><tpAmb>1</tpAmb><verAplic>CAIXAFACIL_SIMULADO</verAplic><chNFe>${escapeXmlText(chNFe)}</chNFe><dhRecbto>${escapeXmlText(protDh)}</dhRecbto><nProt>${escapeXmlText(nProt)}</nProt><digVal>DIGEST_PLACEHOLDER</digVal><cStat>100</cStat><xMotivo>Autorizado o uso da NF-e</xMotivo></infProt></protNFe>` +
+          `</NFe>` +
+          `</nfeProc>`
+        );
+      };
+
+      if (individual) {
+        const zip = new Yazl.ZipFile();
+        purchaseNotes.forEach((n, idx) => {
+          const fname = `nfe-${(n.documentNumber && n.documentNumber.trim()) || (n as any)._id || idx}.xml`;
+          const single = `<?xml version="1.0" encoding="UTF-8"?>${buildNfeProc(n, idx)}`;
+          zip.addBuffer(Buffer.from(single, "utf8"), fname);
+        });
+        zip.end();
+
+        const chunks: Buffer[] = [];
+        await new Promise<void>((resolve, reject) => {
+          zip.outputStream.on("data", (d: Buffer) => chunks.push(Buffer.from(d)));
+          zip.outputStream.on("end", () => resolve());
+          zip.outputStream.on("error", (err) => reject(err));
+        });
+        const zipBuffer = Buffer.concat(chunks);
+        return new NextResponse(new Uint8Array(zipBuffer), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/zip",
+            "Content-Disposition": `attachment; filename="caixa-facil-${year}-${m}-notas-nfe.zip"`,
+          },
+        });
+      }
+
+      const entries = purchaseNotes.map(buildNfeProc).join("\n");
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n${entries}`;
+      return new NextResponse(xml, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/xml; charset=UTF-8",
+          "Content-Disposition": `attachment; filename="caixa-facil-${year}-${m}-notas-nfe.xml"`,
+        },
+      });
+    }
 
     const parts: string[] = [];
     parts.push(`<?xml version="1.0" encoding="utf-8"?>`);

@@ -64,6 +64,45 @@ export default function PurchaseNotesTable() {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-end gap-2">
+        <button
+          type="button"
+          disabled={sel.selected.length === 0}
+          onClick={async () => {
+            if (sel.selected.length === 0) {
+              Swal.fire({ icon: 'warning', title: 'Nenhuma nota selecionada', text: 'Selecione pelo menos uma nota para exportar.' });
+              return;
+            }
+            Swal.fire({ title: 'Preparando exportação...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            try {
+              const res = await fetch('/api/export', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ month, year, kind: 'XML', types: ['notas'], selected: { notas: sel.selected }, individual: true }),
+              });
+              if (!res.ok) throw new Error('Erro ao exportar');
+              const blob = await res.blob();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `caixa-facil-notas-selected.zip`;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+              Swal.close();
+              Swal.fire({ icon: 'success', title: 'Exportado', text: 'ZIP baixado.' });
+            } catch (err) {
+              Swal.close();
+              const message = err instanceof Error ? err.message : 'Erro inesperado';
+              Swal.fire({ icon: 'error', title: 'Erro', text: message });
+            }
+          }}
+          className="rounded-xl bg-zinc-900 text-white px-3 py-2 text-sm disabled:opacity-60"
+        >
+          Exportar selecionados (ZIP)
+        </button>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <div className="space-y-2">
           <label className="text-sm font-medium">Mês</label>
@@ -137,7 +176,9 @@ export default function PurchaseNotesTable() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950/50 dark:text-zinc-400">
-              <th className="px-4 py-3 font-medium"> </th>
+                <th className="px-4 py-3 font-medium"> <input type="checkbox" checked={items.length > 0 && sel.selected.length === items.length} onChange={(e) => {
+                  if (e.target.checked) sel.setSelected(items.map(i => i.id)); else sel.clear();
+                }} /></th>
               <th className="px-4 py-3 font-medium">Data</th>
               <th className="px-4 py-3 font-medium">Descrição</th>
               <th className="px-4 py-3 font-medium">Categoria</th>
@@ -193,6 +234,34 @@ export default function PurchaseNotesTable() {
                           Swal.fire({ icon: 'error', title: 'Erro', text: message });
                         }
                       }} className="text-sm text-red-600">Excluir</button>
+                      <button onClick={async () => {
+                        // Export this single note as XML (direct file)
+                        Swal.fire({ title: 'Preparando exportação...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                        try {
+                          const res = await fetch('/api/export', {
+                            method: 'POST',
+                            headers: { 'content-type': 'application/json' },
+                            body: JSON.stringify({ month, year, kind: 'XML', types: ['notas'], selected: { notas: [item.id] } }),
+                          });
+                          if (!res.ok) throw new Error('Erro ao exportar');
+                          const text = await res.text();
+                          const blob = new Blob([text], { type: 'application/xml;charset=utf-8' });
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `caixa-facil-nota-${item.id}.xml`;
+                          document.body.appendChild(a);
+                          a.click();
+                          a.remove();
+                          URL.revokeObjectURL(url);
+                          Swal.close();
+                          Swal.fire({ icon: 'success', title: 'Exportado', text: 'Arquivo XML baixado.' });
+                        } catch (err) {
+                          Swal.close();
+                          const message = err instanceof Error ? err.message : 'Erro inesperado';
+                          Swal.fire({ icon: 'error', title: 'Erro', text: message });
+                        }
+                      }} className="text-sm text-green-600">Exportar</button>
                     </div>
                   </td>
                 </tr>

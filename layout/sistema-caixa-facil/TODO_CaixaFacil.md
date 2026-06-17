@@ -72,12 +72,31 @@
 - [x] Server: adicionada exportação completa das Notas de compras (todos os campos da nota) em XML.
 - [x] Client: `app/relatorios/ExportActions.tsx` adicionada checkbox "Notas de compras" e passa `types: ["notas"]` quando selecionada.
 
+## Atualizações recentes (2026-06-17)
+- [x] Server: `app/api/export/route.ts` — adicionado `buildNfeProc` com formato `nfeProc` mais completo para gerar XMLs individuais de Notas de compras (placeholders para assinatura/protocolo). Ajustes para evitar ReferenceError em variáveis emitente.
+- [x] Server: corrigi dependência de empacotamento ZIP usando `yazl` e ajustei `package.json` (versão disponível) para permitir geração de ZIPs individuais.
+- [x] Client: `app/relatorios/ExportActions.tsx` — adicionada opção para solicitar `individual: true` quando "Selecionar tudo (Notas)" estiver marcada; trata resposta ZIP (baixar .zip) ou XML consolidado.
+- [x] UI/Notas: `app/notas-de-compras/PurchaseNotesTable.tsx` — implementei seleção por linha (checkbox por registro), checkbox no cabeçalho para selecionar tudo, botão "Exportar selecionados (ZIP)" que envia os ids selecionados como `selected` + `individual: true`, e botão por linha agora baixa o `.xml` da nota diretamente.
+- [x] Testes rápidos: criei e rodei `scripts/post_export_test.js` para validar que o endpoint `/api/export` retorna ZIP/XML corretamente; `export_test.zip` gerado com sucesso.
+
 ## Próximos objetivos identificados (a partir do TODO)
 - [ ] Implementar seleção por linha nas tabelas (Despesas / Notas de compras / Fechamentos) com checkbox e controle de seleção.
 - [ ] Fazer o `ExportActions` enviar o objeto `selected` com os ids selecionados ao exportar XML (integração UI → API).
+- [x] Implementar seleção por linha nas tabelas (Despesas / Notas de compras / Fechamentos) com checkbox e controle de seleção. — **Parcialmente concluído:** implementação feita para *Notas de compras* (`app/notas-de-compras/PurchaseNotesTable.tsx`). Ainda falta aplicar o mesmo comportamento em `Despesas` e `Fechamentos`.
+- [x] Fazer o `ExportActions` enviar o objeto `selected` com os ids selecionados ao exportar XML (integração UI → API). — **Concluído para Notas:** `ExportActions` e `PurchaseNotesTable` trocam `localStorage` e suportam `selected` + `individual`.
 - [ ] Gerar gráficos com Recharts no `Dashboard` (tarefa já listada em 3. MVP UI/rotas).
 - [ ] Testes manuais: executar fluxo completo (criar fechamentos, adicionar despesas, criar notas de compras, gerar exportações e validar conteúdo XML/Excel/PDF).
 - [ ] NFC-e / Certificado A1: estruturar `FiscalConfig` e `FiscalDocument` (pendente, conforme seção 8).
+
+**Ponto atual onde parei:**
+- Exportação individual de Notas está funcional: o servidor gera XMLs no formato `nfeProc` (com placeholders) e empacota em ZIP quando `individual: true` é enviado; a UI de Notas permite selecionar linhas e exportar selecionados como ZIP; o botão por linha baixa o XML direto.
+- Ainda faltam aplicar seleção por linha e botão de exportação direta para `Despesas` e `Fechamentos`, além de deixar o checkbox do cabeçalho com estado indeterminado quando seleção parcial (melhoria de UX).
+- Não rodei `npm run build` no CI/local para verificar build de produção após mudanças (recomendado antes de deploy).
+
+Se quiser, implemento agora:
+- Propagar seleção por linha para `Despesas` e `Fechamentos`.
+- Ajustar estado `indeterminate` do checkbox de cabeçalho.
+- Executar `npm run build` e corrigir possíveis erros de build.
 
 Observação: não modifiquei o sistema além de documentar as mudanças — se quiser, implemento a seleção por linha e o envio automático de `selected` ao exportar.
 

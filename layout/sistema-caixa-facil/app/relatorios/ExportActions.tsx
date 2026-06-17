@@ -13,6 +13,7 @@ export default function ExportActions() {
   const [includeClosures, setIncludeClosures] = useState(true);
   const [includeExpenses, setIncludeExpenses] = useState(true);
   const [includePurchaseNotes, setIncludePurchaseNotes] = useState(false);
+  const [selectAllNotes, setSelectAllNotes] = useState(false);
   // load selections from localStorage
   const selClosures = typeof window !== 'undefined' ? (JSON.parse(localStorage.getItem('export:selected:fechamentos') || '[]') as string[]) : [];
   const selExpenses = typeof window !== 'undefined' ? (JSON.parse(localStorage.getItem('export:selected:despesas') || '[]') as string[]) : [];
@@ -27,19 +28,35 @@ export default function ExportActions() {
         return;
       }
 
-      const res = await fetch("/api/export", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ month, year, kind, types: [
-          ...(includeClosures ? ["fechamentos"] : []),
-          ...(includeExpenses ? ["despesas"] : []),
-          ...(includePurchaseNotes ? ["notas"] : []),
-        ],
+      const types = [
+        ...(includeClosures ? ["fechamentos"] : []),
+        ...(includeExpenses ? ["despesas"] : []),
+        ...(includePurchaseNotes ? ["notas"] : []),
+      ];
+
+      const payload: any = {
+        month,
+        year,
+        kind,
+        types,
         selected: {
           fechamentos: selClosures,
           despesas: selExpenses,
           notas: selNotes,
-        } }),
+        },
+      };
+
+      // If user wants to export all notes as individual XMLs, request ZIP from server
+      if (kind === "XML" && includePurchaseNotes && selectAllNotes && types.length === 1 && types[0] === "notas") {
+        payload.individual = true;
+        // let server fetch all notes for the month by keeping selected.notas as empty array
+        payload.selected.notas = [];
+      }
+
+      const res = await fetch("/api/export", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -68,18 +85,31 @@ export default function ExportActions() {
         return;
       }
 
-      // Para XML, retorna text
+      // Para XML, pode retornar XML ou ZIP de XMLs individuais
       if (kind === "XML") {
-        const xml = await res.text();
-        const blob = new Blob([xml], { type: "application/xml;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `caixa-facil-${year}-${month}.xml`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
+        const contentType = res.headers.get("content-type") || "";
+        if (contentType.includes("application/zip") || contentType.includes("application/octet-stream")) {
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `caixa-facil-${year}-${month}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        } else {
+          const xml = await res.text();
+          const blob = new Blob([xml], { type: "application/xml;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `caixa-facil-${year}-${month}.xml`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+        }
 
         Swal.fire({
           icon: "success",
@@ -155,6 +185,16 @@ export default function ExportActions() {
         <label className="inline-flex items-center gap-2">
           <input type="checkbox" checked={includePurchaseNotes} onChange={(e) => setIncludePurchaseNotes(e.target.checked)} className="h-4 w-4" />
           <span className="text-sm">Notas de compras</span>
+        </label>
+        <label className="inline-flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={selectAllNotes}
+            onChange={(e) => setSelectAllNotes(e.target.checked)}
+            className="h-4 w-4"
+            disabled={!includePurchaseNotes}
+          />
+          <span className="text-sm">Selecionar tudo (Notas) — baixar ZIP</span>
         </label>
       </div>
 

@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "yazl": "^3.3.1"
+  }
+}
