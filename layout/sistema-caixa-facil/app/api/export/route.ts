@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import * as XLSX from "xlsx";
 import * as Yazl from "yazl";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { CashClosureModel, type CashClosureDoc } from "@/models/CashClosure";
 import { ExpenseModel, type ExpenseDoc } from "@/models/Expense";
 import { PurchaseNoteModel, type PurchaseNoteDoc } from "@/models/PurchaseNote";
@@ -12,6 +13,60 @@ const escapeXmlText = (v: any) => {
   const s = v === null || v === undefined ? "" : String(v);
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 };
+
+async function generatePDF(
+  month: string,
+  year: string,
+  closures: CashClosureDoc[],
+  expenses: ExpenseDoc[],
+  summary: { totalsByPayment: Record<string, number>; totalEntrada: number; totalDespesas: number; lucroEstimado: number }
+): Promise<Buffer> {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([595, 842]);
+  const { width, height } = page.getSize();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  let y = height - 40;
+  page.drawText(`Relatório - ${month}/${year}`, { x: 40, y, size: 14, font });
+  y -= 24;
+  page.drawText(`Total Entradas: R$ ${String(summary.totalEntrada.toFixed(2))}`, { x: 40, y, size: 10, font });
+  y -= 16;
+  page.drawText(`Total Despesas: R$ ${String(summary.totalDespesas.toFixed(2))}`, { x: 40, y, size: 10, font });
+  y -= 16;
+  page.drawText(`Lucro Estimado: R$ ${String(summary.lucroEstimado.toFixed(2))}`, { x: 40, y, size: 10, font });
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+function generateExcel(
+  month: string,
+  year: string,
+  closures: CashClosureDoc[],
+  expenses: ExpenseDoc[],
+  purchaseNotes: PurchaseNoteDoc[],
+  summary: { totalsByPayment: Record<string, number>; totalEntrada: number; totalDespesas: number; lucroEstimado: number }
+): Buffer {
+  const workbook = XLSX.utils.book_new();
+  if (closures.length > 0) {
+    const rows = [["Data", "Dinheiro", "PIX", "CartaoCredito", "CartaoDebito", "Total"]];
+    closures.forEach((c) => rows.push([c.date, c.dinheiro ?? 0, c.pix ?? 0, c.cartao_credito ?? 0, c.cartao_debito ?? 0, c.total ?? 0]));
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    XLSX.utils.book_append_sheet(workbook, ws, "Fechamentos");
+  }
+  if (expenses.length > 0) {
+    const rows = [["Data", "Categoria", "Descricao", "Valor"]];
+    expenses.forEach((e) => rows.push([e.date, e.category, e.description ?? "", e.amount ?? 0]));
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    XLSX.utils.book_append_sheet(workbook, ws, "Despesas");
+  }
+  if (purchaseNotes.length > 0) {
+    const rows = [["Data", "Categoria", "Descricao", "Fornecedor", "Valor"]];
+    purchaseNotes.forEach((n) => rows.push([n.date, n.category, n.description ?? "", n.supplier ?? "", n.amount ?? 0]));
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    XLSX.utils.book_append_sheet(workbook, ws, "Notas");
+  }
+  const buf = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+  return Buffer.from(buf);
+}
 
 
         const buildNfeProc = (n: PurchaseNoteDoc, idx: number) => {
