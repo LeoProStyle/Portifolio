@@ -47,21 +47,39 @@ function generateExcel(
 ): Buffer {
   const workbook = XLSX.utils.book_new();
   if (closures.length > 0) {
-    const rows = [["Data", "Dinheiro", "PIX", "CartaoCredito", "CartaoDebito", "Total"]];
-    closures.forEach((c) => rows.push([c.date, c.dinheiro ?? 0, c.pix ?? 0, c.cartao_credito ?? 0, c.cartao_debito ?? 0, c.total ?? 0]));
-    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const rows: string[][] = [["Data", "Dinheiro", "PIX", "CartaoCredito", "CartaoDebito", "Total"]];
+    closures.forEach((c) => rows.push([
+      String(c.date ?? ""),
+      String(c.dinheiro ?? 0),
+      String(c.pix ?? 0),
+      String(c.cartao_credito ?? 0),
+      String(c.cartao_debito ?? 0),
+      String(c.total ?? 0),
+    ]));
+    const ws = XLSX.utils.aoa_to_sheet(rows as any);
     XLSX.utils.book_append_sheet(workbook, ws, "Fechamentos");
   }
   if (expenses.length > 0) {
-    const rows = [["Data", "Categoria", "Descricao", "Valor"]];
-    expenses.forEach((e) => rows.push([e.date, e.category, e.description ?? "", e.amount ?? 0]));
-    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const rows: string[][] = [["Data", "Categoria", "Descricao", "Valor"]];
+    expenses.forEach((e) => rows.push([
+      String(e.date ?? ""),
+      String(e.category ?? ""),
+      String(e.description ?? ""),
+      String(e.amount ?? 0),
+    ]));
+    const ws = XLSX.utils.aoa_to_sheet(rows as any);
     XLSX.utils.book_append_sheet(workbook, ws, "Despesas");
   }
   if (purchaseNotes.length > 0) {
-    const rows = [["Data", "Categoria", "Descricao", "Fornecedor", "Valor"]];
-    purchaseNotes.forEach((n) => rows.push([n.date, n.category, n.description ?? "", n.supplier ?? "", n.amount ?? 0]));
-    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const rows: string[][] = [["Data", "Categoria", "Descricao", "Fornecedor", "Valor"]];
+    purchaseNotes.forEach((n) => rows.push([
+      String(n.date ?? ""),
+      String(n.category ?? ""),
+      String(n.description ?? ""),
+      String(n.supplier ?? ""),
+      String(n.amount ?? 0),
+    ]));
+    const ws = XLSX.utils.aoa_to_sheet(rows as any);
     XLSX.utils.book_append_sheet(workbook, ws, "Notas");
   }
   const buf = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
