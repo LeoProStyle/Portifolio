@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import * as XLSX from "xlsx";
 import * as Yazl from "yazl";
-import { CashClosureModel } from "@/models/CashClosure";
-import { ExpenseModel } from "@/models/Expense";
-import { PurchaseNoteModel } from "@/models/PurchaseNote";
+import { CashClosureModel, type CashClosureDoc } from "@/models/CashClosure";
+import { ExpenseModel, type ExpenseDoc } from "@/models/Expense";
+import { PurchaseNoteModel, type PurchaseNoteDoc } from "@/models/PurchaseNote";
 
 export const runtime = "nodejs";
 
