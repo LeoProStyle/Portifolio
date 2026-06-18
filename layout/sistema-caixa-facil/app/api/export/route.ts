@@ -466,7 +466,7 @@ function generateExcel(
         await new Promise<void>((resolve, reject) => {
           zip.outputStream.on("data", (d: Buffer) => chunks.push(Buffer.from(d)));
           zip.outputStream.on("end", () => resolve());
-          zip.outputStream.on("error", (err) => reject(err));
+          zip.outputStream.on("error", (err: unknown) => reject(err));
         });
         const zipBuffer = Buffer.concat(chunks);
         return new NextResponse(new Uint8Array(zipBuffer), {
