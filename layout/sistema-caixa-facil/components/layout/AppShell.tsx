@@ -59,6 +59,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <NavItem href="/fechamentos" label="Fechamentos" icon={<ListChecks className="h-4 w-4" />} />
             <NavItem href="/despesas" label="Despesas" icon={<Wallet className="h-4 w-4" />} />
             <NavItem href="/notas-de-compras" label="Notas de compras" icon={<ReceiptText className="h-4 w-4" />} />
+            <NavItem href="/emissao-de-nota" label="Emissão de nota" icon={<ReceiptText className="h-4 w-4" />} />
             <NavItem href="/relatorios" label="Relatórios" icon={<BarChart3 className="h-4 w-4" />} />
           </div>
         </aside>
@@ -68,11 +69,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* Mobile bottom nav (simple) */}
       <nav className="fixed bottom-0 left-0 right-0 bg-zinc-50/95 dark:bg-black/95 backdrop-blur border-t border-zinc-200 dark:border-zinc-900 lg:hidden">
-        <div className="grid grid-cols-4 text-center">
+        <div className="grid grid-cols-5 text-center">
           <NavItem href="/dashboard" label="" icon={<SquarePen className="mx-auto h-4 w-4" />} />
           <NavItem href="/fechamentos" label="" icon={<ListChecks className="mx-auto h-4 w-4" />} />
           <NavItem href="/despesas" label="" icon={<Wallet className="mx-auto h-4 w-4" />} />
           <NavItem href="/notas-de-compras" label="" icon={<ReceiptText className="mx-auto h-4 w-4" />} />
+          <NavItem href="/emissao-de-nota" label="" icon={<ReceiptText className="mx-auto h-4 w-4" />} />
           <NavItem href="/relatorios" label="" icon={<BarChart3 className="mx-auto h-4 w-4" />} />
         </div>
       </nav>
