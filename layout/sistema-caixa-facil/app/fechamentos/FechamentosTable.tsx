@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import type { CashClosure } from "@/types";
 import { useExportSelection } from "@/lib/useExportSelection";
 
@@ -13,6 +13,7 @@ export default function FechamentosTable() {
 
   const [items, setItems] = useState<CashClosure[]>([]);
   const sel = useExportSelection("fechamentos");
+  const headerRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,6 +49,11 @@ export default function FechamentosTable() {
       cancelled = true;
     };
   }, [month, year]);
+
+  useEffect(() => {
+    if (!headerRef.current) return;
+    headerRef.current.indeterminate = sel.selected.length > 0 && sel.selected.length < items.length;
+  }, [sel.selected, items.length]);
 
 
 
@@ -113,7 +119,17 @@ export default function FechamentosTable() {
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left text-zinc-500 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800">
-                <th className="py-2"> </th>
+                <th className="py-2">
+                  <input
+                    ref={headerRef}
+                    type="checkbox"
+                    checked={items.length > 0 && sel.selected.length === items.length}
+                    onChange={(e) => {
+                      if (e.target.checked) sel.setSelected(items.map((i) => i.id));
+                      else sel.clear();
+                    }}
+                  />
+                </th>
                 <th className="py-2">Data</th>
                 <th className="py-2">Pix</th>
                 <th className="py-2">Crédito</th>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import type { Expense } from "@/types";
 import Swal from "sweetalert2";
 import { useExportSelection } from "@/lib/useExportSelection";
@@ -18,8 +18,14 @@ export default function DespesasTable() {
 
   const [items, setItems] = useState<Expense[]>([]);
   const sel = useExportSelection("despesas");
+  const headerRef = useRef<HTMLInputElement | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!headerRef.current) return;
+    headerRef.current.indeterminate = sel.selected.length > 0 && sel.selected.length < items.length;
+  }, [sel.selected, items.length]);
 
   useEffect(() => {
     let cancelled = false;
@@ -151,7 +157,17 @@ export default function DespesasTable() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-zinc-200 bg-zinc-50 text-left text-zinc-500 dark:border-zinc-800 dark:bg-zinc-950/50 dark:text-zinc-400">
-              <th className="px-4 py-3 font-medium"> </th>
+              <th className="px-4 py-3 font-medium">
+                <input
+                  ref={headerRef}
+                  type="checkbox"
+                  checked={items.length > 0 && sel.selected.length === items.length}
+                  onChange={(e) => {
+                    if (e.target.checked) sel.setSelected(items.map((i) => i.id));
+                    else sel.clear();
+                  }}
+                />
+              </th>
               <th className="px-4 py-3 font-medium">Data</th>
               <th className="px-4 py-3 font-medium">Descrição</th>
               <th className="px-4 py-3 font-medium">Categoria</th>

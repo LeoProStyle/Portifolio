@@ -33,10 +33,23 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/purchase-notes?id=${noteId}`);
-        const json = await res.json();
-        if (!res.ok || !json?.ok) throw new Error(json?.error || "Erro ao carregar");
-        const d = json.data;
+        const q = encodeURIComponent(String(noteId));
+        const res = await fetch(`/api/purchase-notes?id=${q}`);
+        let json: any = null;
+        try {
+          json = await res.json();
+        } catch (e) {
+          throw new Error(`Resposta inválida do servidor (${res.status})`);
+        }
+
+        if (!res.ok || !json?.ok) throw new Error(json?.error || `Erro ao carregar (status ${res.status})`);
+
+        let d = json.data;
+        // Some endpoints may return an array; try to find by id
+        if (Array.isArray(d)) {
+          d = d.find((x: any) => (x._id?.toString?.() ?? x.id ?? x._id) === noteId) || null;
+        }
+
         if (!cancelled && d) {
           setDate(d.date || defaultDate);
           setCategory(d.category || "Mercadoria");
@@ -50,9 +63,12 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
           setDocumentNumber(d.documentNumber || "");
           setNote(d.note || "");
           setActive(d.active !== false);
+        } else {
+          setError('Nota não encontrada');
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Erro inesperado";
+        console.error('Erro ao carregar nota:', err);
         setError(message);
       } finally {
         if (!cancelled) setLoading(false);

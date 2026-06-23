@@ -1,8 +1,5 @@
-"use client";
-
 import PurchaseNoteForm from "./PurchaseNoteForm";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { useSearchParams } from "next/navigation";
 
 function todayISODate() {
   const d = new Date();
@@ -12,9 +9,10 @@ function todayISODate() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-export default function NovaNotaCompraPage() {
-  const search = useSearchParams();
-  const editId = search?.get("edit") || undefined;
+export default async function NovaNotaCompraPage({ searchParams }: { searchParams?: any }) {
+  const sp = (searchParams && typeof (searchParams as any)?.then === "function") ? await searchParams : searchParams;
+  const rawEdit = sp?.edit;
+  const editId = Array.isArray(rawEdit) ? rawEdit[0] : (rawEdit as string | undefined) || undefined;
 
   return (
     <ProtectedRoute>
