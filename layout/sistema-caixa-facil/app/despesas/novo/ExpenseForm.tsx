@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import CurrencyInput from "@/components/CurrencyInput";
 import { useRouter } from "next/navigation";
 import type { ExpenseCategory } from "@/types";
 import Swal from "sweetalert2";
@@ -209,19 +210,7 @@ export default function ExpenseForm({
       <div className="rounded-2xl border bg-white dark:bg-zinc-900 p-4">
         <div className="space-y-2">
           <label className="text-sm font-medium">Valor</label>
-          <input
-            inputMode="decimal"
-            type="number"
-            step="0.01"
-            value={amount}
-            onInput={(e) => {
-              const el = e.currentTarget;
-              const n = toNumber(el.value);
-              if (el.value !== String(n)) el.value = String(n);
-              setAmount(n);
-            }}
-            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950"
-          />
+            <CurrencyInput value={amount} onChange={(n) => setAmount(n)} className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
         </div>
         <div className="mt-3 text-sm text-zinc-600 dark:text-zinc-300">Prévia: <b>{amountPreview}</b></div>
       </div>

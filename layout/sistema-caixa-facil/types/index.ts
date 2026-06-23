@@ -44,6 +44,7 @@ export interface CashClosure {
   pix: number;
   cartao_credito: number;
   cartao_debito: number;
+  maquininha?: number;
   total: number; // dinheiro + pix + cartao_credito + cartao_debito
   observacao?: string;
   createdBy?: string;

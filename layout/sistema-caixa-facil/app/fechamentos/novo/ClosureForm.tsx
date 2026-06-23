@@ -1,12 +1,15 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import CurrencyInput from "@/components/CurrencyInput";
 import Swal from "sweetalert2";
 
 type PaymentState = {
   pix: number;
   cartao_credito: number;
   cartao_debito: number;
+  maquininha?: number;
 };
 
 const toNumber = (v: string) => {
@@ -37,9 +40,11 @@ const formatBRL = (v: number) =>
 export default function ClosureForm({
   defaultDate,
   onCreated,
+  closureId,
 }: {
   defaultDate: string;
   onCreated?: () => void;
+  closureId?: string;
 }) {
   const [date, setDate] = useState(defaultDate);
   const [observacao, setObservacao] = useState("");
@@ -48,18 +53,49 @@ export default function ClosureForm({
     pix: 0,
     cartao_credito: 0,
     cartao_debito: 0,
+    maquininha: 0,
   });
 
   const total = useMemo(
     () =>
       payment.pix +
       payment.cartao_credito +
-      payment.cartao_debito,
+      payment.cartao_debito +
+      (payment.maquininha ?? 0),
     [payment]
   );
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // load existing closure when editing
+  useEffect(() => {
+    if (!closureId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const q = encodeURIComponent(String(closureId));
+        const res = await fetch(`/api/closures?id=${q}`);
+        const json = await res.json();
+        if (!res.ok || !json?.ok) throw new Error(json?.error || 'Erro ao carregar fechamento');
+        const d = json.data;
+        if (!cancelled && d) {
+          setDate(d.date || defaultDate);
+          setObservacao(d.observacao || "");
+          setPayment({
+            pix: Number(d.pix ?? 0),
+            cartao_credito: Number(d.cartao_credito ?? 0),
+            cartao_debito: Number(d.cartao_debito ?? 0),
+            maquininha: Number(d.maquininha ?? 0),
+          });
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Erro inesperado';
+        setError(message);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [closureId, defaultDate]);
 
   const update = (key: keyof PaymentState, value: string) => {
     // Mantém o valor como número interno, mas garante que não vai “re-escrever” com zeros à esquerda.
@@ -67,8 +103,10 @@ export default function ClosureForm({
     setPayment((p) => ({ ...p, [key]: toNumber(value) }));
   };
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const router = useRouter();
+
+  const submit = async (e?: React.FormEvent, redirectAfterSave = false) => {
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
     setError(null);
 
     if (!date) {
@@ -78,16 +116,21 @@ export default function ClosureForm({
 
     setLoading(true);
     try {
+      const method = closureId ? "PATCH" : "POST";
+      const payload: any = {
+        date,
+        pix: payment.pix,
+        cartao_credito: payment.cartao_credito,
+        cartao_debito: payment.cartao_debito,
+        maquininha: payment.maquininha ?? 0,
+        observacao,
+      };
+      if (closureId) payload.id = closureId;
+
       const res = await fetch("/api/closures", {
-        method: "POST",
+        method,
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          date,
-          pix: payment.pix,
-          cartao_credito: payment.cartao_credito,
-          cartao_debito: payment.cartao_debito,
-          observacao,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const json = await res.json();
@@ -95,20 +138,22 @@ export default function ClosureForm({
         throw new Error(json?.error || "Falha ao salvar fechamento.");
       }
 
-      Swal.fire({
-        icon: "success",
-        title: "Fechamento salvo!",
-        text: "Toque em OK para continuar.",
-        confirmButtonText: "OK",
-        timer: undefined,
-      }).then(() => onCreated?.());
+      const successTitle = closureId ? "Fechamento atualizado!" : "Fechamento salvo!";
 
-      setObservacao("");
-      setPayment({
-        pix: 0,
-        cartao_credito: 0,
-        cartao_debito: 0,
-      });
+      const after = () => {
+        if (redirectAfterSave) {
+          router.push("/fechamentos");
+        } else {
+          onCreated?.();
+        }
+      };
+
+      Swal.fire({ icon: "success", title: successTitle, text: "Toque em OK para continuar.", confirmButtonText: "OK" }).then(after);
+
+      if (!closureId) {
+        setObservacao("");
+        setPayment({ pix: 0, cartao_credito: 0, cartao_debito: 0, maquininha: 0 });
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro inesperado";
       setError(message);
@@ -118,7 +163,7 @@ export default function ClosureForm({
   };
 
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={(e) => submit(e, true)} className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
           <label className="text-sm font-medium">Data</label>
@@ -145,21 +190,22 @@ export default function ClosureForm({
         <div className="text-sm font-semibold">Entradas</div>
 
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <AmountInput
-            label="Pix"
-            value={payment.pix}
-            onChange={(v) => update("pix", v)}
-          />
-          <AmountInput
-            label="Cartão Crédito"
-            value={payment.cartao_credito}
-            onChange={(v) => update("cartao_credito", v)}
-          />
-          <AmountInput
-            label="Cartão Débito"
-            value={payment.cartao_debito}
-            onChange={(v) => update("cartao_debito", v)}
-          />
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Pix</label>
+            <CurrencyInput value={payment.pix} onChange={(n) => update("pix", String(n))} className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Cartão Crédito</label>
+            <CurrencyInput value={payment.cartao_credito} onChange={(n) => update("cartao_credito", String(n))} className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Cartão Débito</label>
+            <CurrencyInput value={payment.cartao_debito} onChange={(n) => update("cartao_debito", String(n))} className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Valor Maquininha</label>
+            <CurrencyInput value={payment.maquininha ?? 0} onChange={(n) => update("maquininha", String(n))} className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
+          </div>
         </div>
 
         <div className="mt-4 rounded-2xl border bg-white dark:bg-zinc-900 p-4">
@@ -183,7 +229,7 @@ export default function ClosureForm({
         disabled={loading}
         className="w-full rounded-xl bg-zinc-900 text-white px-4 py-2.5 text-sm font-medium disabled:opacity-60 dark:bg-white dark:text-black"
       >
-        {loading ? "Salvando..." : "Salvar fechamento"}
+        {loading ? "Salvando..." : "Salvar e voltar"}
       </button>
     </form>
   );

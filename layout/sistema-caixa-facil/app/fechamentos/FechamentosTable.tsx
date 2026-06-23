@@ -31,7 +31,15 @@ export default function FechamentosTable() {
           throw new Error(json?.error || "Falha ao carregar fechamentos");
         }
         if (!cancelled) {
-          const data = (json.data || []).map((d: any) => ({ ...d, id: d.id ?? d._id }));
+          const data = (json.data || []).map((d: any) => ({
+            ...d,
+            id: String(d.id ?? d._id),
+            pix: Number(d.pix ?? 0),
+            cartao_credito: Number(d.cartao_credito ?? 0),
+            cartao_debito: Number(d.cartao_debito ?? 0),
+            maquininha: Number(d.maquininha ?? 0),
+            total: Number(d.total ?? 0),
+          }));
           setItems(data);
         }
       } catch (e) {
@@ -134,6 +142,7 @@ export default function FechamentosTable() {
                 <th className="py-2">Pix</th>
                 <th className="py-2">Crédito</th>
                 <th className="py-2">Débito</th>
+                <th className="py-2">Maquininha</th>
                 <th className="py-2">Total</th>
                 <th className="py-2">Ações</th>
             </tr>
@@ -141,13 +150,13 @@ export default function FechamentosTable() {
           <tbody>
             {loading ? (
               <tr>
-                    <td colSpan={7} className="py-4 text-zinc-600 dark:text-zinc-300">
+                    <td colSpan={8} className="py-4 text-zinc-600 dark:text-zinc-300">
                   Carregando...
                 </td>
               </tr>
             ) : items.length === 0 ? (
               <tr>
-                    <td colSpan={7} className="py-4 text-zinc-600 dark:text-zinc-300">
+                    <td colSpan={8} className="py-4 text-zinc-600 dark:text-zinc-300">
                   Sem fechamentos para este período.
                 </td>
               </tr>
@@ -159,11 +168,12 @@ export default function FechamentosTable() {
                       <td className="py-3">{formatBRL(r.pix ?? 0)}</td>
                       <td className="py-3">{formatBRL(r.cartao_credito ?? 0)}</td>
                       <td className="py-3">{formatBRL(r.cartao_debito ?? 0)}</td>
+                      <td className="py-3">{formatBRL((r as any).maquininha ?? 0)}</td>
                       <td className="py-3 font-semibold">{formatBRL(r.total ?? 0)}</td>
                       <td className="py-3">
                         <div className="flex gap-2">
                           <button onClick={() => alert(JSON.stringify(r, null, 2))} className="text-sm text-zinc-600">Visualizar</button>
-                          <a href={`/fechamentos/novo?edit=${r.id ?? ''}`} className="text-sm text-blue-600">Editar</a>
+                          <a href={`/fechamentos/novo?edit=${encodeURIComponent(r.id ?? '')}`} className="text-sm text-blue-600">Editar</a>
                           <button onClick={async () => {
                             const Swal = (await import('sweetalert2')).default;
                             const res = await Swal.fire({ title: 'Confirma excluir este fechamento?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Sim, excluir', cancelButtonText: 'Cancelar' });

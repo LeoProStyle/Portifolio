@@ -9,6 +9,7 @@ export type CashClosureDoc = {
   pix: number;
   cartao_credito: number;
   cartao_debito: number;
+  maquininha?: number;
   total: number;
   observacao?: string;
   createdBy?: string;
@@ -21,6 +22,7 @@ const CashClosureSchema = new Schema<CashClosureDoc>(
     pix: { type: Number, default: 0 },
     cartao_credito: { type: Number, default: 0 },
     cartao_debito: { type: Number, default: 0 },
+    maquininha: { type: Number, default: 0 },
     total: { type: Number, default: 0 },
     observacao: { type: String, default: "" },
     createdBy: { type: String, default: "" },
