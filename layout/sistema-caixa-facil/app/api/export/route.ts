@@ -47,39 +47,97 @@ function generateExcel(
 ): Buffer {
   const workbook = XLSX.utils.book_new();
   if (closures.length > 0) {
-    const rows: string[][] = [["Data", "Dinheiro", "PIX", "CartaoCredito", "CartaoDebito", "Total"]];
-    closures.forEach((c) => rows.push([
-      String(c.date ?? ""),
-      String(c.dinheiro ?? 0),
-      String(c.pix ?? 0),
-      String(c.cartao_credito ?? 0),
-      String(c.cartao_debito ?? 0),
-      String(c.total ?? 0),
-    ]));
+    const rows: (string | number)[][] = [["Data", "Total"]];
+    let sumClosures = 0;
+    closures.forEach((c) => {
+      const totalVal = Number(c.total ?? 0);
+      const rounded = Number(totalVal.toFixed(2));
+      rows.push([String(c.date ?? ""), rounded]);
+      sumClosures += rounded;
+    });
+    // blank row then grand total
+    rows.push([]);
+    sumClosures = Number(sumClosures.toFixed(2));
+    rows.push(["Total Geral", sumClosures]);
     const ws = XLSX.utils.aoa_to_sheet(rows as any);
+    // apply numeric type and currency format to the Total column (column B)
+    if (ws['!ref']) {
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+        const cellRef = XLSX.utils.encode_cell({ c: 1, r: R });
+        const cell = ws[cellRef];
+        if (cell && cell.v !== undefined && cell.v !== null && cell.v !== '') {
+          const num = Number(cell.v);
+          if (!isNaN(num)) {
+            const rounded = Number(num.toFixed(2));
+            cell.t = 'n';
+            cell.v = rounded;
+            cell.z = 'R$ #,##0.00';
+          }
+        }
+      }
+    }
+    // set reasonable column widths
+    ws['!cols'] = [{ wch: 14 }, { wch: 14 }];
     XLSX.utils.book_append_sheet(workbook, ws, "Fechamentos");
   }
   if (expenses.length > 0) {
-    const rows: string[][] = [["Data", "Categoria", "Descricao", "Valor"]];
+    const rows: (string | number)[][] = [["Data", "Categoria", "Descricao", "Valor"]];
     expenses.forEach((e) => rows.push([
       String(e.date ?? ""),
       String(e.category ?? ""),
       String(e.description ?? ""),
-      String(e.amount ?? 0),
+      Number(e.amount ?? 0),
     ]));
     const ws = XLSX.utils.aoa_to_sheet(rows as any);
+    // format Valor column (column D) as currency
+    if (ws['!ref']) {
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+        const cellRef = XLSX.utils.encode_cell({ c: 3, r: R });
+        const cell = ws[cellRef];
+        if (cell && cell.v !== undefined && cell.v !== null && cell.v !== '') {
+          const num = Number(cell.v);
+          if (!isNaN(num)) {
+            const rounded = Number(num.toFixed(2));
+            cell.t = 'n';
+            cell.v = rounded;
+            cell.z = 'R$ #,##0.00';
+          }
+        }
+      }
+    }
+    ws['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 36 }, { wch: 12 }];
     XLSX.utils.book_append_sheet(workbook, ws, "Despesas");
   }
   if (purchaseNotes.length > 0) {
-    const rows: string[][] = [["Data", "Categoria", "Descricao", "Fornecedor", "Valor"]];
+    const rows: (string | number)[][] = [["Data", "Categoria", "Descricao", "Fornecedor", "Valor"]];
     purchaseNotes.forEach((n) => rows.push([
       String(n.date ?? ""),
       String(n.category ?? ""),
       String(n.description ?? ""),
       String(n.supplier ?? ""),
-      String(n.amount ?? 0),
+      Number(n.amount ?? 0),
     ]));
     const ws = XLSX.utils.aoa_to_sheet(rows as any);
+    // format Valor column (column E) as currency
+    if (ws['!ref']) {
+      const range = XLSX.utils.decode_range(ws['!ref']);
+      for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+        const cellRef = XLSX.utils.encode_cell({ c: 4, r: R });
+        const cell = ws[cellRef];
+        if (cell && cell.v !== undefined && cell.v !== null && cell.v !== '') {
+          const num = Number(cell.v);
+          if (!isNaN(num)) {
+            const rounded = Number(num.toFixed(2));
+            cell.t = 'n';
+            cell.v = rounded;
+            cell.z = 'R$ #,##0.00';
+          }
+        }
+      }
+    }
+    ws['!cols'] = [{ wch: 14 }, { wch: 18 }, { wch: 36 }, { wch: 24 }, { wch: 12 }];
     XLSX.utils.book_append_sheet(workbook, ws, "Notas");
   }
   const buf = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });

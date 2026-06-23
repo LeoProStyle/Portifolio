@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectToMongo } from "@/lib/mongodb";
 import { CashClosureModel, type CashClosureDoc } from "@/models/CashClosure";
 import { ExpenseModel, type ExpenseDoc } from "@/models/Expense";
+import { PurchaseNoteModel, type PurchaseNoteDoc } from "@/models/PurchaseNote";
 
 export const runtime = "nodejs";
 
@@ -27,6 +28,10 @@ export async function GET(req: Request) {
       .sort({ date: 1 })
       .lean()) as ExpenseDoc[];
 
+    const purchaseNotes = (await PurchaseNoteModel.find({ date: { $regex: dateRegex } })
+      .sort({ date: 1 })
+      .lean()) as PurchaseNoteDoc[];
+
     console.log(`[GET /dashboard] Found ${closures.length} closures and ${expenses.length} expenses`);
 
     const totalsByPayment = {
@@ -38,7 +43,9 @@ export async function GET(req: Request) {
 
     const totalEntrada = closures.reduce((s: number, c: CashClosureDoc) => s + (c.total ?? 0), 0);
     const totalDespesas = expenses.reduce((s: number, e: ExpenseDoc) => s + (e.amount ?? 0), 0);
-    const lucroEstimado = totalEntrada - totalDespesas;
+    const totalNotas = purchaseNotes.reduce((s: number, n: PurchaseNoteDoc) => s + (n.amount ?? 0), 0);
+    // Lucro estimado = receitas - (despesas + compras de nota)
+    const lucroEstimado = totalEntrada - (totalDespesas + totalNotas);
 
     const daily = closures.map((c: CashClosureDoc) => ({
       date: c.date,
@@ -50,6 +57,7 @@ export async function GET(req: Request) {
       payload: {
         totalEntrada,
         totalDespesas,
+        totalNotas,
         lucroEstimado,
         totalsByPayment,
         closures: daily,

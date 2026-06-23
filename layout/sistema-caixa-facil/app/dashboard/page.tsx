@@ -18,6 +18,7 @@ type DashboardPayload = {
     cartao_debito: number;
   };
   closures?: Array<{ date: string; total: number }>;
+  totalNotas?: number;
 };
 
 export default function DashboardPage() {
@@ -69,8 +70,8 @@ export default function DashboardPage() {
 
   const faturamentoMes = payload?.totalEntrada ?? 0;
   const despesasMes = payload?.totalDespesas ?? 0;
-  const totalPix = payload?.totalsByPayment?.pix ?? 0;
   const lucroEstimado = payload?.lucroEstimado ?? 0;
+  const totalNotas = payload?.totalNotas ?? 0;
 
   // "Hoje": MVP simplificado baseado no mesmo endpoint (a lista diária do payload existe)
   const totalHoje = useMemo(() => {
@@ -103,8 +104,8 @@ export default function DashboardPage() {
         </div>
 
         <div className="rounded-2xl border bg-white dark:bg-zinc-900 p-4">
-          <div className="text-sm text-zinc-600 dark:text-zinc-300">Total Pix</div>
-          <div className="text-2xl font-semibold mt-1">{loading ? "—" : formatBRL(totalPix)}</div>
+          <div className="text-sm text-zinc-600 dark:text-zinc-300">Compras (Notas)</div>
+          <div className="text-2xl font-semibold mt-1">{loading ? "—" : formatBRL(totalNotas)}</div>
         </div>
 
         <div className="rounded-2xl border bg-white dark:bg-zinc-900 p-4">

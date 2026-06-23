@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
+import CurrencyInput from "@/components/CurrencyInput";
 
 function formatCurrency(v: number) {
   return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -198,7 +199,7 @@ export default function EmissaoNotaClient() {
           </label>
           <label className="flex-1">
             <div className="text-sm font-medium">Valor unitário</div>
-            <input type="number" step="0.01" min={0} value={unitPrice} onChange={(e) => setUnitPrice(Number(e.target.value))} className="w-full rounded border px-3 py-2" />
+            <CurrencyInput value={unitPrice} onChange={(n) => setUnitPrice(n)} className="w-full rounded border px-3 py-2" />
           </label>
         </div>
 

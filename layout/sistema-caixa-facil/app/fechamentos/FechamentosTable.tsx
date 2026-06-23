@@ -117,6 +117,41 @@ export default function FechamentosTable() {
         </div>
       </div>
 
+      <div className="flex items-center justify-end">
+        <button
+          type="button"
+          disabled={items.length === 0}
+          onClick={async () => {
+            const Swal = (await import('sweetalert2')).default;
+            Swal.fire({ title: 'Preparando exportação...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            try {
+              const body: any = { month, year, kind: 'Excel', types: ['fechamentos'] };
+              if (sel.selected.length > 0) body.selected = { fechamentos: sel.selected };
+              const res = await fetch('/api/export', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+              if (!res.ok) throw new Error('Erro ao exportar');
+              const blob = await res.blob();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `caixa-facil-fechamentos-${year}-${String(month).padStart(2,'0')}.xlsx`;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+              Swal.close();
+              Swal.fire({ icon: 'success', title: 'Exportado', text: 'Planilha baixada.' });
+            } catch (err) {
+              Swal.close();
+              const message = err instanceof Error ? err.message : 'Erro inesperado';
+              (await import('sweetalert2')).default.fire({ icon: 'error', title: 'Erro', text: message });
+            }
+          }}
+          className="rounded-xl bg-zinc-900 text-white px-3 py-2 text-sm disabled:opacity-60 mb-2"
+        >
+          Exportar Excel
+        </button>
+      </div>
+
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}

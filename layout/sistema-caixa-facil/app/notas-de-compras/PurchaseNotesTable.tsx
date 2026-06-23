@@ -108,6 +108,37 @@ export default function PurchaseNotesTable() {
         >
           Exportar selecionados (ZIP)
         </button>
+        <button
+          type="button"
+          disabled={items.length === 0}
+          onClick={async () => {
+            Swal.fire({ title: 'Preparando exportação...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            try {
+              const body: any = { month, year, kind: 'Excel', types: ['notas'] };
+              if (sel.selected.length > 0) body.selected = { notas: sel.selected };
+              const res = await fetch('/api/export', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+              if (!res.ok) throw new Error('Erro ao exportar');
+              const blob = await res.blob();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `caixa-facil-notas-${year}-${String(month).padStart(2,'0')}.xlsx`;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              URL.revokeObjectURL(url);
+              Swal.close();
+              Swal.fire({ icon: 'success', title: 'Exportado', text: 'Planilha baixada.' });
+            } catch (err) {
+              Swal.close();
+              const message = err instanceof Error ? err.message : 'Erro inesperado';
+              Swal.fire({ icon: 'error', title: 'Erro', text: message });
+            }
+          }}
+          className="rounded-xl bg-green-600 text-white px-3 py-2 text-sm disabled:opacity-60"
+        >
+          Exportar Excel
+        </button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         <div className="space-y-2">

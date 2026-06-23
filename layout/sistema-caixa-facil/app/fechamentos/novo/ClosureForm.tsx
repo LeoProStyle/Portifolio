@@ -244,24 +244,6 @@ function AmountInput({
   value: number;
   onChange: (v: string) => void;
 }) {
-  return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium">{label}</label>
-      <input
-        inputMode="decimal"
-        type="number"
-        step="0.01"
-        value={Number.isFinite(value) ? value : 0}
-        onInput={(e) => {
-          const el = e.currentTarget;
-          const n = toNumber(el.value);
-          // Normaliza em tempo real para remover zeros à esquerda
-          if (el.value !== String(n)) el.value = String(n);
-          onChange(el.value);
-        }}
-        className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950"
-      />
-    </div>
-  );
+  return null;
 }
 
