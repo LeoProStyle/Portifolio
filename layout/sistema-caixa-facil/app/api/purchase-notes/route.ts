@@ -26,8 +26,6 @@ export async function GET(req: Request) {
     if (month && year) {
       const m = month.toString().padStart(2, "0");
       filter.date = { $regex: `^${year}-${m}-` };
-    }
-    if (start || end) {
       filter.date = filter.date || {};
       if (start) filter.date.$gte = start;
       if (end) filter.date.$lte = end;
@@ -52,8 +50,10 @@ export async function POST(req: Request) {
       description?: string;
       amount: number;
       supplier?: string;
+      supplierCNPJ?: string;
       emitCNPJ?: string;
       emitName?: string;
+      emitIE?: string;
       paymentMethod?: string;
       hasFiscalDocument?: boolean;
       documentNumber?: string;
@@ -74,8 +74,10 @@ export async function POST(req: Request) {
       description: body.description ?? "",
       amount: Number(body.amount),
       supplier: body.supplier ?? "",
+      supplierCNPJ: body.supplierCNPJ ?? "",
       emitCNPJ: body.emitCNPJ ?? "",
       emitName: body.emitName ?? "",
+      emitIE: body.emitIE ?? "",
       paymentMethod: body.paymentMethod ?? "",
       hasFiscalDocument: !!body.hasFiscalDocument,
       documentNumber: body.documentNumber ?? "",
@@ -89,8 +91,7 @@ export async function POST(req: Request) {
     const message = error instanceof Error ? error.message : "Erro ao criar";
     return NextResponse.json({ ok: false, error: message }, { status: 500 });
   }
-}
-
+  }
 export async function PATCH(req: Request) {
   try {
     const body = (await req.json().catch(() => ({}))) as {
@@ -100,8 +101,10 @@ export async function PATCH(req: Request) {
       description?: string;
       amount?: number;
       supplier?: string;
+      supplierCNPJ?: string;
       emitCNPJ?: string;
       emitName?: string;
+      emitIE?: string;
       paymentMethod?: string;
       hasFiscalDocument?: boolean;
       documentNumber?: string;
@@ -119,8 +122,10 @@ export async function PATCH(req: Request) {
       "description",
       "amount",
       "supplier",
+      "supplierCNPJ",
       "emitCNPJ",
       "emitName",
+      "emitIE",
       "paymentMethod",
       "hasFiscalDocument",
       "documentNumber",

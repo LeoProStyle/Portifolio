@@ -15,8 +15,7 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
   const [amount, setAmount] = useState<number>(0);
   const [supplier, setSupplier] = useState("");
   const [supplierCNPJ, setSupplierCNPJ] = useState("");
-  const [emitCNPJ, setEmitCNPJ] = useState("");
-  const [emitName, setEmitName] = useState("");
+  const [emitIE, setEmitIE] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [hasFiscalDocument, setHasFiscalDocument] = useState(false);
   const [documentNumber, setDocumentNumber] = useState("");
@@ -45,8 +44,7 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
           setAmount(Number(d.amount ?? 0));
           setSupplier(d.supplier || "");
           setSupplierCNPJ(d.supplierCNPJ || d.supplierCnpj || "");
-          setEmitCNPJ(d.emitCNPJ || d.emitCnpj || "");
-          setEmitName(d.emitName || d.emitName || "");
+          setEmitIE(d.emitIE || d.emitIe || (d.emitter && d.emitter.ie) || "");
           setPaymentMethod(d.paymentMethod || "");
           setHasFiscalDocument(!!d.hasFiscalDocument);
           setDocumentNumber(d.documentNumber || "");
@@ -65,6 +63,10 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await saveNote();
+  };
+
+  const saveNote = async () => {
     setError(null);
     if (!date) return setError("Informe a data.");
     if (!category) return setError("Informe a categoria.");
@@ -74,7 +76,7 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
     setLoading(true);
     Swal.fire({ title: "Salvando nota...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     try {
-      const payload = { date, category, description, amount: Number(amount), supplier, supplierCNPJ, emitCNPJ, emitName, paymentMethod, hasFiscalDocument, documentNumber, note, active } as any;
+      const payload = { date, category, description, amount: Number(amount), supplier, supplierCNPJ, emitIE, paymentMethod, hasFiscalDocument, documentNumber, note, active } as any;
       const res = await fetch('/api/purchase-notes', { method: noteId ? 'PATCH' : 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(noteId ? { id: noteId, ...payload } : payload) });
       const json = await res.json();
       if (!res.ok || !json?.ok) throw new Error(json?.error || 'Falha ao salvar nota.');
@@ -97,6 +99,13 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
 
   return (
     <form onSubmit={submit} className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div></div>
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={() => router.push('/notas-de-compras')} disabled={loading} className="rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm hover:bg-zinc-50">Voltar ao menu</button>
+          <button type="button" onClick={() => saveNote()} disabled={loading} className="rounded-xl bg-zinc-900 text-white px-3 py-2 text-sm font-medium disabled:opacity-60">{loading ? 'Salvando...' : 'Salvar'}</button>
+        </div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
           <label className="text-sm font-medium">Data</label>
@@ -112,12 +121,8 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="space-y-2">
-          <label className="text-sm font-medium">CNPJ (Emitente)</label>
-          <input value={emitCNPJ} onChange={(e) => setEmitCNPJ(e.target.value)} placeholder="Opcional" className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Nome (Emitente)</label>
-          <input value={emitName} onChange={(e) => setEmitName(e.target.value)} placeholder="Opcional" className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
+          <label className="text-sm font-medium">IE (Inscrição Estadual)</label>
+          <input value={emitIE} onChange={(e) => setEmitIE(e.target.value)} placeholder="Opcional" className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm dark:border-zinc-800 dark:bg-zinc-950" />
         </div>
       </div>
 

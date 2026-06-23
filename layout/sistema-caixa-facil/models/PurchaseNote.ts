@@ -6,6 +6,7 @@ export type PurchaseNoteDoc = {
   description: string;
   amount: number;
   supplier?: string;
+  supplierCNPJ?: string;
   supplierAddress?: string;
   supplierNumber?: string;
   supplierNeighborhood?: string;
@@ -13,6 +14,7 @@ export type PurchaseNoteDoc = {
   supplierCity?: string;
   supplierUF?: string;
   supplierCEP?: string;
+  emitIE?: string;
   emitCNPJ?: string;
   emitName?: string;
   model?: string;
@@ -37,6 +39,7 @@ const PurchaseNoteSchema = new Schema<PurchaseNoteDoc>(
     description: { type: String, default: "" },
     amount: { type: Number, required: true },
     supplier: { type: String, default: "" },
+    supplierCNPJ: { type: String, default: "" },
     supplierAddress: { type: String, default: "" },
     supplierNumber: { type: String, default: "" },
     supplierNeighborhood: { type: String, default: "" },
@@ -44,6 +47,7 @@ const PurchaseNoteSchema = new Schema<PurchaseNoteDoc>(
     supplierCity: { type: String, default: "" },
     supplierUF: { type: String, default: "" },
     supplierCEP: { type: String, default: "" },
+    emitIE: { type: String, default: "" },
     emitCNPJ: { type: String, default: "" },
     emitName: { type: String, default: "" },
     model: { type: String, default: "" },

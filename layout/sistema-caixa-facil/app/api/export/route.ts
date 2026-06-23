@@ -117,11 +117,15 @@ function generateExcel(
           const DEST_CEP = n.supplierCEP ?? EMIT_CEP;
 
           // optional emitter fields coming from the purchase note
-          const NOTE_EMIT_CNPJ_RAW = (n as any).emitCNPJ ?? (n as any).emitterCNPJ ?? (n as any).emitterCnpj ?? (n as any).emitter?.cnpj ?? null;
-          const NOTE_EMIT_NAME = (n as any).emitName ?? (n as any).emitterName ?? (n as any).emitter?.xNome ?? null;
-          // if note doesn't provide an emit name, fall back to supplier (company name saved on the note)
-          const RES_EMIT_CNPJ = NOTE_EMIT_CNPJ_RAW ? String(NOTE_EMIT_CNPJ_RAW).replace(/\D/g, "").padStart(14, "0") : EMIT_CNPJ;
-          const RES_EMIT_XNOME = NOTE_EMIT_NAME ?? (n as any).supplier ?? EMIT_xNome;
+          // Use supplier/supplierCNPJ for the <emit> block as requested (prefer supplierCNPJ)
+          const NOTE_EMIT_CNPJ_RAW = (n as any).supplierCNPJ ?? (n as any).supplierCnpj ?? (n as any).supplier_cnpj ?? (n as any).emitCNPJ ?? (n as any).emitterCNPJ ?? (n as any).emitterCnpj ?? (n as any).emitter?.cnpj ?? (n as any).documentNumber ?? null;
+          const NOTE_EMIT_NAME = (n as any).supplier ?? (n as any).emitName ?? (n as any).emitterName ?? (n as any).emitter?.xNome ?? null;
+          const NOTE_EMIT_IE = (n as any).emitIE ?? (n as any).emitIe ?? (n as any).emitter?.ie ?? null;
+          // normalize/clean values: treat empty strings as absent
+          const NOTE_EMIT_CNPJ_CLEAN = NOTE_EMIT_CNPJ_RAW ? String(NOTE_EMIT_CNPJ_RAW).replace(/\D/g, "") : null;
+          const RES_EMIT_CNPJ = NOTE_EMIT_CNPJ_CLEAN && NOTE_EMIT_CNPJ_CLEAN.length > 0 ? NOTE_EMIT_CNPJ_CLEAN.padStart(14, "0") : EMIT_CNPJ;
+          const RES_EMIT_XNOME = (NOTE_EMIT_NAME && String(NOTE_EMIT_NAME).trim()) ? String(NOTE_EMIT_NAME).trim() : EMIT_xNome;
+          const RES_EMIT_IE = (NOTE_EMIT_IE && String(NOTE_EMIT_IE).trim()) ? String(NOTE_EMIT_IE).trim() : EMIT_IE;
 
           // determine model (55 default) and special handling for cupom (65)
           const mod = (n.model === "65" || String(n.model) === "65") ? "65" : "55";
@@ -210,7 +214,7 @@ function generateExcel(
           nfe.push(`<xPais>${escapeXmlText(EMIT_xPais)}</xPais>`);
           nfe.push(`<fone>${escapeXmlText(EMIT_fone)}</fone>`);
           nfe.push(`</enderEmit>`);
-          nfe.push(`<IE>${escapeXmlText(EMIT_IE)}</IE>`);
+          nfe.push(`<IE>${escapeXmlText(RES_EMIT_IE)}</IE>`);
           nfe.push(`<CRT>3</CRT>`);
           nfe.push(`</emit>`);
 
@@ -430,12 +434,22 @@ function generateExcel(
 
     const purchaseNotesXml = purchaseNotes
       .map((n) => {
+        // determine best CNPJ value for the note
+        const rawSupplierCnpj = (n as any).supplierCNPJ ?? (n as any).supplierCnpj ?? (n as any).supplier_cnpj ?? null;
+        const rawEmitCnpj = (n as any).emitCNPJ ?? (n as any).emitCnpj ?? (n as any).emitterCNPJ ?? (n as any).emitter?.cnpj ?? null;
+        const rawFromDocument = (n as any).documentNumber ?? null;
+        const pickRaw = rawSupplierCnpj || rawEmitCnpj || rawFromDocument || null;
+        const cleaned = pickRaw ? String(pickRaw).replace(/\D/g, "") : "";
+        const noteCnpj = cleaned && cleaned.length > 0 ? cleaned : "";
+
         return (
           `  <Nota data="${escapeXmlText(n.date)}">\n` +
           `    <Categoria>${escapeXmlText(n.category)}</Categoria>\n` +
           `    <Descricao>${escapeXmlText(n.description ?? "")}</Descricao>\n` +
           `    <Valor>${escapeXmlText(n.amount ?? 0)}</Valor>\n` +
+          `    <CNPJ>${escapeXmlText(noteCnpj)}</CNPJ>\n` +
           `    <Fornecedor>${escapeXmlText(n.supplier ?? "")}</Fornecedor>\n` +
+          `    <IE>${escapeXmlText((n as any).emitIE ?? (n as any).emitIe ?? "")}</IE>\n` +
           `    <FormaPagamento>${escapeXmlText(n.paymentMethod ?? "")}</FormaPagamento>\n` +
           `    <TemDocumentoFiscal>${escapeXmlText(n.hasFiscalDocument ?? false)}</TemDocumentoFiscal>\n` +
           `    <NumeroDocumento>${escapeXmlText(n.documentNumber ?? "")}</NumeroDocumento>\n` +
