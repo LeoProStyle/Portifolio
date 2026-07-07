@@ -11,6 +11,8 @@ interface EmulatorProps {
 const FALLBACK_TIMEOUT_MS = 10000;
 const RETRY_DELAY_MS = 250;
 
+type EmulatorState = 'loading' | 'running' | 'failed';
+
 function getCoreCandidates(primaryCore?: string): string[] {
   const normalized = (primaryCore || 'nes').trim().toLowerCase();
   const baseCandidates: Record<string, string[]> = {
@@ -42,24 +44,63 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
   const [status, setStatus] = useState<string>('Preparing emulator...');
   const romUrl = `/api/rom/${gameSlug}`;
   const coreCandidates = getCoreCandidates(core);
-  const attemptRef = useRef({ attemptIndex: 0, timeoutId: null as number | null, iframeUrl: '', currentCore: '' });
+
+  // State management for emulator lifecycle
+  const stateRef = useRef<EmulatorState>('loading');
+  const attemptRef = useRef({
+    attemptIndex: 0,
+    timeoutId: null as number | null,
+    iframeUrl: '',
+    currentCore: '',
+    iframeElement: null as HTMLIFrameElement | null
+  });
   const cancelledRef = useRef(false);
+
+  // Cleanup resources for current attempt
+  const cleanupCurrentAttempt = () => {
+    if (attemptRef.current.timeoutId !== null) {
+      window.clearTimeout(attemptRef.current.timeoutId);
+      attemptRef.current.timeoutId = null;
+    }
+  };
+
+  // Log helper with consistent format
+  const logEmulator = (level: 'info' | 'warn' | 'error', message: string, data?: any) => {
+    const logMessage = `[emulator] ${message}`;
+    console[level](logMessage, {
+      gameSlug,
+      gameTitle,
+      console: core,
+      currentCore: attemptRef.current.currentCore,
+      attemptIndex: attemptRef.current.attemptIndex + 1,
+      totalAttempts: coreCandidates.length,
+      state: stateRef.current,
+      ...data
+    });
+  };
 
   const tryCore = (attemptIndex: number) => {
     if (cancelledRef.current) return;
 
     const currentCore = coreCandidates[attemptIndex];
     if (!currentCore) {
+      logEmulator('error', 'No more cores available to try');
       setStatus('Unable to initialize the emulator with the available cores.');
+      stateRef.current = 'failed';
       return;
     }
 
-    console.info('[emulator] Trying core', { gameSlug, gameTitle, core: currentCore, attempt: attemptIndex + 1 });
-    setStatus(`Trying core ${currentCore} (${attemptIndex + 1}/${coreCandidates.length})...`);
+    stateRef.current = 'loading';
+    attemptRef.current.attemptIndex = attemptIndex;
+    attemptRef.current.currentCore = currentCore;
+
+    logEmulator('info', `Trying core (${attemptIndex + 1}/${coreCandidates.length})`, { core: currentCore });
+    setStatus(`Trying ${currentCore} (${attemptIndex + 1}/${coreCandidates.length})...`);
     setIframeUrl('');
 
+    // Delay before showing iframe to allow state cleanup
     window.setTimeout(() => {
-      if (cancelledRef.current) return;
+      if (cancelledRef.current || stateRef.current === 'running') return;
 
       const params = new URLSearchParams({
         title: gameTitle,
@@ -67,25 +108,29 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
         rom: romUrl
       });
 
-      // Do not rely on messages from the emulator. Consider failure only when
-      // the iframe triggers an error or when the timeout expires.
       const url = `/emulator.html?${params.toString()}`;
-      attemptRef.current.attemptIndex = attemptIndex;
-      attemptRef.current.currentCore = currentCore;
       attemptRef.current.iframeUrl = url;
 
       setIframeUrl(url);
 
+      // Set timeout for this attempt
       const timeoutId = window.setTimeout(() => {
         if (cancelledRef.current) return;
-        console.warn('[emulator] Core timeout', { gameSlug, gameTitle, core: currentCore });
-        setStatus(`Core ${currentCore} did not initialize. Trying the next fallback...`);
+        
+        // Only trigger fallback if still in loading state
+        if (stateRef.current === 'loading') {
+          logEmulator('warn', 'Core initialization timeout');
+          stateRef.current = 'failed';
+          setStatus(`${currentCore} did not initialize within ${FALLBACK_TIMEOUT_MS}ms. Trying next core...`);
 
-        const nextAttempt = attemptIndex + 1;
-        if (nextAttempt < coreCandidates.length) {
-          window.setTimeout(() => tryCore(nextAttempt), RETRY_DELAY_MS);
-        } else {
-          setStatus('The emulator could not be initialized with the available cores.');
+          const nextAttempt = attemptIndex + 1;
+          if (nextAttempt < coreCandidates.length) {
+            window.setTimeout(() => tryCore(nextAttempt), RETRY_DELAY_MS);
+          } else {
+            logEmulator('error', 'All cores exhausted - emulator initialization failed');
+            setStatus('All cores exhausted. Unable to initialize emulator.');
+            stateRef.current = 'failed';
+          }
         }
       }, FALLBACK_TIMEOUT_MS);
 
@@ -95,28 +140,31 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
 
   useEffect(() => {
     cancelledRef.current = false;
+    stateRef.current = 'loading';
 
-    // Listen for canvas ready signal from iframe
+    // Listen for canvas ready signal from iframe (generic for any core/console)
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === 'EMULATOR_CANVAS_READY') {
-        console.info('[emulator] Core initialized successfully.');
-        if (attemptRef.current.timeoutId !== null) {
-          window.clearTimeout(attemptRef.current.timeoutId);
-          attemptRef.current.timeoutId = null;
-        }
-        setStatus(`${attemptRef.current.currentCore} initialized.`);
+        // Ignore if not in loading state or component is cancelled
+        if (cancelledRef.current || stateRef.current !== 'loading') return;
+
+        // Mark as running and prevent any further fallback attempts
+        stateRef.current = 'running';
+        cleanupCurrentAttempt();
+
+        logEmulator('info', 'Core initialized successfully');
+        logEmulator('info', `Running with core: ${attemptRef.current.currentCore}`);
+        setStatus(`Running: ${attemptRef.current.currentCore}`);
       }
     };
 
     window.addEventListener('message', handleMessage);
-
     tryCore(0);
+
     return () => {
       cancelledRef.current = true;
       window.removeEventListener('message', handleMessage);
-      if (attemptRef.current.timeoutId !== null) {
-        window.clearTimeout(attemptRef.current.timeoutId);
-      }
+      cleanupCurrentAttempt();
     };
   }, [gameSlug, gameTitle, core]);
 
@@ -138,25 +186,31 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
           title={`Play ${gameTitle}`}
           allow="fullscreen"
           onLoad={() => {
-            console.info('[emulator] iframe loaded', { gameSlug, gameTitle, core, iframeUrl });
-            // Note: Do NOT cancel the fallback timeout on load; loader.js may load
-            // but the emulator may still fail to initialize. Success is assumed
-            // unless an error or timeout occurs.
+            logEmulator('info', 'iframe loaded (document ready)', { url: iframeUrl });
           }}
           onError={() => {
-            // Immediate fallback on iframe error for the current attempt
-            if (attemptRef.current.timeoutId !== null) {
-              window.clearTimeout(attemptRef.current.timeoutId);
-            }
-            const attemptIndex = attemptRef.current.attemptIndex || 0;
-            const currentCore = attemptRef.current.currentCore;
-            console.error('[emulator] iframe error', { gameSlug, gameTitle, core: currentCore });
-            setStatus(`Core ${currentCore} failed to load. Trying next fallback...`);
-            const nextAttempt = attemptIndex + 1;
-            if (nextAttempt < coreCandidates.length) {
-              window.setTimeout(() => tryCore(nextAttempt), RETRY_DELAY_MS);
-            } else {
-              setStatus('The emulator could not be initialized with the available cores.');
+            // Immediate fallback on iframe network/security error
+            if (cancelledRef.current) return;
+            
+            // Only trigger fallback if still in loading state
+            if (stateRef.current === 'loading') {
+              cleanupCurrentAttempt();
+              stateRef.current = 'failed';
+
+              const attemptIndex = attemptRef.current.attemptIndex || 0;
+              const currentCore = attemptRef.current.currentCore;
+
+              logEmulator('error', `iframe error - triggering fallback for core: ${currentCore}`);
+              setStatus(`${currentCore} failed to load. Trying next core...`);
+
+              const nextAttempt = attemptIndex + 1;
+              if (nextAttempt < coreCandidates.length) {
+                window.setTimeout(() => tryCore(nextAttempt), RETRY_DELAY_MS);
+              } else {
+                logEmulator('error', 'All cores exhausted on iframe error');
+                setStatus('All cores failed. Unable to initialize emulator.');
+                stateRef.current = 'failed';
+              }
             }
           }}
         />
