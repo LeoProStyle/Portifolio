@@ -17,215 +17,105 @@
             width: 100%;
             height: 100%;
         }
-        .error {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            color: #ff4444;
-            font-size: 18px;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
     </style>
 </head>
 <body>
     <div id="game"></div>
     <script>
         const params = new URLSearchParams(window.location.search);
+
         const gameTitle = params.get('title') || 'Game';
         const core = params.get('core') || 'nes';
         const romUrl = params.get('rom');
+        const emuPath = '/emulator/';
 
-        // Core is passed explicitly from the game.system mapping.
-        // Do not infer the emulator core from the ROM file extension.
-        function setStatus(message) {
-            const container = document.getElementById('game');
-            if (!container) return;
-            container.innerHTML = `<div class="error">${message}</div>`;
-        }
+        window.EJS_player = '#game';
+        window.EJS_core = core;
+        window.EJS_pathtodata = emuPath;
+        window.EJS_startOnLoaded = true;
+        window.EJS_defaultControls = true;
 
-        function logEvent(level, message, detail) {
-            console[level](`[emulator] ${message}`, detail || {});
-            try {
-                fetch('/api/logs', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ level, message, detail, core, romUrl, gameTitle })
-                }).catch(() => {});
-            } catch (e) {}
-        }
+        let canvasSignalSent = false;
+        let canvasWatchTimer = null;
+        let canvasObserver = null;
+        let hasLoggedWaiting = false;
 
-        const emuPath = 'https://cdn.emulatorjs.org/stable/data/';
+        const sendCanvasReadySignal = () => {
+            if (canvasSignalSent) return;
 
-        console.info('[emulator] Booting emulator shell');
-        // Log key bootstrap info before loading the runtime
-        logEvent('info', 'Core selected', { core });
-        logEvent('info', 'ROM URL', { romUrl });
-        logEvent('info', 'EmulatorJS path', { path: emuPath });
-        setStatus(`Loading ${gameTitle}...`);
-
-        if (!romUrl) {
-            const msg = 'No ROM URL provided';
-            setStatus(msg);
-            logEvent('error', msg, { core, gameTitle });
-        } else {
-            (function () {
-                // Minimal EmulatorJS configuration: rely on EmulatorJS to fetch the ROM
-                // using `EJS_gameUrl` and only set the required bootstrap variables.
-                const allowedCores = [
-                    'fceumm',
-                    'snes9x',
-                    'mupen64plus_next',
-                    'gambatte',
-                    'mgba',
-                    'genesis_plus_gx',
-                    'pcsx_rearmed',
-                    'fbneo'
-                ];
-
-                const coreNorm = (core || '').trim();
-                if (!coreNorm || !allowedCores.includes(coreNorm)) {
-                    const msg = `Invalid or missing emulator core: ${coreNorm || '<empty>'}`;
-                    console.error('[emulator] ' + msg);
-                    setStatus(msg);
-                    logEvent('error', msg, { core: coreNorm, allowedCores });
-                    return; // Do not attempt to load a nonexistent core
+            const canvas = document.querySelector('canvas');
+            if (!canvas) {
+                if (!hasLoggedWaiting) {
+                    console.log('[RetroKey] Waiting canvas...');
+                    hasLoggedWaiting = true;
                 }
+                return;
+            }
 
-                window.EJS_player = '#game';
-                window.EJS_core = coreNorm;
-                window.EJS_pathtodata = emuPath;
-                window.EJS_gameUrl = romUrl;
-                window.EJS_startOnLoaded = true;
+            canvasSignalSent = true;
+            if (canvasWatchTimer) {
+                window.clearInterval(canvasWatchTimer);
+                canvasWatchTimer = null;
+            }
+            if (canvasObserver) {
+                canvasObserver.disconnect();
+                canvasObserver = null;
+            }
 
-                // Log and validate all EmulatorJS parameters before loading the runtime
-                (function logAndValidateEJS() {
-                    const ejsConfig = {
-                        EJS_player: window.EJS_player,
-                        EJS_core: window.EJS_core,
-                        EJS_gameUrl: window.EJS_gameUrl,
-                        EJS_pathtodata: window.EJS_pathtodata,
-                        EJS_startOnLoaded: window.EJS_startOnLoaded
-                    };
+            canvas.setAttribute('tabindex', '0');
+            canvas.focus?.();
 
-                    console.info('[emulator] EJS configuration:', ejsConfig);
-                    logEvent('info', 'EJS configuration', ejsConfig);
+            console.log('[RetroKey] Canvas detected');
+            console.log('[RetroKey] Sending EMULATOR_CANVAS_READY');
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'EMULATOR_CANVAS_READY' }, '*');
+            }
+        };
 
-                    const invalid = Object.entries(ejsConfig).filter(([k, v]) => v === undefined || v === null || (typeof v === 'string' && v.trim() === ''));
-                    if (invalid.length) {
-                        const keys = invalid.map(([k]) => k).join(', ');
-                        const msg = `Invalid EmulatorJS parameters: ${keys}`;
-                        console.error('[emulator] ' + msg, { invalid });
-                        logEvent('error', msg, { invalid, ejsConfig });
-                        setStatus(msg);
-                        throw new Error(msg); // abort initialization by stopping script execution
-                    }
-                })();
+        const startCanvasWatch = () => {
+            console.log('[RetroKey] EmulatorJS loader loaded');
+            console.log('[RetroKey] Waiting canvas...');
+            sendCanvasReadySignal();
 
-                const script = document.createElement('script');
-                script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-                script.onload = () => {
-                    console.info('[emulator] Loader script loaded');
-                    logEvent('info', 'Loader script loaded');
+            canvasWatchTimer = window.setInterval(sendCanvasReadySignal, 250);
+            canvasObserver = new MutationObserver(() => {
+                sendCanvasReadySignal();
+            });
+            canvasObserver.observe(document.documentElement, {
+                childList: true,
+                subtree: true
+            });
+        };
 
-                    (async function verifyVersions() {
-                        try {
-                            const loaderSrc = script.src;
-                            logEvent('info', 'Loader script src', { src: loaderSrc });
+        (async () => {
+            console.log('[RetroKey] Loading ROM:', romUrl);
 
-                            // Try to read version from global emulator instance if available
-                            const globalVersion = (window.EJS_emulator && (window.EJS_emulator.version || window.EJS_emulator.ver || window.EJS_emulator.build)) || null;
-                            if (globalVersion) {
-                                console.info('[emulator] Detected EmulatorJS version (global)', globalVersion);
-                                logEvent('info', 'EmulatorJS version (global)', { version: globalVersion });
-                            }
+            const response = await fetch(romUrl);
+            if (!response.ok) {
+                console.error('ROM error', response.status);
+                return;
+            }
 
-                            // Attempt to fetch loader.js and emulator.min.js and look for a version string
-                            const loaderResp = await fetch(loaderSrc, { cache: 'no-store' });
-                            let loaderVersion = null;
-                            if (loaderResp.ok) {
-                                const loaderText = await loaderResp.text();
-                                const m = loaderText.match(/version\W*[:=]\W*["']?(\d+\.\d+\.\d+)/i) || loaderText.match(/EmulatorJS\s*v?(\d+\.\d+\.\d+)/i);
-                                if (m) loaderVersion = m[1];
-                                console.info('[emulator] loader.js fetch OK', { loaderSrc, loaderVersion: loaderVersion || '<none>' });
-                                logEvent('info', 'loader.js fetched', { loaderSrc, loaderVersion: loaderVersion || null });
-                            } else {
-                                console.warn('[emulator] Unable to fetch loader.js for version check', { loaderSrc, status: loaderResp.status });
-                                logEvent('warn', 'Unable to fetch loader.js for version check', { loaderSrc, status: loaderResp.status });
-                            }
+            const buffer = await response.arrayBuffer();
+            console.log('[RetroKey] ROM loaded:', buffer.byteLength, 'bytes');
 
-                            const emMinUrl = emuPath + 'emulator.min.js';
-                            const emResp = await fetch(emMinUrl, { cache: 'no-store' });
-                            let emVersion = null;
-                            if (emResp.ok) {
-                                const emText = await emResp.text();
-                                const m2 = emText.match(/version\W*[:=]\W*["']?(\d+\.\d+\.\d+)/i) || emText.match(/EmulatorJS\s*v?(\d+\.\d+\.\d+)/i);
-                                if (m2) emVersion = m2[1];
-                                console.info('[emulator] emulator.min.js fetch OK', { emMinUrl, emVersion: emVersion || '<none>' });
-                                logEvent('info', 'emulator.min.js fetched', { emMinUrl, emVersion: emVersion || null });
-                            } else {
-                                console.warn('[emulator] Unable to fetch emulator.min.js for version check', { emMinUrl, status: emResp.status });
-                                logEvent('warn', 'Unable to fetch emulator.min.js for version check', { emMinUrl, status: emResp.status });
-                            }
+            window.EJS_gameUrl = romUrl;
+            window.EJS_gameData = buffer;
 
-                            // Compare detected versions
-                            if (loaderVersion && emVersion && loaderVersion !== emVersion) {
-                                const msg = `Loader.js version (${loaderVersion}) does not match emulator.min.js version (${emVersion})`;
-                                console.warn('[emulator] ' + msg);
-                                logEvent('warn', 'Version mismatch', { loaderVersion, emVersion });
-                            } else if (loaderVersion && emVersion && loaderVersion === emVersion) {
-                                console.info('[emulator] Loader and emulator runtime versions match', { version: loaderVersion });
-                                logEvent('info', 'Version match', { version: loaderVersion });
-                            } else {
-                                console.info('[emulator] Version information incomplete', { loaderVersion, emVersion, globalVersion });
-                                logEvent('info', 'Version information incomplete', { loaderVersion: loaderVersion || null, emVersion: emVersion || null, globalVersion: globalVersion || null });
-                            }
-                        } catch (err) {
-                            console.warn('[emulator] Version verification failed', err);
-                            logEvent('error', 'Version verification failed', { error: (err && err.message) || String(err) });
-                        }
-                    })();
+            const ext = romUrl.split('.').pop();
+            window.EJS_gameName = `${gameTitle}.${ext}`;
 
-                    (function monitorCanvasInitialization() {
-                        let checkCount = 0;
-                        const maxChecks = 100; // ~10s at 100ms intervals
-                        const checkInterval = setInterval(() => {
-                            checkCount++;
+            const script = document.createElement('script');
+            script.src = `${emuPath}loader.js`;
+            script.onload = () => {
+                startCanvasWatch();
+            };
+            script.onerror = () => {
+                console.error('[RetroKey] Failed to load EmulatorJS loader');
+            };
 
-                            // Check if canvas was created inside #game container
-                            const gameContainer = document.getElementById('game');
-                            const canvas = gameContainer?.querySelector('canvas');
-
-                            if (canvas) {
-                                clearInterval(checkInterval);
-                                console.info('[emulator] Core initialized successfully.');
-                                logEvent('info', 'Core initialized successfully');
-
-                                // Notify parent component that core initialized
-                                try {
-                                    window.parent.postMessage({ type: 'EMULATOR_CANVAS_READY', core }, '*');
-                                } catch (err) {
-                                    console.warn('[emulator] Failed to send EMULATOR_CANVAS_READY message', err);
-                                }
-                            } else if (checkCount >= maxChecks) {
-                                clearInterval(checkInterval);
-                                console.warn('[emulator] Canvas not detected within timeout', { checkCount, maxChecks });
-                                logEvent('warn', 'Canvas not detected within timeout', { checkCount, maxChecks });
-                            }
-                        }, 100);
-                    })();
-                };
-                script.onerror = () => {
-                    const msg = 'Failed to load emulator script';
-                    setStatus(msg);
-                    logEvent('error', msg, { core, romUrl });
-                };
-                document.body.appendChild(script);
-            })();
-        }
+            document.body.appendChild(script);
+        })();
     </script>
 </body>
 </html>

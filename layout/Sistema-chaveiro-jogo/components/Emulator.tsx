@@ -45,6 +45,9 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
   const romUrl = `/api/rom/${gameSlug}`;
   const coreCandidates = getCoreCandidates(core);
 
+  // Ref for iframe to manage focus
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
   // State management for emulator lifecycle
   const stateRef = useRef<EmulatorState>('loading');
   const attemptRef = useRef({
@@ -175,6 +178,7 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
       </div>
       {iframeUrl ? (
         <iframe
+          ref={iframeRef}
           key={iframeUrl}
           src={iframeUrl}
           style={{
@@ -185,6 +189,7 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
           }}
           title={`Play ${gameTitle}`}
           allow="fullscreen"
+          tabIndex={0}
           onLoad={() => {
             logEmulator('info', 'iframe loaded (document ready)', { url: iframeUrl });
           }}
