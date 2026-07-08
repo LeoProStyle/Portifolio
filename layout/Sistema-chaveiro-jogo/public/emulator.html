@@ -33,7 +33,110 @@
         window.EJS_core = core;
         window.EJS_pathtodata = emuPath;
         window.EJS_startOnLoaded = true;
-        window.EJS_defaultControls = true;
+        window.EJS_DEBUG_XX = true;
+         window.EJS_defaultControls = true;
+
+        const arcadeCores = ['fbneo', 'mame2003_plus', 'mame2003', 'arcade', 'mame'];
+        const genesisCores = ['genesis_plus_gx', 'picodrive', 'smsplus'];
+        const nesCores = ['fceumm', 'nestopia', 'nes'];
+
+        const isArcadeCore = arcadeCores.includes(core);
+        const isGenesisCore = genesisCores.includes(core);
+        const isNesCore = nesCores.includes(core);
+
+        if (isGenesisCore) {
+            console.log('[RetroKey] Loading Genesis controls');
+
+            window.EJS_defaultControls = {
+                0: {
+                    0: { value: 'z', value2: 'A' },
+                    1: { value: 'x', value2: 'Y' },
+                    2: { value: 'c', value2: 'X' },
+                    3: { value: 'enter', value2: 'START' },
+                    4: { value: 'up arrow', value2: 'DPAD_UP' },
+                    5: { value: 'down arrow', value2: 'DPAD_DOWN' },
+                    6: { value: 'left arrow', value2: 'DPAD_LEFT' },
+                    7: { value: 'right arrow', value2: 'DPAD_RIGHT' }
+                }
+            };
+
+            if (core === 'smsplus') {
+                window.EJS_controlScheme = 'segaMS';
+            } else {
+                window.EJS_controlScheme = 'segaMD';
+            }
+        } else if (isArcadeCore) {
+            console.log('[RetroKey] Loading Arcade/MAME controls');
+
+            window.EJS_defaultControls = {
+                0: {
+                    0: { value: 'z', value2: 'BUTTON_1' },
+                    1: { value: 'x', value2: 'BUTTON_2' },
+                    2: { value: 'c', value2: 'INSERT_COIN' },
+                    3: { value: 'Enter', value2: 'START' },
+                    4: { value: 'ArrowUp', value2: 'DPAD_UP' },
+                    5: { value: 'ArrowDown', value2: 'DPAD_DOWN' },
+                    6: { value: 'ArrowLeft', value2: 'DPAD_LEFT' },
+                    7: { value: 'ArrowRight', value2: 'DPAD_RIGHT' }
+                }
+            };
+            window.EJS_controlScheme = 'arcade';
+        } else if (isNesCore) {
+            console.log('[RetroKey] Loading NES controls');
+
+            window.EJS_defaultControls = {
+                0: {
+                    0: { value: 'x', value2: 'BUTTON_2' },
+                    3: { value: 'Enter', value2: 'START' },
+                    4: { value: 'ArrowUp', value2: 'DPAD_UP' },
+                    5: { value: 'ArrowDown', value2: 'DPAD_DOWN' },
+                    6: { value: 'ArrowLeft', value2: 'DPAD_LEFT' },
+                    7: { value: 'ArrowRight', value2: 'DPAD_RIGHT' },
+                    8: { value: 'z', value2: 'BUTTON_1' }
+                }
+            };
+            window.EJS_controlScheme = 'nes';
+        } else {
+            console.log('[RetroKey] Loading default controls for', core);
+
+            window.EJS_defaultControls = {
+                0: {
+                    0: { value: 'x', value2: 'BUTTON_2' },
+                    3: { value: 'Enter', value2: 'START' },
+                    4: { value: 'ArrowUp', value2: 'DPAD_UP' },
+                    5: { value: 'ArrowDown', value2: 'DPAD_DOWN' },
+                    6: { value: 'ArrowLeft', value2: 'DPAD_LEFT' },
+                    7: { value: 'ArrowRight', value2: 'DPAD_RIGHT' },
+                    8: { value: 'z', value2: 'BUTTON_1' }
+                }
+            };
+        }
+
+        // Ensure objects exist for players 1-3 to match EmulatorJS expectations
+        window.EJS_defaultControls[1] = window.EJS_defaultControls[1] || {};
+        window.EJS_defaultControls[2] = window.EJS_defaultControls[2] || {};
+        window.EJS_defaultControls[3] = window.EJS_defaultControls[3] || {};
+
+        // Ensure keyboard mapping uses EmulatorJS control mapping (disable direct passthrough)
+        window.EJS_defaultOptions = window.EJS_defaultOptions || {};
+        window.EJS_defaultOptions.keyboardInput = 'disabled';
+        window.EJS_defaultOptions.altKeyboardInput = 'disabled';
+
+        console.log('[RetroKey] EJS_defaultControls registered', window.EJS_defaultControls);
+
+        // Callback executed when EmulatorJS emits ready
+        window.EJS_ready = function() {
+            console.log('[RetroKey] EJS_ready called - emulator initialized');
+            try {
+                if (window.EJS_emulator && window.EJS_emulator.controls) {
+                    console.log('[RetroKey] Emulator controls (player 0):', window.EJS_emulator.controls[0]);
+                } else {
+                    console.log('[RetroKey] Emulator object not yet available to inspect controls');
+                }
+            } catch (e) {
+                console.warn('[RetroKey] Error reading emulator controls', e);
+            }
+        };
 
         let canvasSignalSent = false;
         let canvasWatchTimer = null;
@@ -99,14 +202,29 @@
             const buffer = await response.arrayBuffer();
             console.log('[RetroKey] ROM loaded:', buffer.byteLength, 'bytes');
 
-            window.EJS_gameUrl = romUrl;
+            // Use in-memory game data only; do not set EJS_gameUrl when using EJS_gameData
             window.EJS_gameData = buffer;
 
-            const ext = romUrl.split('.').pop();
+            const getExtensionFromContentDisposition = (header) => {
+                if (!header) return null;
+                const match = header.match(/filename\*=UTF-8''([^;\n\r]+)/i);
+                if (match && match[1]) {
+                    return match[1].split('.').pop();
+                }
+                const fallbackMatch = header.match(/filename="?([^";\n\r]+)"?/i);
+                if (fallbackMatch && fallbackMatch[1]) {
+                    return fallbackMatch[1].split('.').pop();
+                }
+                return null;
+            };
+
+            const contentDisposition = response.headers.get('content-disposition');
+            const ext = getExtensionFromContentDisposition(contentDisposition) || 'zip';
             window.EJS_gameName = `${gameTitle}.${ext}`;
 
             const script = document.createElement('script');
             script.src = `${emuPath}loader.js`;
+            console.log('[RetroKey] Starting EmulatorJS loader:', script.src);
             script.onload = () => {
                 startCanvasWatch();
             };
@@ -116,6 +234,10 @@
 
             document.body.appendChild(script);
         })();
+
+
+
+
     </script>
 </body>
 </html>

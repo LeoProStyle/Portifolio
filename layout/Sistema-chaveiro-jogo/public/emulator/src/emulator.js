@@ -875,6 +875,13 @@ class EmulatorJS {
                     resolve();
                 });
             }
+            const inMemoryGameData = this.config.gameData || window.EJS_gameData;
+            if (inMemoryGameData) {
+                console.log("[RetroKey] Using in-memory ROM data");
+                gotGameData(inMemoryGameData);
+                return;
+            }
+
             const downloadFile = async () => {
                 const res = await this.downloadFile(this.config.gameUrl, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Data") + progress;

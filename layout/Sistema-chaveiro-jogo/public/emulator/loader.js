@@ -79,8 +79,9 @@
         await loadStyle("emulator.min.css");
     }
     const config = {};
-    config.gameUrl = window.EJS_gameUrl;
-    config.dataPath = scriptPath;
+    config.gameUrl = window.EJS_gameUrl || (window.EJS_gameData ? "game" : undefined);
+    config.gameData = window.EJS_gameData;
+    config.dataPath = (typeof window.EJS_pathtodata === "string" && window.EJS_pathtodata.length > 0) ? window.EJS_pathtodata : scriptPath;
     config.system = window.EJS_core;
     config.biosUrl = window.EJS_biosUrl;
     config.gameName = window.EJS_gameName;

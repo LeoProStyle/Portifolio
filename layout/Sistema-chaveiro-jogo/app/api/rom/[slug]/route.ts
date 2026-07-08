@@ -19,6 +19,29 @@ function hasR2Config() {
   );
 }
 
+function getFilenameFromRomPath(romPath: string, fallbackSlug: string): string {
+  const basename = path.basename(romPath || '');
+  return basename || `${fallbackSlug}.bin`;
+}
+
+function getContentTypeFromFilename(filename: string): string {
+  const ext = path.extname(filename).toLowerCase();
+  switch (ext) {
+    case '.zip':
+      return 'application/zip';
+    case '.7z':
+      return 'application/x-7z-compressed';
+    case '.rar':
+      return 'application/vnd.rar';
+    case '.iso':
+      return 'application/x-iso9660-image';
+    case '.bin':
+      return 'application/octet-stream';
+    default:
+      return 'application/octet-stream';
+  }
+}
+
 async function fetchRomFromR2(objectKey: string) {
   if (!hasR2Config()) {
     console.warn('[rom] R2 not configured - skipping R2 fetch for', objectKey);
@@ -70,10 +93,10 @@ export async function GET(_request: Request, { params }: { params: { slug: strin
       console.info('[rom] romPath indicates R2 key:', romPath, 'for game', game.slug);
       const fileBuffer = await fetchRomFromR2(romPath);
       if (fileBuffer) {
+        const filename = getFilenameFromRomPath(romPath, game.slug);
         const contentLength = Buffer.byteLength(fileBuffer);
-        const filename = `${game.slug}.bin`;
         const headers = {
-          'Content-Type': 'application/octet-stream',
+          'Content-Type': getContentTypeFromFilename(filename),
           'Content-Disposition': `attachment; filename="${filename}"`,
           'Content-Length': String(contentLength),
           'Cache-Control': 'public, max-age=86400'
@@ -96,10 +119,10 @@ export async function GET(_request: Request, { params }: { params: { slug: strin
     try {
       console.info('[rom] Attempting to read local ROM file at', localPath);
       const fileBuffer = fs.readFileSync(localPath);
+      const filename = getFilenameFromRomPath(romPath, game.slug);
       const contentLength = Buffer.byteLength(fileBuffer);
-      const filename = `${game.slug}.bin`;
       const headers = {
-        'Content-Type': 'application/octet-stream',
+        'Content-Type': getContentTypeFromFilename(filename),
         'Content-Disposition': `attachment; filename="${filename}"`,
         'Content-Length': String(contentLength),
         'Cache-Control': 'public, max-age=86400'
