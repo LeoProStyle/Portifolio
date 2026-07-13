@@ -27,14 +27,18 @@
         const gameTitle = params.get('title') || 'Game';
         const core = params.get('core') || 'nes';
         const romUrl = params.get('rom');
-        const emuPath = '/emulator/';
+
+        // CDN oficial do EmulatorJS
+        const EMULATORJS_CDN = 'https://cdn.emulatorjs.org/stable/data/';
 
         window.EJS_player = '#game';
         window.EJS_core = core;
-        window.EJS_pathtodata = emuPath;
+        window.EJS_pathtodata = EMULATORJS_CDN;
         window.EJS_startOnLoaded = true;
-        window.EJS_DEBUG_XX = true;
-         window.EJS_defaultControls = true;
+        // Use the minified EmulatorJS bundle from the CDN. Enabling debug mode
+        // forces non-minified files that are not available from the stable build.
+        window.EJS_DEBUG_XX = false;
+        window.EJS_defaultControls = true;
 
         const arcadeCores = ['fbneo', 'mame2003_plus', 'mame2003', 'arcade', 'mame'];
         const genesisCores = ['genesis_plus_gx', 'picodrive', 'smsplus'];
@@ -202,8 +206,20 @@
             const buffer = await response.arrayBuffer();
             console.log('[RetroKey] ROM loaded:', buffer.byteLength, 'bytes');
 
-            // Use in-memory game data only; do not set EJS_gameUrl when using EJS_gameData
+            const romBlob = new Blob([buffer], { type: 'application/octet-stream' });
+            const romBlobUrl = typeof URL.createObjectURL === 'function'
+                ? URL.createObjectURL(romBlob)
+                : null;
+
+            if (!romBlobUrl) {
+                throw new Error('Unable to create a blob URL for the ROM.');
+            }
+
+            // EmulatorJS expects a real URL for the ROM, not an undefined path.
+            window.EJS_gameUrl = romBlobUrl;
             window.EJS_gameData = buffer;
+            console.log('[RetroKey] EJS_gameUrl set:', romBlobUrl);
+            console.log('[RetroKey] EJS_gameData set:', typeof window.EJS_gameData, window.EJS_gameData instanceof ArrayBuffer ? 'ArrayBuffer' : 'unknown');
 
             const getExtensionFromContentDisposition = (header) => {
                 if (!header) return null;
@@ -223,7 +239,7 @@
             window.EJS_gameName = `${gameTitle}.${ext}`;
 
             const script = document.createElement('script');
-            script.src = `${emuPath}loader.js`;
+            script.src = EMULATORJS_CDN + 'loader.js';
             console.log('[RetroKey] Starting EmulatorJS loader:', script.src);
             script.onload = () => {
                 startCanvasWatch();

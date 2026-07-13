@@ -89,11 +89,15 @@ export async function GET(_request: Request, { params }: { params: { slug: strin
 
     const romPath = game.romPath || '';
 
-    if (romPath.startsWith('roms/')) {
-      console.info('[rom] romPath indicates R2 key:', romPath, 'for game', game.slug);
-      const fileBuffer = await fetchRomFromR2(romPath);
+    // Normalize romPath: remove leading slash if present
+    const normalizedRomPath = romPath.startsWith('/') ? romPath.slice(1) : romPath;
+
+    // Try R2 first if romPath looks like it's meant for R2 (starts with roms/)
+    if (normalizedRomPath.startsWith('roms/')) {
+      console.info('[rom] romPath indicates R2 key:', normalizedRomPath, 'for game', game.slug);
+      const fileBuffer = await fetchRomFromR2(normalizedRomPath);
       if (fileBuffer) {
-        const filename = getFilenameFromRomPath(romPath, game.slug);
+        const filename = getFilenameFromRomPath(normalizedRomPath, game.slug);
         const contentLength = Buffer.byteLength(fileBuffer);
         const headers = {
           'Content-Type': getContentTypeFromFilename(filename),
@@ -104,22 +108,22 @@ export async function GET(_request: Request, { params }: { params: { slug: strin
         console.info('[rom] Served ROM from R2 for', game.slug, { status: 200, headers, contentLength, filename });
         return new NextResponse(fileBuffer, { headers });
       } else {
-        console.warn('[rom] R2 fetch returned no data for', romPath, '; falling back to local if applicable');
+        console.error('[rom] R2 fetch returned no data for', normalizedRomPath);
+        console.info('[rom] Returning JSON error response', { status: 404, contentType: 'application/json' });
+        return NextResponse.json(
+          { error: 'ROM not found on R2', details: `Expected ROM at R2 key: ${normalizedRomPath}` },
+          { status: 404 }
+        );
       }
     }
 
-    if (!romPath.startsWith('/roms/')) {
-      console.error('[rom] Invalid romPath for', game.slug, romPath);
-      console.info('[rom] Returning JSON error response', { status: 400, contentType: 'application/json' });
-      return NextResponse.json({ error: 'Invalid ROM path' }, { status: 400 });
-    }
-
-    const localPath = path.join(process.cwd(), 'public', romPath);
+    // If romPath doesn't start with roms/ and R2 is not configured, try local filesystem
+    const localPath = path.join(process.cwd(), 'public', normalizedRomPath);
 
     try {
       console.info('[rom] Attempting to read local ROM file at', localPath);
       const fileBuffer = fs.readFileSync(localPath);
-      const filename = getFilenameFromRomPath(romPath, game.slug);
+      const filename = getFilenameFromRomPath(normalizedRomPath, game.slug);
       const contentLength = Buffer.byteLength(fileBuffer);
       const headers = {
         'Content-Type': getContentTypeFromFilename(filename),
@@ -131,10 +135,10 @@ export async function GET(_request: Request, { params }: { params: { slug: strin
       return new NextResponse(fileBuffer, { headers });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      console.error('[rom] Failed to read local ROM file for', game.slug, localPath, message);
+      console.error('[rom] ROM file not found for', game.slug, localPath, message);
       console.info('[rom] Returning JSON error response', { status: 404, contentType: 'application/json' });
       return NextResponse.json(
-        { error: 'ROM file not available', url: null, details: message },
+        { error: 'ROM file not available', details: `Unable to locate ROM at local path or R2: ${normalizedRomPath}` },
         { status: 404 }
       );
     }
