@@ -9,6 +9,9 @@
     "seed": "tsx scripts/seed.ts",
     "test:auth": "node --import tsx --test tests/auth-config.test.ts"
   },
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1079.0",
     "mongodb": "^7.4.0",
