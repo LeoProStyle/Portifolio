@@ -63,10 +63,26 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
   });
   const cancelledRef = useRef(false);
 
+  const scheduleTimeout = (callback: () => void, delay: number) => {
+    if (typeof window !== 'undefined') {
+      return window.setTimeout(callback, delay);
+    }
+    return setTimeout(callback, delay) as unknown as number;
+  };
+
+  const clearScheduledTimeout = (timeoutId: number | null) => {
+    if (timeoutId === null) return;
+    if (typeof window !== 'undefined') {
+      window.clearTimeout(timeoutId);
+    } else {
+      clearTimeout(timeoutId);
+    }
+  };
+
   // Cleanup resources for current attempt
   const cleanupCurrentAttempt = () => {
     if (attemptRef.current.timeoutId !== null) {
-      window.clearTimeout(attemptRef.current.timeoutId);
+      clearScheduledTimeout(attemptRef.current.timeoutId);
       attemptRef.current.timeoutId = null;
     }
   };
@@ -106,7 +122,7 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
     setIframeUrl('');
 
     // Delay before showing iframe to allow state cleanup
-    window.setTimeout(() => {
+    scheduleTimeout(() => {
       if (cancelledRef.current || stateRef.current === 'running') return;
 
       const params = new URLSearchParams({
@@ -121,7 +137,7 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
       setIframeUrl(url);
 
       // Set timeout for this attempt
-      const timeoutId = window.setTimeout(() => {
+      const timeoutId = scheduleTimeout(() => {
         if (cancelledRef.current) return;
         
         // Only trigger fallback if still in loading state
@@ -214,7 +230,7 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
 
               const nextAttempt = attemptIndex + 1;
               if (nextAttempt < coreCandidates.length) {
-                window.setTimeout(() => tryCore(nextAttempt), RETRY_DELAY_MS);
+                scheduleTimeout(() => tryCore(nextAttempt), RETRY_DELAY_MS);
               } else {
                 logEmulator('error', 'All cores exhausted on iframe error');
                 setStatus('All cores failed. Unable to initialize emulator.');

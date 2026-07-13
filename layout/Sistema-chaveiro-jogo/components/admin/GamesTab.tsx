@@ -242,8 +242,11 @@ export default function GamesTab() {
                     onClick={() => {
                       // Open the play route in a new tab to test the game
                       try {
-                        const url = `${window.location.origin}/play/${game.slug}`;
-                        window.open(url, '_blank');
+                        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+                        const url = `${origin || ''}/play/${game.slug}`;
+                        if (typeof window !== 'undefined') {
+                          window.open(url, '_blank');
+                        }
                         setFeedback(`Opened tester for ${game.title}`);
                       } catch (err) {
                         console.error('Failed to open tester', err);
@@ -259,15 +262,18 @@ export default function GamesTab() {
                   <button
                     onClick={async () => {
                       try {
-                        const link = `${window.location.origin}/play/${game.slug}`;
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+                        const link = `${origin || ''}/play/${game.slug}`;
+                        if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
                           await navigator.clipboard.writeText(link);
                           setFeedback(`Link copiado: ${link}`);
-                        } else {
+                        } else if (typeof window !== 'undefined') {
                           // Fallback: prompt the link so user can copy manually
                           // eslint-disable-next-line no-alert
                           window.prompt('Copy this link for your NFC tag:', link);
                           setFeedback('Link exibido para cópia.');
+                        } else {
+                          setFeedback(`Link disponível: ${link}`);
                         }
                       } catch (err) {
                         console.error('Failed to copy link', err);

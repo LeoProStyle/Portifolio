@@ -22,6 +22,10 @@
 <body>
     <div id="game"></div>
     <script>
+        if (typeof window === 'undefined' || typeof document === 'undefined') {
+            throw new Error('Emulator page must run in a browser environment.');
+        }
+
         const params = new URLSearchParams(window.location.search);
 
         const gameTitle = params.get('title') || 'Game';
