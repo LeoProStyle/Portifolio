@@ -154,7 +154,7 @@ function generateExcel(
           const EMIT_UF = process.env.FISCAL_UF ?? "SP";
           const EMIT_mun = process.env.FISCAL_MUN ?? "3550308"; // São Paulo default IBGE
           const EMIT_xMun = process.env.FISCAL_MUN_NAME ?? "SAO PAULO";
-          const EMIT_IE = process.env.FISCAL_IE ?? "123456789123";
+          const EMIT_IE = process.env.FISCAL_IE?.trim() || "";
           const EMIT_xLgr = process.env.FISCAL_LOGRADOURO ?? "Endereco Emitente";
           const EMIT_nro = process.env.FISCAL_NUM ?? "1000";
           const EMIT_xBairro = process.env.FISCAL_BAIRRO ?? "Centro";
@@ -183,7 +183,7 @@ function generateExcel(
           const NOTE_EMIT_CNPJ_CLEAN = NOTE_EMIT_CNPJ_RAW ? String(NOTE_EMIT_CNPJ_RAW).replace(/\D/g, "") : null;
           const RES_EMIT_CNPJ = NOTE_EMIT_CNPJ_CLEAN && NOTE_EMIT_CNPJ_CLEAN.length > 0 ? NOTE_EMIT_CNPJ_CLEAN.padStart(14, "0") : EMIT_CNPJ;
           const RES_EMIT_XNOME = (NOTE_EMIT_NAME && String(NOTE_EMIT_NAME).trim()) ? String(NOTE_EMIT_NAME).trim() : EMIT_xNome;
-          const RES_EMIT_IE = (NOTE_EMIT_IE && String(NOTE_EMIT_IE).trim()) ? String(NOTE_EMIT_IE).trim() : EMIT_IE;
+          const RES_EMIT_IE = (NOTE_EMIT_IE && String(NOTE_EMIT_IE).trim()) ? String(NOTE_EMIT_IE).trim() : "";
 
           // determine model (55 default) and special handling for cupom (65)
           const mod = (n.model === "65" || String(n.model) === "65") ? "65" : "55";

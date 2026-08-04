@@ -37,6 +37,14 @@ const toNumber = (v: string) => {
 const formatBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+function todayISODate() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 export default function ClosureForm({
   defaultDate,
   onCreated,
@@ -46,7 +54,7 @@ export default function ClosureForm({
   onCreated?: () => void;
   closureId?: string;
 }) {
-  const [date, setDate] = useState(defaultDate);
+  const [date, setDate] = useState(() => (closureId ? defaultDate : todayISODate()));
   const [observacao, setObservacao] = useState("");
 
   const [payment, setPayment] = useState<PaymentState>({
@@ -67,6 +75,12 @@ export default function ClosureForm({
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!closureId) {
+      setDate(todayISODate());
+    }
+  }, [closureId]);
 
   // load existing closure when editing
   useEffect(() => {

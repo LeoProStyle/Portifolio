@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CurrencyInput from "@/components/CurrencyInput";
 import { useRouter } from "next/navigation";
 import type { ExpenseCategory } from "@/types";
@@ -8,6 +8,14 @@ import Swal from "sweetalert2";
 
 const formatBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+function todayISODate() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
 
 const toNumber = (v: string) => {
   const n = Number(v);
@@ -23,7 +31,7 @@ export default function ExpenseForm({
   onCreated?: () => void;
   expenseId?: string;
 }) {
-  const [date, setDate] = useState(defaultDate);
+  const [date, setDate] = useState(() => (expenseId ? defaultDate : todayISODate()));
   const [category, setCategory] = useState<ExpenseCategory>("Mercadoria");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState<number>(0);
@@ -37,6 +45,12 @@ export default function ExpenseForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!expenseId) {
+      setDate(todayISODate());
+    }
+  }, [expenseId]);
 
   const disabled = !date || !category || !description || typeof amount !== "number" || loading;
 

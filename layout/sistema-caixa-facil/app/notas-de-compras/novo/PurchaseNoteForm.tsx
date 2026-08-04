@@ -9,8 +9,16 @@ import { useRouter } from "next/navigation";
 const formatBRL = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 const toNumber = (v: string) => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
 
+function todayISODate() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { defaultDate: string; onCreated?: () => void; noteId?: string; }) {
-  const [date, setDate] = useState(defaultDate);
+  const [date, setDate] = useState(() => (noteId ? defaultDate : todayISODate()));
   const [category, setCategory] = useState<ExpenseCategory>("Mercadoria");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState<number>(0);
@@ -26,6 +34,12 @@ export default function PurchaseNoteForm({ defaultDate, onCreated, noteId }: { d
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (!noteId) {
+      setDate(todayISODate());
+    }
+  }, [noteId]);
 
   // load existing when editing
   React.useEffect(() => {
