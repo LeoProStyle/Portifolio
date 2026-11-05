@@ -19,7 +19,15 @@ export default function Home() {
    */
   async function refreshStudyStatus() {
     const res = await fetch("/api/study");
-    const data = await res.json();
+    const text = await res.text();
+
+    let data: Record<string, any> = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = {};
+    }
+
     setStudyStatus(data.status || "idle");
     setStudyMessage(data.message || "Sem status de estudo.");
   }
@@ -90,7 +98,14 @@ export default function Home() {
         body: JSON.stringify({ question: currentQuestion }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: Record<string, any> = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        data = {};
+      }
+
       if (!res.ok) {
         throw new Error(data?.error || "Falha ao consultar o documento.");
       }

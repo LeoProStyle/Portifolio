@@ -41,3 +41,14 @@ yarn-error.log*
 
 # OS
 Thumbs.db
+
+# ADD - managed by code-addiction
+.codeadd/*
+!.codeadd/settings.json
+!.codeadd/wiki/
+.claude/
+# END ADD
+
+# ADD QA evidence - managed by add-qa-setup
+docs/features/**/_tests/run-*/
+# END ADD QA evidence

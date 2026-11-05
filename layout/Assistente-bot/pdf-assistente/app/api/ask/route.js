@@ -10,25 +10,26 @@ import { getChunks, studyDocument } from "@/lib/knowledgeBase";
  * @returns {Promise<Response>} Resposta JSON com `answer` ou erro validado.
  */
 export async function POST(req) {
-  const { question } = await req.json();
+  try {
+    const { question } = await req.json();
 
-  if (!question?.trim()) {
-    return Response.json({ error: "Pergunta inválida." }, { status: 400 });
-  }
+    if (!question?.trim()) {
+      return Response.json({ error: "Pergunta inválida." }, { status: 400 });
+    }
 
-  const chunks = getChunks() || (await studyDocument());
-  const results = search(question, chunks);
-  const bestScore = results[0]?.score ?? 0;
+    const chunks = getChunks() || (await studyDocument());
+    const results = search(question, chunks);
+    const bestScore = results[0]?.score ?? 0;
 
-  if (bestScore <= 0) {
-    return Response.json({
-      answer: "este conteudo nao esta no meu banco de dados no momento",
-    });
-  }
+    if (bestScore <= 0) {
+      return Response.json({
+        answer: "este conteudo nao esta no meu banco de dados no momento",
+      });
+    }
 
-  const context = results.map(r => r.chunk).join("\n\n");
+    const context = results.map((r) => r.chunk).join("\n\n");
 
-  const prompt = `
+    const prompt = `
 Você é um assistente que responde baseado no documento abaixo.
 
 CONTEXTO:
@@ -40,7 +41,13 @@ ${question}
 Responda de forma clara e direta:
 `;
 
-  const answer = await askOllama(prompt);
+    const answer = await askOllama(prompt);
 
-  return Response.json({ answer });
+    return Response.json({ answer });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Erro inesperado ao consultar o documento.";
+
+    return Response.json({ error: message }, { status: 503 });
+  }
 }

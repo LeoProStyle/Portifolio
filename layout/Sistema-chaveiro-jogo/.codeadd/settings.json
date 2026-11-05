@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "qa": {
+    "baseUrl": "http://localhost:3001",
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "tablet": [
+        768,
+        1024
+      ],
+      "mobile": [
+        375,
+        812
+      ]
+    },
+    "bootHint": "npm run dev",
+    "authSeed": "Sign in at /login with ADMIN_USERNAME / ADMIN_PASSWORD from .env.local (admin area: add/remove games); data via npm run seed",
+    "setup-shape": "sha256:5a8b5405851bf4d8",
+    "framework-version": "1.8.1",
+    "first-run": "2026-11-05",
+    "last-run": "2026-11-05",
+    "materialized": [
+      {
+        "path": ".codeadd/settings.json",
+        "owner": "shared",
+        "hash": null
+      },
+      {
+        "path": ".claude/skills/qa-project/SKILL.md",
+        "owner": "setup",
+        "hash": "sha256:879e4df65f3847020ffd0e496f8a68bd4df71c20b60f34ab7d63f012a8eb7eb1"
+      },
+      {
+        "path": ".gitignore",
+        "owner": "shared",
+        "hash": null
+      }
+    ],
+    "prereqs": {
+      "playwright-test": "installed",
+      "chromium": "installed",
+      "playwright-mcp": "installed"
+    },
+    "qa-pipeline-feature": "already-enabled",
+    "migration": {
+      "detected": [
+        "custom"
+      ],
+      "decision": "declined",
+      "decided-at": "2026-11-05"
+    },
+    "log": [
+      {
+        "date": "2026-11-05",
+        "item": "migration",
+        "decision": "declined",
+        "reason": "existing node --test suite in tests/ is unit/integration, kept alongside the E2E pipeline",
+        "shape": "sha256:5a8b5405851bf4d8"
+      }
+    ]
+  },
+  "setup": {
+    "setup-shape": "none",
+    "framework-version": "1.8.1",
+    "first-run": "2026-11-05",
+    "last-run": "2026-11-05",
+    "offered": {
+      "tdd-pipeline": "already-on",
+      "qa-pipeline": "enabled",
+      "docs-pruning": "declined",
+      "agent-mode": "declined",
+      "gitnexus": "enabled",
+      "playwright": "enabled",
+      "design": "enabled",
+      "qa-setup": "enabled",
+      "version-record": "enabled",
+      "wiki": "enabled"
+    },
+    "log": [
+      {
+        "date": "2026-11-05",
+        "item": "tdd-pipeline",
+        "decision": "already-on",
+        "reason": "keep on: project already has node --test unit tests in tests/"
+      },
+      {
+        "date": "2026-11-05",
+        "item": "qa-pipeline",
+        "decision": "enabled",
+        "reason": "frontend present (player, login, admin) and no QA setup"
+      },
+      {
+        "date": "2026-11-05",
+        "item": "playwright",
+        "decision": "enabled",
+        "reason": "live browser driving for the QA review"
+      },
+      {
+        "date": "2026-11-05",
+        "item": "qa-setup",
+        "decision": "enabled",
+        "reason": "QA runner, config and receipt for the qa-pipeline"
+      },
+      {
+        "date": "2026-11-05",
+        "item": "gitnexus",
+        "decision": "enabled",
+        "reason": "repo has code; agents see call graph before changes"
+      },
+      {
+        "date": "2026-11-05",
+        "item": "design",
+        "decision": "enabled",
+        "reason": "frontend present; UI plans get style, palette and type from ui-ux-pro-max"
+      },
+      {
+        "date": "2026-11-05",
+        "item": "agent-mode",
+        "decision": "declined",
+        "reason": "a person types the commands"
+      },
+      {
+        "date": "2026-11-05",
+        "item": "docs-pruning",
+        "decision": "declined",
+        "reason": "keep feature planning files after merge"
+      },
+      {
+        "date": "2026-11-05",
+        "item": "version-record",
+        "decision": "enabled",
+        "reason": "version .codeadd/settings.json with the project"
+      },
+      {
+        "date": "2026-11-05",
+        "item": "wiki",
+        "decision": "enabled",
+        "reason": "wiki absent; generated with gitnexus graph available"
+      }
+    ]
+  }
+}
