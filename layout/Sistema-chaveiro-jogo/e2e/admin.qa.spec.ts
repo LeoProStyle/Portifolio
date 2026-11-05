@@ -5,8 +5,11 @@ import type { APIRequestContext, Page } from '@playwright/test';
 // Credentials come from ADMIN_USERNAME / ADMIN_PASSWORD (loaded from .env.local by playwright.config.ts).
 
 const PREFIX = 'e2e-sf01-';
-const USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const USERNAME = process.env.ADMIN_USERNAME ?? '';
+const PASSWORD = process.env.ADMIN_PASSWORD ?? '';
+if (!USERNAME || !PASSWORD) {
+  throw new Error('ADMIN_USERNAME and ADMIN_PASSWORD must be set (.env.local) to run the admin E2E spec.');
+}
 const LOGIN_URL_RE = /\/login\?callbackUrl=(\/admin|%2Fadmin)$/;
 
 function uid() {
@@ -45,7 +48,14 @@ async function loginAdminUi(page: Page) {
   await page.getByPlaceholder('Usuário').fill(USERNAME);
   await page.getByPlaceholder('Senha').fill(PASSWORD);
   await page.getByRole('button', { name: 'Entrar', exact: true }).click();
-  await page.waitForURL('**/admin', { timeout: 30_000 });
+  try {
+    await page.waitForURL('**/admin', { timeout: 30_000 });
+  } catch (error) {
+    // Clear the fields so the failure snapshot (test-results/**/error-context.md) never records the credentials.
+    await page.getByPlaceholder('Usuário').fill('').catch(() => {});
+    await page.getByPlaceholder('Senha').fill('').catch(() => {});
+    throw error;
+  }
   // First hit compiles /admin in dev; wait for the gate to resolve before the test acts.
   await expect(page.getByRole('heading', { name: 'Manage RetroKey' })).toBeVisible({ timeout: 45_000 });
 }
@@ -103,6 +113,20 @@ async function cleanup(baseURL: string) {
   }
 }
 
+// Dev server compiles each route on first hit; a compile in the middle of a login can drop the CSRF cookie.
+// Warm the routes once per project so the tests act on compiled routes.
+test.beforeAll(async ({}, testInfo) => {
+  test.setTimeout(180_000);
+  const api = await newApi(baseURLOf(testInfo));
+  try {
+    for (const path of ['/login', '/admin', '/api/auth/csrf', '/api/auth/session', '/api/admin/games', '/api/admin/games/warmup', '/api/admin/cartridges', '/api/admin/cartridges/warmup']) {
+      await api.get(path, { maxRedirects: 0, timeout: 120_000 }).catch(() => {});
+    }
+  } finally {
+    await api.dispose();
+  }
+});
+
 test.beforeEach(async ({}, testInfo) => {
   const isNoMongo = testInfo.project.name === 'no-mongo';
   const isT17 = testInfo.title.startsWith('T17');
@@ -118,6 +142,13 @@ test.describe('main project', () => {
     try {
       const game = await createGame(admin, slug);
       const cartsUp = (await cartridgesOrNull(admin)) !== null;
+      if (!cartsUp) {
+        testInfo.annotations.push({
+          type: 'warning',
+          description: 'cartridge catalog comparison skipped: /api/admin/cartridges did not answer 200 (backend unavailable)'
+        });
+        expect(process.env.CI, 'cartridge backend must be reachable in CI').toBeFalsy();
+      }
       const cart: Item = cartsUp ? await createCartridge(admin, slug, game.id) : { id: `${slug}-no-db` };
       const beforeGames = snapshot(await listOf(admin, 'games'));
       const beforeCarts = cartsUp ? snapshot((await cartridgesOrNull(admin)) ?? []) : null;
@@ -259,14 +290,17 @@ test.describe('main project', () => {
     const slug = uid();
     try {
       const before = snapshot(await listOf(admin, 'games'));
-      const res = await anon.post('/api/admin/games', {
-        headers: { 'x-middleware-subrequest': 'middleware' },
-        data: { title: `bypass ${slug}`, system: 'nes', slug },
-        maxRedirects: 0
-      });
-      expect(res.status()).toBe(401);
-      expect(await res.json()).toEqual({ error: 'Unauthorized' });
-      expect(snapshot(await listOf(admin, 'games')), 'games catalog unchanged').toBe(before);
+      // Plain value from the spec, plus the recursion-depth form that skips middleware on Next < 14.2.25 (CVE-2025-29927).
+      for (const header of ['middleware', 'middleware:middleware:middleware:middleware:middleware']) {
+        const res = await anon.post('/api/admin/games', {
+          headers: { 'x-middleware-subrequest': header },
+          data: { title: `bypass ${slug}`, system: 'nes', slug },
+          maxRedirects: 0
+        });
+        expect(res.status(), `x-middleware-subrequest: ${header}`).toBe(401);
+        expect(await res.json()).toEqual({ error: 'Unauthorized' });
+        expect(snapshot(await listOf(admin, 'games')), 'games catalog unchanged').toBe(before);
+      }
     } finally {
       await anon.dispose();
       await admin.dispose();
@@ -287,6 +321,7 @@ test.describe('main project', () => {
         data: { title: `Title ${slug}`, system: 'nes', console: 'nes', slug, description: 'sf01 e2e', romPath: '' }
       });
       expect(created.status()).toBe(201);
+      expect(await created.json()).toMatchObject({ slug });
       const game = (await listOf(admin, 'games')).find((g) => g.slug === slug) as Item;
       expect(game).toBeTruthy();
 
@@ -294,6 +329,7 @@ test.describe('main project', () => {
         data: { title: `Updated ${slug}`, system: 'nes', console: 'nes', slug, description: 'sf01 e2e', romPath: '', active: true }
       });
       expect(updated.status()).toBe(200);
+      expect(await updated.json()).toEqual({ updated: true });
 
       const deleted = await admin.delete(`/api/admin/games/${game.id}`);
       expect(deleted.status()).toBe(200);

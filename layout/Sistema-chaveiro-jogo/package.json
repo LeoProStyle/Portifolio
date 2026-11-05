@@ -8,7 +8,7 @@
     "start": "next start -p 3001",
     "seed": "tsx scripts/seed.ts",
     "test": "node --import tsx --test \"tests/*.test.ts\"",
-    "test:auth":"node --import tsx --test tests/auth-config.test.ts"
+    "test:auth": "node --import tsx --test tests/auth-config.test.ts"
   },
   "engines": {
     "node": "24.x"

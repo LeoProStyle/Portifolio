@@ -13,6 +13,8 @@ const NO_MONGO_PORT = 3002;
 
 // The 3002 server (T17, no MongoDB) is only started when its project can run:
 // no --project flag at all, or an explicit --project=no-mongo.
+// Both dev servers write to the same .next folder (no distDir override exists), so run the
+// projects one at a time: `--project=main`, then `--project=no-mongo`.
 const argv = process.argv.join(' ');
 const projectFlagged = /--project/.test(argv);
 const wantsNoMongo = !projectFlagged || /no-mongo/.test(argv);
