@@ -44,17 +44,23 @@ async function adminApi(baseURL: string) {
 }
 
 async function loginAdminUi(page: Page) {
-  await page.goto('/login?callbackUrl=/admin');
-  await page.getByPlaceholder('Usuário').fill(USERNAME);
-  await page.getByPlaceholder('Senha').fill(PASSWORD);
-  await page.getByRole('button', { name: 'Entrar', exact: true }).click();
-  try {
-    await page.waitForURL('**/admin', { timeout: 30_000 });
-  } catch (error) {
-    // Clear the fields so the failure snapshot (test-results/**/error-context.md) never records the credentials.
-    await page.getByPlaceholder('Usuário').fill('').catch(() => {});
-    await page.getByPlaceholder('Senha').fill('').catch(() => {});
-    throw error;
+  // The dev server can recompile during the first login and drop the CSRF cookie (MissingCSRF);
+  // wait for the page to settle and retry the login once.
+  for (let attempt = 1; ; attempt++) {
+    await page.goto('/login?callbackUrl=/admin');
+    await page.waitForLoadState('networkidle');
+    await page.getByPlaceholder('Usuário').fill(USERNAME);
+    await page.getByPlaceholder('Senha').fill(PASSWORD);
+    await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+    try {
+      await page.waitForURL('**/admin', { timeout: 20_000 });
+      break;
+    } catch (error) {
+      // Clear the fields so the failure snapshot (test-results/**/error-context.md) never records the credentials.
+      await page.getByPlaceholder('Usuário').fill('').catch(() => {});
+      await page.getByPlaceholder('Senha').fill('').catch(() => {});
+      if (attempt >= 2) throw error;
+    }
   }
   // First hit compiles /admin in dev; wait for the gate to resolve before the test acts.
   await expect(page.getByRole('heading', { name: 'Manage RetroKey' })).toBeVisible({ timeout: 45_000 });
