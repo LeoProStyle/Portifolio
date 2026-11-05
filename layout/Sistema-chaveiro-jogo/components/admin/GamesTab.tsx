@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { Game } from '@/models/game';
 import { systemOptions } from '@/lib/emulator-cores';
+import { getAdminAuthStatus, type AdminApiErrorBody, type AdminAuthStatus } from '@/lib/admin-api';
 
 interface GameFormState {
   title: string;
@@ -14,7 +15,11 @@ interface GameFormState {
   active: boolean;
 }
 
-export default function GamesTab() {
+interface GamesTabProps {
+  onAuthError: (status: AdminAuthStatus) => void;
+}
+
+export default function GamesTab({ onAuthError }: GamesTabProps) {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -37,6 +42,11 @@ export default function GamesTab() {
   const loadGames = async () => {
     try {
       const response = await fetch('/api/admin/games');
+      const authStatus = getAdminAuthStatus(response);
+      if (authStatus) {
+        onAuthError(authStatus);
+        return;
+      }
       if (response.ok) {
         const data = await response.json();
         setGames(data);
@@ -88,12 +98,18 @@ export default function GamesTab() {
         body: formData
       });
 
+      const authStatus = getAdminAuthStatus(response);
+      if (authStatus) {
+        onAuthError(authStatus);
+        return;
+      }
+
       if (response.ok) {
         setFeedback(editingId ? 'Game updated successfully.' : 'Game created successfully.');
         resetForm();
         loadGames();
       } else {
-        const data = await response.json().catch(() => ({}));
+        const data: AdminApiErrorBody = await response.json().catch(() => ({}));
         setFeedback(data.error || (editingId ? 'Unable to update game.' : 'Unable to create game.'));
       }
     } catch (error) {
@@ -110,11 +126,17 @@ export default function GamesTab() {
         method: 'DELETE'
       });
 
+      const authStatus = getAdminAuthStatus(response);
+      if (authStatus) {
+        onAuthError(authStatus);
+        return;
+      }
+
       if (response.ok) {
         setFeedback('Game deleted.');
         loadGames();
       } else {
-        const data = await response.json().catch(() => ({}));
+        const data: AdminApiErrorBody = await response.json().catch(() => ({}));
         setFeedback(data.error || 'Unable to delete game.');
       }
     } catch (error) {

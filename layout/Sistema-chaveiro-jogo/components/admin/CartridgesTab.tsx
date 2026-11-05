@@ -3,8 +3,13 @@
 import { useEffect, useState } from 'react';
 import type { Cartridge } from '@/models/cartridge';
 import type { Game } from '@/models/game';
+import { getAdminAuthStatus, type AdminApiErrorBody, type AdminAuthStatus } from '@/lib/admin-api';
 
-export default function CartridgesTab() {
+interface CartridgesTabProps {
+  onAuthError: (status: AdminAuthStatus) => void;
+}
+
+export default function CartridgesTab({ onAuthError }: CartridgesTabProps) {
   const [cartridges, setCartridges] = useState<Cartridge[]>([]);
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,6 +31,13 @@ export default function CartridgesTab() {
         fetch('/api/admin/cartridges'),
         fetch('/api/admin/games')
       ]);
+
+      // One call for both parallel loads; skip both setters on an auth failure.
+      const authStatus = getAdminAuthStatus(cartridgesRes) ?? getAdminAuthStatus(gamesRes);
+      if (authStatus) {
+        onAuthError(authStatus);
+        return;
+      }
 
       if (cartridgesRes.ok) {
         setCartridges(await cartridgesRes.json());
@@ -54,6 +66,12 @@ export default function CartridgesTab() {
         })
       });
 
+      const authStatus = getAdminAuthStatus(response);
+      if (authStatus) {
+        onAuthError(authStatus);
+        return;
+      }
+
       if (response.ok) {
         setFeedback('Cartridge created successfully.');
         setForm({
@@ -64,7 +82,7 @@ export default function CartridgesTab() {
         });
         loadData();
       } else {
-        const data = await response.json().catch(() => ({}));
+        const data: AdminApiErrorBody = await response.json().catch(() => ({}));
         setFeedback(data.error || 'Unable to create cartridge.');
       }
     } catch (error) {
@@ -81,11 +99,17 @@ export default function CartridgesTab() {
         method: 'DELETE'
       });
 
+      const authStatus = getAdminAuthStatus(response);
+      if (authStatus) {
+        onAuthError(authStatus);
+        return;
+      }
+
       if (response.ok) {
         setFeedback('Cartridge deleted.');
         loadData();
       } else {
-        const data = await response.json().catch(() => ({}));
+        const data: AdminApiErrorBody = await response.json().catch(() => ({}));
         setFeedback(data.error || 'Unable to delete cartridge.');
       }
     } catch (error) {
