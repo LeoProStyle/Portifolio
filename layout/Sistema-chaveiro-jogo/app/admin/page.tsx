@@ -70,33 +70,33 @@ export default function AdminPage() {
           </div>
         ) : (
           <>
-        <div className="mt-8 flex gap-4 border-b border-zinc-800">
-          <button
-            onClick={() => setActiveTab('games')}
-            className={`px-4 py-2 font-medium transition ${
-              activeTab === 'games'
-                ? 'border-b-2 border-cyan-400 text-cyan-400'
-                : 'text-zinc-400 hover:text-zinc-300'
-            }`}
-          >
-            Games
-          </button>
-          <button
-            onClick={() => setActiveTab('cartridges')}
-            className={`px-4 py-2 font-medium transition ${
-              activeTab === 'cartridges'
-                ? 'border-b-2 border-cyan-400 text-cyan-400'
-                : 'text-zinc-400 hover:text-zinc-300'
-            }`}
-          >
-            Cartridges
-          </button>
-        </div>
+            <div className="mt-8 flex gap-4 border-b border-zinc-800">
+              <button
+                onClick={() => setActiveTab('games')}
+                className={`px-4 py-2 font-medium transition ${
+                  activeTab === 'games'
+                    ? 'border-b-2 border-cyan-400 text-cyan-400'
+                    : 'text-zinc-400 hover:text-zinc-300'
+                }`}
+              >
+                Games
+              </button>
+              <button
+                onClick={() => setActiveTab('cartridges')}
+                className={`px-4 py-2 font-medium transition ${
+                  activeTab === 'cartridges'
+                    ? 'border-b-2 border-cyan-400 text-cyan-400'
+                    : 'text-zinc-400 hover:text-zinc-300'
+                }`}
+              >
+                Cartridges
+              </button>
+            </div>
 
-        <div className="mt-8">
-          {activeTab === 'games' && <GamesTab onAuthError={setAuthError} />}
-          {activeTab === 'cartridges' && <CartridgesTab onAuthError={setAuthError} />}
-        </div>
+            <div className="mt-8">
+              {activeTab === 'games' && <GamesTab onAuthError={setAuthError} />}
+              {activeTab === 'cartridges' && <CartridgesTab onAuthError={setAuthError} />}
+            </div>
           </>
         )}
       </div>
