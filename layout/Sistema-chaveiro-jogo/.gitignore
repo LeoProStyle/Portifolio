@@ -11,15 +11,22 @@ coverage/
 out/
 build/
 
-# Environment
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Environment (never commit real values; .env.example holds names only)
+.env
+.env.*
+!.env.example
+.vercel/
+
+# Secrets and session artifacts
+cookies.txt
+*.cookies
+*.cookie
+cookie*.txt
 
 # Misc
 .DS_Store
 *.pem
+*.key
 
 # ROM files (too large, should be served from Cloudflare R2)
 public/roms/
