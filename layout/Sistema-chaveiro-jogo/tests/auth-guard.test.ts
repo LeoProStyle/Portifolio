@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { Session } from 'next-auth';
-import { evaluateAdminSession, type AdminGuardResult } from '../lib/auth-guard';
+import { evaluateAdminSession, requireAdmin, type AdminGuardResult } from '../lib/auth-guard';
 
 const EXPIRES = '2099-01-01T00:00:00.000Z';
 
@@ -65,4 +65,50 @@ test('T16 guard decides without MongoDB configured', async () => {
   } finally {
     if (previous !== undefined) process.env.MONGODB_URI = previous;
   }
+});
+
+// requireAdmin wrapper (RN01 barrier): session reader injected so no NextAuth or server is needed.
+const adminRequest = new Request('http://localhost/api/admin/games', { method: 'POST' });
+
+async function captureAuthLogs<T>(run: () => Promise<T>): Promise<{ result: T; logs: unknown[][] }> {
+  const logs: unknown[][] = [];
+  const original = console.info;
+  console.info = (...args: unknown[]) => {
+    logs.push(args);
+  };
+  try {
+    return { result: await run(), logs };
+  } finally {
+    console.info = original;
+  }
+}
+
+test('requireAdmin maps a session reader failure to 401 and logs reason, path and error name only', async () => {
+  const { result, logs } = await captureAuthLogs(() =>
+    requireAdmin(adminRequest, async () => {
+      throw new TypeError('secret mismatch details');
+    })
+  );
+  await assertRejected(result, 401, 'Unauthorized');
+  assert.equal(logs.length, 1);
+  assert.deepEqual(logs[0][1], { reason: 'auth-error', path: '/api/admin/games', error: 'TypeError' });
+});
+
+test('requireAdmin answers 401 without a session and logs no-session', async () => {
+  const { result, logs } = await captureAuthLogs(() => requireAdmin(adminRequest, async () => null));
+  await assertRejected(result, 401, 'Unauthorized');
+  assert.deepEqual(logs[0][1], { reason: 'no-session', path: '/api/admin/games' });
+});
+
+test('requireAdmin answers 403 for a non-admin session and logs not-admin', async () => {
+  const userSession = asSession({ expires: EXPIRES, user: { id: 'u1', role: 'user', name: 'U', email: 'u@x' } });
+  const { result, logs } = await captureAuthLogs(() => requireAdmin(adminRequest, async () => userSession));
+  await assertRejected(result, 403, 'Forbidden');
+  assert.deepEqual(logs[0][1], { reason: 'not-admin', path: '/api/admin/games' });
+});
+
+test('requireAdmin passes an admin session without logging', async () => {
+  const { result, logs } = await captureAuthLogs(() => requireAdmin(adminRequest, async () => adminSession));
+  assert.equal(result.ok, true);
+  assert.equal(logs.length, 0);
 });

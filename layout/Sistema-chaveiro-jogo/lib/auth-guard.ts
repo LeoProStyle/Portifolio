@@ -40,24 +40,34 @@ export function evaluateAdminSession(session: Session | null): AdminGuardResult 
   };
 }
 
-function logRejection(reason: RejectionReason, request: Request) {
+function logRejection(reason: RejectionReason, request: Request, errorName?: string) {
   let path = 'unknown';
   try {
     path = new URL(request.url).pathname;
   } catch {
     // keep 'unknown'
   }
-  logAuthEvent('admin api rejected', { reason, path });
+  // Reason, path and (on auth-error) the error class name only: no body, cookie, token or message.
+  logAuthEvent('admin api rejected', errorName ? { reason, path, error: errorName } : { reason, path });
 }
 
-export async function requireAdmin(request: Request): Promise<AdminGuardResult> {
+export type SessionReader = () => Promise<Session | null>;
+
+async function readSessionFromAuth(): Promise<Session | null> {
+  // Loaded on demand so unit tests never load NextAuth.
+  const { auth } = await import('@/auth');
+  return auth();
+}
+
+export async function requireAdmin(
+  request: Request,
+  readSession: SessionReader = readSessionFromAuth
+): Promise<AdminGuardResult> {
   let session: Session | null;
   try {
-    // Loaded on demand so unit tests of evaluateAdminSession never load NextAuth.
-    const { auth } = await import('@/auth');
-    session = await auth();
-  } catch {
-    logRejection('auth-error', request);
+    session = await readSession();
+  } catch (error) {
+    logRejection('auth-error', request, error instanceof Error ? error.name : 'unknown');
     return unauthorized();
   }
 

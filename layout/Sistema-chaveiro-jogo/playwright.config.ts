@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import { defineConfig } from '@playwright/test';
 
 // Admin credentials and the rest of the env come from .env.local (values are never printed).
+// The suite creates and deletes `e2e-sf01-*` records in the database .env.local points to:
+// run it only against a dev or test database, never production.
 const envFile = resolve(__dirname, '.env.local');
 if (existsSync(envFile)) {
   process.loadEnvFile(envFile);
