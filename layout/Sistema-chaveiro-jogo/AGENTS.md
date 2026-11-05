@@ -77,7 +77,7 @@ NFC-style cartridge (`/nfc/[id]`) validated against a game, then launched in an 
 **Generated:** 2026-11-05 | **Type:** SingleApp
 
 ### Stack
-{"pkg":"npm","lang":"typescript 5.6","node":"20.x"}
+{"pkg":"npm","lang":"typescript 5.6","node":"24.x"}
 {"framework":{"name":"Next.js","version":"14.2.15","router":"App Router"}}
 {"frontend":{"ui":"React 18.2","styling":"Tailwind 3.4"}}
 {"auth":{"lib":"next-auth 5 beta","mode":"single credentials admin"}}
