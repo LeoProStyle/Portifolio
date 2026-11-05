@@ -29,6 +29,10 @@ export function evaluateAdminSession(session: Session | null): AdminGuardResult 
   if (user.role !== 'admin') {
     return forbidden();
   }
+  if (!user.id) {
+    // An admin session without an id cannot be attributed (SF03 audit); treat it as invalid.
+    return unauthorized();
+  }
   return {
     ok: true,
     admin: { id: user.id, name: user.name ?? null, email: user.email ?? null },

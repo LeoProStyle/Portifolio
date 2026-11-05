@@ -39,6 +39,11 @@ test('T04 session with empty user (no role) is rejected with 403 Forbidden', asy
   await assertRejected(evaluateAdminSession(asSession({ expires: EXPIRES, user: {} })), 403, 'Forbidden');
 });
 
+test('T05 admin session without id is rejected with 401 Unauthorized', async () => {
+  const noId = asSession({ expires: EXPIRES, user: { role: 'admin', name: 'Admin', email: 'admin@retrokey.local' } });
+  await assertRejected(evaluateAdminSession(noId), 401, 'Unauthorized');
+});
+
 test('T05 admin session passes with identity', () => {
   const result = evaluateAdminSession(adminSession);
   assert.equal(result.ok, true);
