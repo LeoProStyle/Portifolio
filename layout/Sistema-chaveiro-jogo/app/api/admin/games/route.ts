@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth-guard';
 import { getDb } from '@/lib/mongo';
 import { getAdminGamesStore } from '@/lib/admin-store';
 import { uploadRomToR2 } from '@/lib/r2';
 import type { Game } from '@/models/game';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const guard = await requireAdmin(request);
+  if (!guard.ok) return guard.response;
   try {
     const db = await getDb();
     const games = await db.collection<Game>('games').find({}).toArray();
@@ -16,6 +19,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const guard = await requireAdmin(request);
+  if (!guard.ok) return guard.response;
   try {
     const contentType = request.headers.get('content-type') || '';
     let body: any;
