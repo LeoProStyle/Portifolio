@@ -1,0 +1,1 @@
+{"ts":"2026-11-05T20:14:13Z","agent":"/dev","type":"add",slug:admin-api-guard,what:Admin API guard, /admin redirect, expired-session panel,sf:SF01,files:[lib/auth-guard.ts,auth.config.ts,middleware.ts,lib/admin-api.ts,app/api/admin,app/admin/page.tsx,components/admin]}

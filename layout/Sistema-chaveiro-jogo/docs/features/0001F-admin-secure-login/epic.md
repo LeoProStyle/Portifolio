@@ -16,7 +16,7 @@ Epic de 0001F-admin-secure-login: quatro subfeatures que, juntas, fazem só o ad
 
 | id | name | objective | status | dependencies | checkpoint |
 |---|---|---|---|---|---|
-| SF01 | admin-api-guard | Toda rota /api/admin/* exige sessão com role admin; middleware redireciona /admin; abas do admin tratam 401/403 | pending | | |
+| SF01 | admin-api-guard | Toda rota /api/admin/* exige sessão com role admin; middleware redireciona /admin; abas do admin tratam 401/403 | done | | 0001F-SF01-done |
 | SF02 | login-hardening | Senha em hash scrypt, bloqueio por tentativas no Mongo, fail closed em produção, sessão de 8h, dica oculta em produção | pending | | |
 | SF03 | admin-audit-trail | Coleção admin_audit com logins e ações de criar/editar/remover | pending | SF01, SF02 | |
 | SF04 | rom-path-containment | romPath derivado no servidor; /api/rom lê só dentro de public/roms | pending | SF01 | |
