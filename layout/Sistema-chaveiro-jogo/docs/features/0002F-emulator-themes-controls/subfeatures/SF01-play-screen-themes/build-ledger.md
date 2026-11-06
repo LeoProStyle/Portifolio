@@ -22,3 +22,4 @@ T01: complete (commits f3e3c5b9..a199fe7a, BUILD_STATUS=n/a (test-only, RED conf
 T02: complete (commits a199fe7a..508bef8b, BUILD_STATUS=n/a (test-only, RED confirmed: Cannot find module ../lib/play-theme), validation at area end)
 T03: complete (commits 508bef8b..c4b25a36, BUILD_STATUS=n/a (test-only, RED confirmed on --project=main: [data-frame] not found against the current card), validation at area end)
 T04: complete (commits c4b25a36..c07cdb27, BUILD_STATUS=pass, tests/emulator-cores.test.ts 4/4, validation at area end)
+T05: complete (commits c07cdb27..6014c879, BUILD_STATUS=pass, tests/play-theme.test.ts 14/14, validation at area end)
