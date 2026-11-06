@@ -21,3 +21,7 @@ backend: validated (commits 91ddc0d2..ca594f69, 0 blocking violations, 3 polish,
 backend: minor (deferred): classifyRomPath accepts Windows reserved device names such as /roms/CON on win32 dev; needs a hand-written stored value and does not apply to the Linux target
 backend: minor (deferred): fetchRomFromR2 logs the format-validated R2 key server-side; client bodies never carry it
 backend: minor (deferred): Content-Disposition filename is not escaped; only builder-generated names reach public/roms today
+T06: complete (commits ca594f69..7803c3e6, BUILD_STATUS=pass via npm run build, verify e2e/admin.qa.spec.ts --project=main 11 passed 1 skipped (T17 no-mongo), validation at area end)
+frontend: validated (commits ca594f69..7803c3e6, 0 violations, SPEC_STATUS=COMPLETE)
+Validation gates: test gate 10/10 exit 0, npm test 55 pass 1 skipped (Mongo-only test), npm run build exit 0 after T06 - tasks.md section 1-5 ticked from the three area reports
+e2e: deferred to the last subfeature (epic; SF04 declares no QA/E2E Specification rows - no design.md); e2e/rom-path.qa.spec.ts authored in T02 as a contract test
