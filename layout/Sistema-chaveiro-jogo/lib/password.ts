@@ -1,4 +1,5 @@
 import { createHash, randomBytes, scrypt, timingSafeEqual, type ScryptOptions } from 'node:crypto';
+import { parsePasswordHashFormat } from '@/lib/password-format';
 
 // Node-only module: never import it from auth.config.ts, middleware.ts or a client component.
 // Hash format: scrypt:<N>:<r>:<p>:<salt base64url>:<key base64url>
@@ -10,8 +11,6 @@ const SCRYPT_P = 1;
 const SALT_BYTES = 16;
 const KEY_BYTES = 64;
 
-const BASE64URL = /^[A-Za-z0-9_-]+$/;
-
 type ParsedHash = { N: number; r: number; p: number; salt: Buffer; key: Buffer };
 
 function deriveKey(password: string, salt: Buffer, keyLength: number, options: ScryptOptions): Promise<Buffer> {
@@ -20,25 +19,14 @@ function deriveKey(password: string, salt: Buffer, keyLength: number, options: S
   });
 }
 
-function isPowerOfTwo(value: number): boolean {
-  return value > 1 && (value & (value - 1)) === 0;
-}
-
 function parseHash(encoded: string): ParsedHash | null {
-  const parts = encoded.split(':');
-  if (parts.length !== 6 || parts[0] !== 'scrypt') return null;
-  const [, nText, rText, pText, saltText, keyText] = parts;
-  if (![nText, rText, pText].every((text) => /^\d{1,7}$/.test(text))) return null;
-  const N = Number(nText);
-  const r = Number(rText);
-  const p = Number(pText);
-  // Bounds keep a hostile or mistyped value from allocating unbounded memory.
-  if (!isPowerOfTwo(N) || N < 1024 || N > 131072 || r < 1 || r > 32 || p < 1 || p > 16) return null;
-  if (!BASE64URL.test(saltText) || !BASE64URL.test(keyText)) return null;
-  const salt = Buffer.from(saltText, 'base64url');
-  const key = Buffer.from(keyText, 'base64url');
+  const parts = parsePasswordHashFormat(encoded);
+  if (!parts) return null;
+  const salt = Buffer.from(parts.saltText, 'base64url');
+  const key = Buffer.from(parts.keyText, 'base64url');
+  // Decoded lengths re-checked on the real bytes, not only on the string length.
   if (salt.length < 8 || key.length < 16 || key.length > 128) return null;
-  return { N, r, p, salt, key };
+  return { N: parts.N, r: parts.r, p: parts.p, salt, key };
 }
 
 export async function hashPassword(password: string): Promise<string> {

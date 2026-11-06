@@ -1,5 +1,7 @@
+import { parsePasswordHashFormat } from '@/lib/password-format';
+
 // Credential resolution for the single admin login.
-// No Node-only imports here (no node:crypto, no mongodb): the hash is checked for shape only.
+// No Node-only imports here (no node:crypto, no mongodb): the hash is checked for shape and bounds only.
 
 export type AdminSecret = { kind: 'hash' | 'plain'; value: string };
 
@@ -10,9 +12,6 @@ export type AdminCredentialsResult =
 const DEFAULT_USERNAME = 'admin';
 const DEFAULT_PASSWORD = 'admin123';
 const DEV_HINT = 'Modo desenvolvimento: use admin / admin123';
-
-// Same shape lib/password.ts produces: scrypt:<N>:<r>:<p>:<salt base64url>:<key base64url>.
-const HASH_SHAPE = /^scrypt:\d+:\d+:\d+:[A-Za-z0-9_-]+:[A-Za-z0-9_-]+$/;
 
 function read(env: NodeJS.ProcessEnv, name: string): string {
   const value = env[name];
@@ -32,7 +31,7 @@ export function resolveAdminCredentials(env: NodeJS.ProcessEnv = process.env): A
   const hash = read(env, 'ADMIN_PASSWORD_HASH');
 
   if (isProductionEnv(env)) {
-    if (!username || !hash || !HASH_SHAPE.test(hash)) {
+    if (!username || !hash || !parsePasswordHashFormat(hash)) {
       return { ok: false, reason: 'missing-credentials' };
     }
     if (!read(env, 'AUTH_SECRET')) {

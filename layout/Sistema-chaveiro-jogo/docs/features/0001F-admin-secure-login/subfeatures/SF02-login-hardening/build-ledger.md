@@ -33,3 +33,10 @@ T12: complete (commits c84aea56..b7db0500, BUILD_STATUS=pass via tsc --noEmit (w
 T13: complete (commits b7db0500..0a605fd1, BUILD_STATUS=pass via npm run build, verify e2e/admin.qa.spec.ts --project=main 11/11 with real login through authorizeAdmin, validation at area end)
 T14: complete (commits 0a605fd1..3b7e6bc8, BUILD_STATUS=pass via npm run build (edge middleware compiled), verify tests/admin-session.test.ts 1/1 and e2e/admin.qa.spec.ts --project=main 11/11, validation at area end)
 T15: complete (commits 3b7e6bc8..e3d8b3f7, BUILD_STATUS=pass via tsc --noEmit (script is outside the app bundle), verify tests/hash-script.test.ts 2/2, .env.example holds names only, validation at area end)
+T16: complete (commits e3d8b3f7..89b76f74, BUILD_STATUS=pass via npm run build, verify e2e/login.qa.spec.ts --project=main T22 green, T23 skipped with annotation - MongoDB unreachable on this machine, validation at area end)
+frontend: validated (commits e3d8b3f7..89b76f74, 0 blocking violations, 2 minor, SPEC_STATUS=COMPLETE with RF04 429 half proven by static read until T23 runs on MongoDB)
+frontend: minor (deferred): a 429 without a JSON url body (platform or proxy) makes next-auth signIn throw and the form shows Erro inesperado instead of the generic message; the app 429 always carries url
+frontend: minor (deferred): T23 (429 end to end) skipped locally - MongoDB unreachable; run e2e/login.qa.spec.ts --project=main with MongoDB reachable before merge
+backend: validated (commits 274318b8..e3d8b3f7, 3 minor violations, SPEC_STATUS=COMPLETE, npm test 45/45)
+Ruling: F2 (duplicate or JSON username skips the 429 pre-check) accepted and recorded in plan Risks - authorizeAdmin still counts the attempt with the name NextAuth parsed, so the 5-check cap holds - costs an attacker seeing CredentialsSignin instead of 429 if wrong
+Ruling: F3 (rotating usernames buys 5 scrypt runs per name from one IP) accepted for SF02 and recorded in plan Risks; a coarse per-IP counter is a future improvement - the spec keys the throttle on username+IP and the real admin key stays capped - costs CPU and Mongo load under a username-rotation flood if wrong

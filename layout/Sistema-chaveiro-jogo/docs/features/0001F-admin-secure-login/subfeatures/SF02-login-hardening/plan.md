@@ -87,6 +87,8 @@ Test IDs (T01-T23, T25) refer to the Test Specification below; execution IDs ref
 | Mongo inacessível nesta máquina | H | T23 não roda local | lógica coberta por T10-T17 com store em memória; T23 obrigatório antes do merge com Mongo acessível |
 | IP falso via `x-forwarded-for` fora da Vercel | M | atacante troca de chave a cada tentativa | a Vercel sobrescreve o cabeçalho; limite documentado; scrypt + senha forte seguram ataque distribuído |
 | Ataque distribuído por muitos IPs contra o mesmo usuário | M | contador por par não segura | escopo do about.md (par usuário+IP); hash scrypt torna cada tentativa cara só offline — registrado como limite conhecido |
+| Usuário duplicado no form ou corpo JSON faz a pré-checagem ler outro nome e pular o 429 [build review F2] | L | atacante recebe CredentialsSignin em vez de 429 | aceito: `authorizeAdmin` conta a tentativa com o nome que o NextAuth leu, então o limite de 5 checagens vale |
+| Trocar de usuário a cada tentativa abre 5 tentativas por nome, cada uma com um scrypt (16 MiB) e um upsert [build review F3] | M | carga de CPU e de Mongo, sem furar o bloqueio do usuário real | aceito nesta SF; contador grosso por IP fica como melhoria futura; TTL limpa os documentos |
 | `@next/env` expande `$` no `.env.local` | M | hash corrompido em dev | formato sem `$` (T01) |
 | Callback `jwt` devolvendo null quebra o middleware | L | redirect sem fim | null só depois de 8h ou sem `loginAt`; T21 cobre só o callback; o caminho do middleware é coberto pelo E2E SF01 T07 no caso não expirado e pela checagem manual de expiração em Validation |
 | `next build` com `NODE_ENV=production` sem `AUTH_SECRET` local | M | build local falha ao pré-renderizar | nada no build chama `auth()`; build é gate em toda tarefa |

@@ -44,6 +44,18 @@ test('T06 production refuses when a required variable is missing or the hash is 
     resolveAdminCredentials(env({ ...prodComplete, ADMIN_PASSWORD_HASH: 'not-a-hash' })),
     { ok: false, reason: 'missing-credentials' }
   );
+  // Right shape, parameters outside the bounds lib/password.ts accepts: every login would fail silently.
+  for (const outOfBounds of [
+    'scrypt:3:8:1:c2FsdHNhbHRzYWx0c2FsdA:aGFzaGhhc2hoYXNoaGFzaA',
+    'scrypt:16384:64:1:c2FsdHNhbHRzYWx0c2FsdA:aGFzaGhhc2hoYXNoaGFzaA',
+    'scrypt:16384:8:1:c2FsdA:aGFzaGhhc2hoYXNoaGFzaA'
+  ]) {
+    assert.deepEqual(
+      resolveAdminCredentials(env({ ...prodComplete, ADMIN_PASSWORD_HASH: outOfBounds })),
+      { ok: false, reason: 'missing-credentials' },
+      outOfBounds
+    );
+  }
 });
 
 test('T07 outside production the order is hash, then plain, then the defaults', () => {
