@@ -13,7 +13,6 @@ type LoginFormProps = {
 // One message for a wrong password and for a locked login (429), so the screen does not reveal the lock.
 const GENERIC_ERROR = 'Credenciais inválidas.';
 
-
 export default function LoginForm({ hint }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();

@@ -49,3 +49,4 @@ Ruling: FR-6 kept the private readline override, now documented in the script; t
 Ruling: FR-14 informational - rotating ADMIN_PASSWORD_HASH does not revoke live sessions, only AUTH_SECRET rotation does; the absolute 8h limit bounds the exposure - costs up to 8h of a stolen session surviving a password change if wrong
 Ruling: FR-1/FR-12 cannot be closed on this machine (MongoDB unreachable) - tests/login-throttle-mongo.test.ts now runs the policy and a 10-parallel burst against the real store and skips without a database; T23 and that test must run with MongoDB reachable before merge - costs every production login failing closed on the first deploy if the pipeline is wrong
 final-review: fix round 1/3 (12 addressed, 1 open - FR-13 callbackUrl bypass via tab; commits f6b292ab..debb7697)
+final-review: fix round 2/3 (3 addressed, 1 open - FR-13 callbackUrl normalized to a //host path; commits debb7697..9feaef2d)

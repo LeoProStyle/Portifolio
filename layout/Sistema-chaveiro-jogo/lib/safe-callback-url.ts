@@ -15,6 +15,12 @@ export function safeCallbackUrl(value: string | null, origin: string): string {
   } catch {
     return DEFAULT_CALLBACK_URL;
   }
-  if (resolved.origin !== new URL(origin).origin) return DEFAULT_CALLBACK_URL;
-  return `${resolved.pathname}${resolved.search}${resolved.hash}`;
+  const ownOrigin = new URL(origin).origin;
+  if (resolved.origin !== ownOrigin) return DEFAULT_CALLBACK_URL;
+  const path = `${resolved.pathname}${resolved.search}${resolved.hash}`;
+  // The parser can normalize '/.//host' or '/a/..//host' into the path '//host', which the router then
+  // reads as protocol-relative. Accept the result only if it is a plain path that resolves home again.
+  if (!path.startsWith('/') || path.startsWith('//') || path.startsWith('/\\')) return DEFAULT_CALLBACK_URL;
+  if (new URL(path, origin).origin !== ownOrigin) return DEFAULT_CALLBACK_URL;
+  return path;
 }
