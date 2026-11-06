@@ -23,3 +23,6 @@ Ruling: T08 also edits auth.ts with a minimal bridge (new credential result, con
 T08: complete (commits 7ef59e1b..9b7db1f5, BUILD_STATUS=pass via npm run build, verify tests/auth-config.test.ts 4/4, validation at area end)
 test: validated (commits a08a87dc..274318b8, 2 violations, SPEC_STATUS=INCOMPLETE - T18 expected-username scan vs plan success log; E2E header must state ADMIN_PASSWORD matches ADMIN_PASSWORD_HASH)
 Ruling: the success login log carries {id: admin, ip} and never the typed username, and T18 keeps scanning every log for the configured username - on success the typed name equals the configured one, which RN05 forbids in logs; SF03 audits success with the session id - costs SF03 losing the typed name on success if wrong, which equals the configured username anyway
+test: fix round 1/3 (2 addressed, 0 open, 2 deferred; commits 9b7db1f5..bee94bb1)
+test: minor (deferred): plan.md TL;DR does not mention the success-log identity ruling; it lives in Modules and the ledger
+Ruling: a failure or locked log whose typed username equals the configured one logs {usernameMatched: true, ip} instead of the name, and T18 gains that case in T12 - RN05 forbids the configured username in logs even when an attacker typed it - costs SF03 an audit row without the typed name when it was the real one, which the configured value already identifies
