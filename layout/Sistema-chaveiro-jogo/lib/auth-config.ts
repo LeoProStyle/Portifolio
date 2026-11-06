@@ -1,30 +1,66 @@
-export interface AdminCredentials {
-  username: string;
-  password: string;
+// Credential resolution for the single admin login.
+// No Node-only imports here (no node:crypto, no mongodb): the hash is checked for shape only.
+
+export type AdminSecret = { kind: 'hash' | 'plain'; value: string };
+
+export type AdminCredentialsResult =
+  | { ok: true; username: string; secret: AdminSecret; usingDefaults: boolean }
+  | { ok: false; reason: 'missing-credentials' | 'missing-auth-secret' };
+
+const DEFAULT_USERNAME = 'admin';
+const DEFAULT_PASSWORD = 'admin123';
+const DEV_HINT = 'Modo desenvolvimento: use admin / admin123';
+
+// Same shape lib/password.ts produces: scrypt:<N>:<r>:<p>:<salt base64url>:<key base64url>.
+const HASH_SHAPE = /^scrypt:\d+:\d+:\d+:[A-Za-z0-9_-]+:[A-Za-z0-9_-]+$/;
+
+function read(env: NodeJS.ProcessEnv, name: string): string {
+  const value = env[name];
+  return typeof value === 'string' ? value.trim() : '';
 }
 
-// The env parameters are accepted but not read yet: tasks.md T08 rewrites this module.
-export function resolveAdminCredentials(_env: NodeJS.ProcessEnv = process.env): AdminCredentials {
-  const username = process.env.ADMIN_USERNAME || 'admin';
-  const password = process.env.ADMIN_PASSWORD || 'admin123';
-
-  return { username, password };
+export function isProductionEnv(env: NodeJS.ProcessEnv = process.env): boolean {
+  return env.NODE_ENV === 'production';
 }
 
-export function isUsingDefaultAdminCredentials(): boolean {
-  return !process.env.ADMIN_USERNAME && !process.env.ADMIN_PASSWORD;
-}
+/**
+ * Production: ADMIN_USERNAME, a well-formed ADMIN_PASSWORD_HASH and AUTH_SECRET are all required;
+ * plain ADMIN_PASSWORD is ignored. Outside production: hash, then plain, then admin/admin123.
+ */
+export function resolveAdminCredentials(env: NodeJS.ProcessEnv = process.env): AdminCredentialsResult {
+  const username = read(env, 'ADMIN_USERNAME');
+  const hash = read(env, 'ADMIN_PASSWORD_HASH');
 
-export function isProductionEnv(_env: NodeJS.ProcessEnv = process.env): boolean {
-  throw new Error('isProductionEnv not implemented (tasks.md T08)');
-}
-
-export function getAdminLoginHint(_env: NodeJS.ProcessEnv = process.env): string {
-  if (isUsingDefaultAdminCredentials()) {
-    return 'Modo desenvolvimento: use admin / admin123';
+  if (isProductionEnv(env)) {
+    if (!username || !hash || !HASH_SHAPE.test(hash)) {
+      return { ok: false, reason: 'missing-credentials' };
+    }
+    if (!read(env, 'AUTH_SECRET')) {
+      return { ok: false, reason: 'missing-auth-secret' };
+    }
+    return { ok: true, username, secret: { kind: 'hash', value: hash }, usingDefaults: false };
   }
 
-  return 'Use as credenciais configuradas em .env.local.';
+  const resolvedUsername = username || DEFAULT_USERNAME;
+  if (hash) {
+    return { ok: true, username: resolvedUsername, secret: { kind: 'hash', value: hash }, usingDefaults: false };
+  }
+  const plain = read(env, 'ADMIN_PASSWORD');
+  if (plain) {
+    return { ok: true, username: resolvedUsername, secret: { kind: 'plain', value: plain }, usingDefaults: false };
+  }
+  return {
+    ok: true,
+    username: resolvedUsername,
+    secret: { kind: 'plain', value: DEFAULT_PASSWORD },
+    usingDefaults: !username
+  };
+}
+
+/** The dev hint, only while the admin/admin123 defaults are in use outside production; otherwise null. */
+export function getAdminLoginHint(env: NodeJS.ProcessEnv = process.env): string | null {
+  const resolved = resolveAdminCredentials(env);
+  return resolved.ok && resolved.usingDefaults ? DEV_HINT : null;
 }
 
 export function logAuthEvent(message: string, details?: Record<string, unknown>) {

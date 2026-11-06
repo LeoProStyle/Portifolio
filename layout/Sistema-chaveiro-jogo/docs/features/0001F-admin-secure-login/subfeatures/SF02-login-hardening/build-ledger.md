@@ -18,3 +18,5 @@ T03: complete (commits f3faa7ea..6cc3f26b, BUILD_STATUS=pass via tsc --noEmit on
 T04: complete (commits 6cc3f26b..80ea5089, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason, validation at area end)
 T05: complete (commits 80ea5089..d156dca9, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason, validation at area end)
 T06: complete (commits d156dca9..274318b8, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason, validation at area end)
+T07: complete (commits 274318b8..7ef59e1b, BUILD_STATUS=pass via tsc --noEmit (module not imported by the app yet), verify tests/password.test.ts 4/4, validation at area end)
+Ruling: T08 also edits auth.ts with a minimal bridge (new credential result, constant-time compare, no expectedUsername log) although auth.ts belongs to T13 - the changed return type of resolveAdminCredentials would otherwise break the build between T08 and T13 - costs a double edit of authorize if wrong, T13 replaces the bridge
