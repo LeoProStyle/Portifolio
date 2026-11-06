@@ -89,6 +89,9 @@ function isFrameRadius(v: unknown): v is string {
 
 export function isAllowedImageUrl(v: unknown): boolean {
   if (typeof v !== 'string' || !/^https:\/\//i.test(v)) return false;
+  // Nothing that could close a CSS url(...) or an attribute, or hide a second host, may appear anywhere.
+  // eslint-disable-next-line no-control-regex
+  if (/["'()\\<>\s\u0000-\u001F\u007F]/.test(v)) return false;
 
   // The raw authority is checked before parsing: URL drops a default port such as ":443",
   // and RN02 refuses any explicit port, user or password.
@@ -142,7 +145,7 @@ export function validatePlayTheme(input: unknown, fallback: PlayTheme): PlayThem
     radius: isFrameRadius(input.radius) ? input.radius : fallback.radius
   };
 
-  const bgImage = isAllowedImageUrl(input.bgImage) ? (input.bgImage as string) : fallback.bgImage;
+  const bgImage = isAllowedImageUrl(input.bgImage) ? new URL(input.bgImage as string).href : fallback.bgImage;
   if (bgImage !== undefined) theme.bgImage = bgImage;
 
   const readable =

@@ -57,7 +57,7 @@ export default function ThemedFrame({ frameStyle, state, onRetry, onReload, chil
     );
   }
 
-  const showsEmulator = state === 'booting' || state === 'running' || state === 'failed';
+  const showsEmulator = state === 'booting' || state === 'running';
 
   return (
     <div className="play-frame-area flex min-h-0 flex-1 items-center justify-center p-2">

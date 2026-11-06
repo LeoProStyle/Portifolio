@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, type CSSProperties } from 'react';
+import { useCallback, useMemo, useState, type CSSProperties } from 'react';
 import Emulator, { type EmulatorStatus } from '@/components/Emulator';
 import PlayTopBar from '@/components/PlayTopBar';
 import StatusStrip, { type PlayScreenState } from '@/components/StatusStrip';
@@ -34,6 +34,7 @@ export default function PlayStage({ slug, game, metaState, onRetry }: PlayStageP
 
   const system = game?.system ?? game?.console ?? '';
   const ready = metaState === 'ok' && game !== null;
+  const core = useMemo(() => getCoreForSystem(system), [system]);
   const theme = resolvePlayTheme(ready ? system : null);
   const screenState: PlayScreenState = ready ? emulator.state : META_TO_SCREEN[metaState === 'ok' ? 'loading' : metaState];
   const title = game?.title || slug;
@@ -64,7 +65,7 @@ export default function PlayStage({ slug, game, metaState, onRetry }: PlayStageP
               key={bootKey}
               gameSlug={slug}
               gameTitle={title}
-              core={getCoreForSystem(system)}
+              core={core}
               onStatusChange={handleStatusChange}
             />
           ) : null}

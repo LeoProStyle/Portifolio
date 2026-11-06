@@ -12,9 +12,10 @@ export default function PlayPage({ params }: { params: { slug: string } }) {
     let ignore = false;
 
     const loadGame = async () => {
+      setGame(null);
       setMetaState('loading');
       try {
-        const response = await fetch(`/api/game/${params.slug}`);
+        const response = await fetch(`/api/game/${encodeURIComponent(params.slug)}`);
         if (ignore) return;
 
         if (response.status === 404) {
@@ -50,7 +51,7 @@ export default function PlayPage({ params }: { params: { slug: string } }) {
 
   return (
     <main>
-      <PlayStage slug={params.slug} game={game} metaState={metaState} onRetry={handleRetry} />
+      <PlayStage key={params.slug} slug={params.slug} game={game} metaState={metaState} onRetry={handleRetry} />
     </main>
   );
 }

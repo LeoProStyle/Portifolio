@@ -203,3 +203,18 @@ test('resolveEmulatorSystem returns null for empty, blank, missing and unknown v
   assert.equal(resolveEmulatorSystem(undefined), null);
   assert.equal(resolveEmulatorSystem('atari 2600'), null);
 });
+
+test('isAllowedImageUrl refuses characters that could break out of a CSS url(...)', () => {
+  assert.equal(isAllowedImageUrl('https://i.imgur.com/a.png"), url("https://evil.example/t.gif'), false);
+  assert.equal(isAllowedImageUrl('https://i.imgur.com\evil'), false);
+  assert.equal(isAllowedImageUrl('https://i.imgur.com/a b'), false);
+  assert.equal(isAllowedImageUrl("https://i.imgur.com/a'b.png"), false);
+  assert.equal(isAllowedImageUrl('https://i.imgur.com/a<b>.png'), false);
+  assert.equal(isAllowedImageUrl('https://i.imgur.com/a\u0001.png'), false);
+});
+
+test('validatePlayTheme stores the normalized href of an accepted bgImage', () => {
+  const fallback = DEFAULT_PLAY_THEMES.NES;
+  const theme = validatePlayTheme({ bgImage: 'https://I.IMGUR.COM/x.png' }, fallback);
+  assert.equal(theme.bgImage, 'https://i.imgur.com/x.png');
+});

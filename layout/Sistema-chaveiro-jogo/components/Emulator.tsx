@@ -49,7 +49,7 @@ function getCoreCandidates(primaryCore?: string): string[] {
 
 export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: EmulatorProps) {
   const [iframeUrl, setIframeUrl] = useState<string>('');
-  const romUrl = `/api/rom/${gameSlug}`;
+  const romUrl = `/api/rom/${encodeURIComponent(gameSlug)}`;
   const coreCandidates = getCoreCandidates(core);
 
   // Held in a ref so a new callback identity never restarts the boot effect below.
