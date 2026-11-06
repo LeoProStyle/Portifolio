@@ -105,12 +105,13 @@ Scope: SF04. Unit = `npm test`; E2E = `npx playwright test e2e/rom-path.qa.spec.
 | T06 | Write helpers never take romPath from the body | backend | RF01, RF02, RF05, RF06 | `romPathForCreate(undefined)`, `romPathForCreate('roms/a.nes')`, `romPathForUpdate(undefined)`, `romPathForUpdate('/roms/a.nes')` | `''`, `'roms/a.nes'`, `{}`, `{romPath:'/roms/a.nes'}` | deep equal |
 | T07 | ROM route stays public and does not echo paths | backend | RN01, RF03 | anonymous GET `/api/rom/super-retro` (mock, `/roms/super-retro.bin`, file absent) and `/api/rom/does-not-exist` | 404 `{error:'ROM not found'}` and 404 `{error:'Game not found'}`; never 401/403; no body carries a path | status + exact body |
 | T08 | Body romPath ignored on create | backend | RF02 | admin POST JSON `{slug:'e2e-sf04-…', romPath:'../.env'}`, then admin GET list | created game has `romPath: ''` | list entry |
+| T09 | Edit without file keeps romPath, body romPath ignored (added by the build's final review, FR-2) | backend | RF02, RF05 | no-mongo project: admin PUT `game-1` JSON and multipart without `romFile`, each with `romPath:'../.env'`, then admin GET `game-1` | `romPath` stays `/roms/super-retro.bin` | GET body |
 
 ### Test File Mapping
 | Area | Test File | Test IDs |
 |------|-----------|----------|
 | backend | tests/rom-path.test.ts | T01, T02, T03, T04, T05, T06 |
-| backend (E2E) | e2e/rom-path.qa.spec.ts | T07, T08 |
+| backend (E2E) | e2e/rom-path.qa.spec.ts | T07, T08 (`--project=main`), T09 (`--project=no-mongo`) |
 
 ### Coverage vs Requirements
 | RF/RN | Test Cases | Status |

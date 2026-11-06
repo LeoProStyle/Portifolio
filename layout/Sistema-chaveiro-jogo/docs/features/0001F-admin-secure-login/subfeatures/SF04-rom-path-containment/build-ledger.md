@@ -34,3 +34,9 @@ final-review: minor (deferred): FR-4 about.md status pending; the lifecycle comm
 final-review: minor (deferred): FR-7 local fallback ROMs under public/roms are statically served without the active check; dev-only since Vercel's filesystem is read-only
 final-review: minor (deferred): FR-8 raw params.slug in [rom] and [data] logs, pre-existing
 final-review: minor (deferred): FR-9 slug-only ROM object key lets two games share one ROM object
+final-review: fix round 1/3 (3 addressed, 0 open, 3 deferred; commits 72fa80a5..83f7c4ff - FR-1 GamesTab hint, FR-2 E2E T09 no-mongo proven red against pre-T05 code by reading, FR-5 generic 500 body)
+final-review: minor (deferred): T09 leaves game-1 mutated in the no-mongo dev server's memory (multipart active stored as 'true' text) until restart; not asserted
+final-review: minor (deferred): T09 trusts that a reused 3002 server runs without MongoDB; the before.romPath mock check fails fast otherwise
+final-review: minor (deferred): the FR-1 hint has no automated UI assertion
+Final review: ruled 1 (after review-000)
+Final review head: 83f7c4ff7af854bcdcda14791965921ec804cfec
