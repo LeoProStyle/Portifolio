@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth-guard';
 import { getDb } from '@/lib/mongo';
 import type { Cartridge } from '@/models/cartridge';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const guard = await requireAdmin(request);
+  if (!guard.ok) return guard.response;
   try {
     const db = await getDb();
     const cartridges = await db.collection<Cartridge>('cartridges').find({}).toArray();
@@ -14,6 +17,8 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const guard = await requireAdmin(request);
+  if (!guard.ok) return guard.response;
   try {
     const body = await request.json();
     const db = await getDb();

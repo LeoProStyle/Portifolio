@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { Game } from '@/models/game';
 import { systemOptions } from '@/lib/emulator-cores';
+import { getAdminAuthStatus, type AdminApiErrorBody, type AdminAuthStatus } from '@/lib/admin-api';
 
 interface GameFormState {
   title: string;
@@ -14,7 +15,11 @@ interface GameFormState {
   active: boolean;
 }
 
-export default function GamesTab() {
+interface GamesTabProps {
+  onAuthError: (status: AdminAuthStatus) => void;
+}
+
+export default function GamesTab({ onAuthError }: GamesTabProps) {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -37,6 +42,11 @@ export default function GamesTab() {
   const loadGames = async () => {
     try {
       const response = await fetch('/api/admin/games');
+      const authStatus = getAdminAuthStatus(response);
+      if (authStatus) {
+        onAuthError(authStatus);
+        return;
+      }
       if (response.ok) {
         const data = await response.json();
         setGames(data);
@@ -72,6 +82,8 @@ export default function GamesTab() {
       const formData = new FormData();
 
       Object.entries(form).forEach(([key, value]) => {
+        // The server derives romPath from romFile; the form only shows the current value.
+        if (key === 'romPath') return;
         if (typeof value === 'boolean') {
           formData.append(key, value ? 'true' : 'false');
         } else {
@@ -88,12 +100,18 @@ export default function GamesTab() {
         body: formData
       });
 
+      const authStatus = getAdminAuthStatus(response);
+      if (authStatus) {
+        onAuthError(authStatus);
+        return;
+      }
+
       if (response.ok) {
         setFeedback(editingId ? 'Game updated successfully.' : 'Game created successfully.');
         resetForm();
         loadGames();
       } else {
-        const data = await response.json().catch(() => ({}));
+        const data: AdminApiErrorBody = await response.json().catch(() => ({}));
         setFeedback(data.error || (editingId ? 'Unable to update game.' : 'Unable to create game.'));
       }
     } catch (error) {
@@ -110,11 +128,17 @@ export default function GamesTab() {
         method: 'DELETE'
       });
 
+      const authStatus = getAdminAuthStatus(response);
+      if (authStatus) {
+        onAuthError(authStatus);
+        return;
+      }
+
       if (response.ok) {
         setFeedback('Game deleted.');
         loadGames();
       } else {
-        const data = await response.json().catch(() => ({}));
+        const data: AdminApiErrorBody = await response.json().catch(() => ({}));
         setFeedback(data.error || 'Unable to delete game.');
       }
     } catch (error) {
@@ -168,13 +192,6 @@ export default function GamesTab() {
               className="rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder-zinc-500"
               required
             />
-            <input
-              type="text"
-              placeholder="ROM path"
-              value={form.romPath}
-              onChange={(e) => setForm({ ...form, romPath: e.target.value })}
-              className="rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder-zinc-500"
-            />
           </div>
           <textarea
             placeholder="Description"
@@ -191,7 +208,11 @@ export default function GamesTab() {
               onChange={(e) => setRomFile(e.target.files?.[0] || null)}
               className="block w-full text-sm text-zinc-400 file:mr-4 file:rounded file:border-0 file:bg-cyan-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-zinc-950 hover:file:bg-cyan-400"
             />
-            {form.romPath ? <p className="mt-2 text-sm text-zinc-500">Current ROM path: {form.romPath}</p> : null}
+            {form.romPath ? (
+              <p className="mt-2 text-sm text-zinc-500">Caminho atual da ROM: {form.romPath}</p>
+            ) : romFile ? null : (
+              <p className="mt-2 text-sm text-amber-400">Envie um arquivo de ROM para o jogo funcionar.</p>
+            )}
           </div>
           {feedback ? <p className="text-sm text-cyan-400">{feedback}</p> : null}
 

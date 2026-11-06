@@ -24,7 +24,12 @@ export async function getMongoClient() {
       }
     });
 
-    clientPromise = client.connect();
+    // A rejected connect is not cached: the next call retries instead of failing until the instance recycles.
+    clientPromise = client.connect().catch((error: unknown) => {
+      client = null;
+      clientPromise = null;
+      throw error;
+    });
   }
 
   return clientPromise;

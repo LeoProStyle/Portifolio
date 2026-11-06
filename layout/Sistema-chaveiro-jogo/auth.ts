@@ -1,10 +1,11 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { logAuthEvent, resolveAdminCredentials } from '@/lib/auth-config';
+import { authConfig } from '@/auth.config';
+import { authorizeAdmin } from '@/lib/admin-login';
 
+// Node-only: the Credentials provider. secret, session and callbacks come from auth.config.ts.
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  trustHost: true,
-  secret: process.env.AUTH_SECRET || 'retrokey-dev-secret',
+  ...authConfig,
   providers: [
     Credentials({
       name: 'Credentials',
@@ -12,43 +13,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         username: { label: 'Username', type: 'text' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials) {
-        const expected = resolveAdminCredentials();
-        const username = credentials?.username;
-        const password = credentials?.password;
-
-        const isValid = username === expected.username && password === expected.password;
-
-        if (isValid) {
-          logAuthEvent('admin login success', { username });
-          return {
-            id: 'admin',
-            name: 'Admin',
-            email: 'admin@retrokey.local'
-          };
-        }
-
-        logAuthEvent('admin login rejected', { username, expectedUsername: expected.username });
-        return null;
+      authorize(credentials, request) {
+        return authorizeAdmin(credentials ?? {}, request);
       }
     })
-  ],
-  pages: {
-    signIn: '/login'
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = 'admin';
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        const sessionUser = session.user as typeof session.user & { role?: string };
-        sessionUser.role = token.role as string;
-      }
-      return session;
-    }
-  }
+  ]
 });

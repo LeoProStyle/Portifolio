@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth-guard';
 import { getDb } from '@/lib/mongo';
 import type { Cartridge } from '@/models/cartridge';
 
-export async function GET(_request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  const guard = await requireAdmin(request);
+  if (!guard.ok) return guard.response;
   try {
     const db = await getDb();
     const cartridge = await db.collection<Cartridge>('cartridges').findOne({ id: params.id });
@@ -18,6 +21,8 @@ export async function GET(_request: Request, { params }: { params: { id: string 
 }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
+  const guard = await requireAdmin(request);
+  if (!guard.ok) return guard.response;
   try {
     const body = await request.json();
     const db = await getDb();
@@ -44,7 +49,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const guard = await requireAdmin(request);
+  if (!guard.ok) return guard.response;
   try {
     const db = await getDb();
     const result = await db.collection<Cartridge>('cartridges').deleteOne({ id: params.id });

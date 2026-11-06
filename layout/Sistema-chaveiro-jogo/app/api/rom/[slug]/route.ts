@@ -2,6 +2,7 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { NextResponse } from 'next/server';
 import { getGameBySlug } from '@/lib/data';
 import { getR2BucketName, getR2Endpoint } from '@/lib/r2';
+import { classifyRomPath } from '@/lib/rom-path';
 import fs from 'fs';
 import path from 'path';
 
@@ -77,6 +78,24 @@ async function fetchRomFromR2(objectKey: string) {
   }
 }
 
+/** One body for every unreadable ROM, so the response never carries a stored path. */
+function romNotFound() {
+  return NextResponse.json({ error: 'ROM not found' }, { status: 404 });
+}
+
+function serveRom(fileBuffer: Buffer, source: string, slug: string, origin: 'R2' | 'local file') {
+  const filename = getFilenameFromRomPath(source, slug);
+  const contentLength = Buffer.byteLength(fileBuffer);
+  const headers = {
+    'Content-Type': getContentTypeFromFilename(filename),
+    'Content-Disposition': `attachment; filename="${filename}"`,
+    'Content-Length': String(contentLength),
+    'Cache-Control': 'public, max-age=86400'
+  };
+  console.info(`[rom] Served ROM from ${origin} for`, slug, { status: 200, contentLength, filename });
+  return new NextResponse(fileBuffer, { headers });
+}
+
 export async function GET(_request: Request, { params }: { params: { slug: string } }) {
   try {
     const game = await getGameBySlug(params.slug);
@@ -87,65 +106,35 @@ export async function GET(_request: Request, { params }: { params: { slug: strin
       return NextResponse.json({ error: 'Game not found' }, { status: 404 });
     }
 
-    const romPath = game.romPath || '';
+    const location = classifyRomPath(game.romPath);
 
-    // Normalize romPath: remove leading slash if present
-    const normalizedRomPath = romPath.startsWith('/') ? romPath.slice(1) : romPath;
+    if (location.kind === 'rejected') {
+      console.warn('[rom] rejected romPath', { slug: game.slug, reason: location.reason });
+      return romNotFound();
+    }
 
-    // Try R2 first if romPath looks like it's meant for R2 (starts with roms/)
-    if (normalizedRomPath.startsWith('roms/')) {
-      console.info('[rom] romPath indicates R2 key:', normalizedRomPath, 'for game', game.slug);
-      const fileBuffer = await fetchRomFromR2(normalizedRomPath);
-      if (fileBuffer) {
-        const filename = getFilenameFromRomPath(normalizedRomPath, game.slug);
-        const contentLength = Buffer.byteLength(fileBuffer);
-        const headers = {
-          'Content-Type': getContentTypeFromFilename(filename),
-          'Content-Disposition': `attachment; filename="${filename}"`,
-          'Content-Length': String(contentLength),
-          'Cache-Control': 'public, max-age=86400'
-        };
-        console.info('[rom] Served ROM from R2 for', game.slug, { status: 200, headers, contentLength, filename });
-        return new NextResponse(fileBuffer, { headers });
-      } else {
-        console.error('[rom] R2 fetch returned no data for', normalizedRomPath);
-        console.info('[rom] Returning JSON error response', { status: 404, contentType: 'application/json' });
-        return NextResponse.json(
-          { error: 'ROM not found on R2', details: `Expected ROM at R2 key: ${normalizedRomPath}` },
-          { status: 404 }
-        );
+    if (location.kind === 'r2') {
+      const fileBuffer = await fetchRomFromR2(location.key);
+      if (!fileBuffer) {
+        console.error('[rom] R2 fetch returned no data', { slug: game.slug });
+        return romNotFound();
       }
+      return serveRom(fileBuffer, location.key, game.slug, 'R2');
     }
 
-    // If romPath doesn't start with roms/ and R2 is not configured, try local filesystem
-    const localPath = path.join(process.cwd(), 'public', normalizedRomPath);
-
+    let fileBuffer: Buffer;
     try {
-      console.info('[rom] Attempting to read local ROM file at', localPath);
-      const fileBuffer = fs.readFileSync(localPath);
-      const filename = getFilenameFromRomPath(normalizedRomPath, game.slug);
-      const contentLength = Buffer.byteLength(fileBuffer);
-      const headers = {
-        'Content-Type': getContentTypeFromFilename(filename),
-        'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Length': String(contentLength),
-        'Cache-Control': 'public, max-age=86400'
-      };
-      console.info('[rom] Served ROM from local file for', game.slug, { status: 200, headers, localPath });
-      return new NextResponse(fileBuffer, { headers });
+      fileBuffer = fs.readFileSync(location.absolutePath);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error('[rom] ROM file not found for', game.slug, localPath, message);
-      console.info('[rom] Returning JSON error response', { status: 404, contentType: 'application/json' });
-      return NextResponse.json(
-        { error: 'ROM file not available', details: `Unable to locate ROM at local path or R2: ${normalizedRomPath}` },
-        { status: 404 }
-      );
+      const code = (error as NodeJS.ErrnoException)?.code ?? 'unknown';
+      console.error('[rom] local ROM file not readable', { slug: game.slug, code });
+      return romNotFound();
     }
+    return serveRom(fileBuffer, location.absolutePath, game.slug, 'local file');
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[rom] Unexpected error while fetching ROM for', params.slug, message);
     console.info('[rom] Returning JSON error response', { status: 500, contentType: 'application/json' });
-    return NextResponse.json({ error: 'Failed to fetch ROM', details: message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch ROM' }, { status: 500 });
   }
 }

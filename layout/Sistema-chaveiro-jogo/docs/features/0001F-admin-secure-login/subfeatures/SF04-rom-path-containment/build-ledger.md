@@ -1,0 +1,42 @@
+# Build ledger — feature: SF04-rom-path-containment — plan: docs/features/0001F-admin-secure-login/subfeatures/SF04-rom-path-containment/plan.md
+
+Ruling: SF04 built instead of EPIC_CURRENT_SF=SF03 - epic.md Notes order SF01 -> SF02 -> SF04 -> SF03 and the user asked for SF04 - costs SF03 being planned against handlers SF04 changed, which SF04 keeps response shapes for
+Preflight: T03 produces classifyRomPath(romPath: unknown, publicDir?: string): RomLocation; T04 consumes the same string - match
+Preflight: T03 produces romPathForCreate(uploaded: string | undefined): string and romPathForUpdate(uploaded: string | undefined): { romPath?: string }; T05 consumes both, same strings - match
+Preflight: T01 and T03 both list lib/rom-path.ts - T01 writes the throwing stub, T03 replaces the bodies; T03 Deps T01 - sequential, no conflict
+Preflight: T01, T02 test tasks - no Consumes/Produces, Files cover T01-T06 and T07-T08 - self-consistent
+Preflight: T04, T05 - Deps T02, T03 cover every Consumes producer and the red E2E - self-consistent
+Preflight: T06 - Deps T05 (server ignores romPath before the form stops sending it), no interface - self-consistent
+Ruling: the coordinator implements tasks directly instead of one implementer subagent per task, as in SF02 - 6 small tasks over 7 files with the plan and code already read; area validators and the final review stay independent subagents - costs a self-review blind spot if wrong, mitigated by the per-area reviewer and the final review
+T01: complete (commits 858a02d6..13b2dccf, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason 6/6 not implemented, validation at area end)
+T02: complete (commits 13b2dccf..91ddc0d2, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason - T07 body echoes details, T08 stores ../.env, validation at area end)
+T03: complete (commits 91ddc0d2..5832dcb9, BUILD_STATUS=pass via tsc --noEmit (module not imported by the app yet), verify tests/rom-path.test.ts 6/6, validation at area end)
+T04: impact NOT VERIFIED by GitNexus (git root two levels up, symbols unmapped) - text search: GET /api/rom/[slug] has one caller, components/Emulator.tsx:49 via the emulator iframe, which never reads the error body; wiki pages cite the old route lines and drift after this task
+test: validated (commits 858a02d6..91ddc0d2, 0 blocking violations, 2 polish, SPEC_STATUS=COMPLETE)
+test: minor (deferred): e2e/rom-path.qa.spec.ts T08 cleanup calls listGames with an expect in finally, which can mask the original failure (same pattern as SF01 cleanup)
+test: minor (deferred): T07 relies on public/roms/super-retro.bin being absent; documented in the spec header, not guarded
+T04: complete (commits 5832dcb9..794e48ae, BUILD_STATUS=pass via npm run build, verify e2e/rom-path.qa.spec.ts --project=main T07 green, T08 red until T05, validation at area end)
+T05: complete (commits 794e48ae..ca594f69, BUILD_STATUS=pass via npm run build (jose Edge warning pre-existing), verify e2e/rom-path.qa.spec.ts + e2e/admin.qa.spec.ts --project=main 13 passed 1 skipped (T17 no-mongo), guard lines unchanged, impact NOT VERIFIED by GitNexus - text search: callers are components/admin/GamesTab.tsx and the E2E specs, validation at area end)
+backend: validated (commits 91ddc0d2..ca594f69, 0 blocking violations, 3 polish, SPEC_STATUS=COMPLETE, no containment bypass found on POSIX or win32 semantics)
+backend: minor (deferred): classifyRomPath accepts Windows reserved device names such as /roms/CON on win32 dev; needs a hand-written stored value and does not apply to the Linux target
+backend: minor (deferred): fetchRomFromR2 logs the format-validated R2 key server-side; client bodies never carry it
+backend: minor (deferred): Content-Disposition filename is not escaped; only builder-generated names reach public/roms today
+T06: complete (commits ca594f69..7803c3e6, BUILD_STATUS=pass via npm run build, verify e2e/admin.qa.spec.ts --project=main 11 passed 1 skipped (T17 no-mongo), validation at area end)
+frontend: validated (commits ca594f69..7803c3e6, 0 violations, SPEC_STATUS=COMPLETE)
+Validation gates: test gate 10/10 exit 0, npm test 55 pass 1 skipped (Mongo-only test), npm run build exit 0 after T06 - tasks.md section 1-5 ticked from the three area reports
+e2e: deferred to the last subfeature (epic; SF04 declares no QA/E2E Specification rows - no design.md); e2e/rom-path.qa.spec.ts authored in T02 as a contract test
+Final review findings: FR-1 create without file stores '' silently, game 404s (feature, minor); FR-2 no handler-level test for PUT preservation or body romPath on PUT (feature, minor); FR-3 validation_gates.test omits tests/rom-path.test.ts (feature, polish); FR-4 about.md status pending (feature, polish); FR-5 ROM route outer catch echoes error message in details (owasp, minor); FR-6 full in-memory ROM reads, no size cap or rate limit, pre-existing (owasp, minor); FR-7 local fallback ROMs in public/roms are statically served without the active check (owasp, polish); FR-8 raw slug in logs, pre-existing (owasp, polish); FR-9 slug-only object key lets two games overwrite one ROM (owasp, polish)
+Ruling: the coordinator applies the final-review fix wave directly instead of @fix-agent, as with the tasks - three small edits in files already read; the re-review stays an independent reviewer subagent - costs a self-fix blind spot if wrong, mitigated by the scoped re-review
+Ruling: FR-1 fixed with a Portuguese hint under the file input, not a 400 on POST - plan.md fixes create without file as '' and SF01 T12 creates JSON games without a file - costs an admin ignoring the hint and saving a game that 404s if wrong, recoverable by re-upload (RF06)
+Ruling: FR-6 accepted for SF04 - pre-existing whole-file reads on the public route; streaming and a size cap or edge rate limit are a separate change outside path containment - costs memory pressure or egress under a download flood of a large ROM if wrong
+final-review: minor (deferred): FR-3 validation_gates.test in AGENTS.md omits tests/rom-path.test.ts; npm test covers it - the gate command is the user's to change
+final-review: minor (deferred): FR-4 about.md status pending; the lifecycle commands own it
+final-review: minor (deferred): FR-7 local fallback ROMs under public/roms are statically served without the active check; dev-only since Vercel's filesystem is read-only
+final-review: minor (deferred): FR-8 raw params.slug in [rom] and [data] logs, pre-existing
+final-review: minor (deferred): FR-9 slug-only ROM object key lets two games share one ROM object
+final-review: fix round 1/3 (3 addressed, 0 open, 3 deferred; commits 72fa80a5..83f7c4ff - FR-1 GamesTab hint, FR-2 E2E T09 no-mongo proven red against pre-T05 code by reading, FR-5 generic 500 body)
+final-review: minor (deferred): T09 leaves game-1 mutated in the no-mongo dev server's memory (multipart active stored as 'true' text) until restart; not asserted
+final-review: minor (deferred): T09 trusts that a reused 3002 server runs without MongoDB; the before.romPath mock check fails fast otherwise
+final-review: minor (deferred): the FR-1 hint has no automated UI assertion
+Final review: ruled 1 (after review-000)
+Final review head: 83f7c4ff7af854bcdcda14791965921ec804cfec
