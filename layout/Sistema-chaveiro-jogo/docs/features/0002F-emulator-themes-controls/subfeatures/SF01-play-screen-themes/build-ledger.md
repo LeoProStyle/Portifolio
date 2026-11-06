@@ -24,3 +24,4 @@ T03: complete (commits 508bef8b..c4b25a36, BUILD_STATUS=n/a (test-only, RED conf
 T04: complete (commits c4b25a36..c07cdb27, BUILD_STATUS=pass, tests/emulator-cores.test.ts 4/4, validation at area end)
 T05: complete (commits c07cdb27..6014c879, BUILD_STATUS=pass, tests/play-theme.test.ts 14/14, validation at area end)
 T06: complete (commits 6014c879..fb412f14, BUILD_STATUS=pass, fallback constants and attempt order unchanged in diff; failed emitted in the 3 exhausted branches only, E2E T08 confirms at T10, validation at area end)
+T07: complete (commits fb412f14..63eafd88, BUILD_STATUS=pass, validation at area end)
