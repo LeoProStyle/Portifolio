@@ -1,0 +1,8 @@
+{
+  "feature": "0002F-emulator-themes-controls",
+  "screens": [
+    { "id": "play", "sf": "SF01", "name": "Play screen", "kind": "route",
+      "path": "/play/super-retro", "auth": false,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF01-play-screen-themes/design.md" }
+  ]
+}
