@@ -141,6 +141,7 @@ Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (
 | T23 | 6th wrong login gets 429, same message | frontend | RF03, RF04 | 6 wrong logins, username `e2e-sf02-<ts>` | 6th callback response 429 + `Retry-After`; same "Credenciais inválidas." | network + text |
 | T25 | Hash script prints one verifiable value | backend | RF02 | `tsx scripts/hash-admin-password.ts` with password on stdin; empty and <12-char input | one stdout line, T01 format, `verifyPasswordHash` true; password not in output; short input refused | spawn + verify |
 | T26 | One IP capped at 30 attempts in 15 min | backend | RF03 | 31 `registerIpAttempt` from one IP, any usernames | 31st `allowed:false`, `retryAfterSeconds` from the 30th; other IP unaffected | decision |
+| T29 | 429 shows the generic message in the browser | frontend | RF04 | callback intercepted with the exact `LockedResponse` 429 | "Credenciais inválidas.", no "Erro inesperado", stays on /login | page text |
 | T28 | Post-login redirect stays on the same origin | frontend | RF04 | `safeCallbackUrl` with `/admin`, `//host`, `/\host`, `/<TAB>/host`, absolute URLs | same-origin path kept; every other value → `/admin` | strict equality |
 | T27 | IP cap and input limits before any work | backend | RF03, RN05 | 31 logins rotating usernames; username >256 or password >1024; username with control chars | 31st refused before its user key exists, log `locked {scope:'ip', ip}`; oversized input refused with no store call; logged name ≤64 chars, no control chars | store + log spy |
 
@@ -156,7 +157,7 @@ Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (
 | backend | tests/admin-session.test.ts | T21 |
 | backend | tests/hash-script.test.ts | T25 |
 | frontend | tests/safe-callback-url.test.ts | T28 |
-| frontend (E2E) | e2e/login.qa.spec.ts | T22, T23 |
+| frontend (E2E) | e2e/login.qa.spec.ts | T22, T23, T29 |
 
 ### Coverage vs Requirements
 | RF/RN | Test Cases | Status |
@@ -164,7 +165,7 @@ Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (
 | RF01 | T01, T02, T03, T15 | ✅ |
 | RF02 | T25 | ✅ |
 | RF03 | T10-T14, T19, T20, T23, T26, T27 | ✅ |
-| RF04 | T19 (body), T22, T23 | ✅ |
+| RF04 | T19 (body), T22, T23, T29 | ✅ |
 | RF05 | T21 | ✅ |
 | RF06 | T05 | ✅ |
 | RF07 | T09, T14 | ✅ |

@@ -70,6 +70,27 @@ test.describe('SF02 login hardening', () => {
     await expect(page).toHaveURL(/\/login/);
   });
 
+  test('T29 a 429 from the credentials callback shows the same generic message (no MongoDB needed)', async ({ page, baseURL }) => {
+    // The server half (checkCredentialsLock builds this exact body) is unit test T19; this checks the
+    // browser half: next-auth/react signIn parses the 429 and LoginForm shows the wrong-password text.
+    await page.route('**/api/auth/callback/credentials**', (route) =>
+      route.fulfill({
+        status: 429,
+        headers: { 'Retry-After': '900' },
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'TooManyRequests', url: `${baseURL}/api/auth/error?error=CredentialsSignin` })
+      })
+    );
+    await page.goto('/login?callbackUrl=/admin');
+    await page.waitForLoadState('networkidle');
+    const callback = page.waitForResponse((res) => res.url().includes('/api/auth/callback/credentials'));
+    await submitLogin(page, throwawayUser(), 'any-password');
+    expect((await callback).status()).toBe(429);
+    await expect(page.getByText(GENERIC_ERROR)).toBeVisible();
+    await expect(page.getByText('Erro inesperado')).toHaveCount(0);
+    await expect(page).toHaveURL(/\/login/);
+  });
+
   test('T23 the 6th wrong login in 15 minutes gets 429 with Retry-After and the same message', async ({ page, baseURL }) => {
     test.setTimeout(180_000);
     if (!(await mongoReachable(baseURL as string))) {

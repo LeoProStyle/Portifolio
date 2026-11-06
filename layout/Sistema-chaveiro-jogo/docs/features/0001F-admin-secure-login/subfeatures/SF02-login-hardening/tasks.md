@@ -13,7 +13,7 @@
 - [x] RF01 — Senha do admin como hash scrypt em `ADMIN_PASSWORD_HASH`, comparada com `timingSafeEqual`
 - [x] RF02 — Script do projeto gera o valor de `ADMIN_PASSWORD_HASH`
 - [x] RF03 — Bloqueio de 15 min por par usuário+IP após 5 falhas em 15 min, 429 com `Retry-After`
-- [ ] RF04 — Mesma mensagem na tela para senha errada e bloqueio
+- [x] RF04 — Mesma mensagem na tela para senha errada e bloqueio
 - [x] RF05 — Sessão do admin expira 8 horas após o login
 - [x] RF06 — Produção exige `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, `AUTH_SECRET`; `ADMIN_PASSWORD` ignorada
 - [x] RF07 — IP = primeiro valor de `x-forwarded-for`, ou `unknown`
@@ -157,7 +157,7 @@
 - [x] `scripts/hash-admin-password.ts` reads the password from stdin, never argv, and prints one hash line that `verifyPasswordHash` accepts; `npm run hash-password` runs it (RF02)
 - [x] 5 attempts for one user+IP key inside 15 min from the first lock the key for 15 min from the 5th; the next callback POST answers 429 with integer `Retry-After` and body `{error:'TooManyRequests', url}` with `error=CredentialsSignin`, after logging one `locked` outcome with `{username, ip}` only (RF03, RN05)
 - [x] The attempt counter increments atomically before the password check and a successful login clears it (RF03, RN04)
-- [ ] `LoginForm` shows "Credenciais inválidas." both for a wrong password and for a 429 (RF04)
+- [x] `LoginForm` shows "Credenciais inválidas." both for a wrong password and for a 429 (RF04)
 - [x] `authConfig.session.maxAge === 28800`; the `jwt` callback stamps `loginAt` at sign-in and returns null once 8h have passed (RF05)
 - [x] In production `resolveAdminCredentials` requires `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` and `AUTH_SECRET` and ignores `ADMIN_PASSWORD`; a malformed `ADMIN_PASSWORD_HASH` counts as missing (RF06, RN01)
 - [x] `getClientIp` returns the trimmed first `x-forwarded-for` value or `'unknown'`, and the throttle key uses it (RF07)
@@ -171,7 +171,7 @@
 
 ## Known Issues
 
-- T-TEST-08 / RF04 429 half: e2e/login.qa.spec.ts T23 skipped locally (MongoDB unreachable); run it with MongoDB reachable before merge.
+- T-TEST-08: e2e/login.qa.spec.ts T23 (real 429 after 5 wrong logins) skipped locally - MongoDB unreachable; run it, and tests/login-throttle-mongo.test.ts, with MongoDB reachable before merge. RF04 429 half is proven by T19 (server body) + T29 (browser message, intercepted 429).
 
 ## Validation Gates
 

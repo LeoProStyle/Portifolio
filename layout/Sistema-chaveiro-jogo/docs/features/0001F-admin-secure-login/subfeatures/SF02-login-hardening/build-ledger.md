@@ -50,3 +50,7 @@ Ruling: FR-14 informational - rotating ADMIN_PASSWORD_HASH does not revoke live 
 Ruling: FR-1/FR-12 cannot be closed on this machine (MongoDB unreachable) - tests/login-throttle-mongo.test.ts now runs the policy and a 10-parallel burst against the real store and skips without a database; T23 and that test must run with MongoDB reachable before merge - costs every production login failing closed on the first deploy if the pipeline is wrong
 final-review: fix round 1/3 (12 addressed, 1 open - FR-13 callbackUrl bypass via tab; commits f6b292ab..debb7697)
 final-review: fix round 2/3 (3 addressed, 1 open - FR-13 callbackUrl normalized to a //host path; commits debb7697..9feaef2d)
+final-review: fix round 3/3 (1 addressed, 0 open; commits 9feaef2d..68a520c2)
+Final review: ruled 4 (after review-000)
+Final review head: 68a520c2b221cd8ea450a1ce89465479b9b030c3
+Ruling: RF04 acceptance ticked on T19 (server 429 body) plus new E2E T29 (browser shows the generic message for an intercepted 429) instead of waiting for T23; T-TEST-08 stays open until T23 runs with MongoDB - the two halves of the contract are each proven by a running test - costs a 429 mismatch between the real throttle and the intercepted body if wrong, which T23 catches before merge
