@@ -9,3 +9,4 @@ Preflight: T04, T05 - Deps T02, T03 cover every Consumes producer and the red E2
 Preflight: T06 - Deps T05 (server ignores romPath before the form stops sending it), no interface - self-consistent
 Ruling: the coordinator implements tasks directly instead of one implementer subagent per task, as in SF02 - 6 small tasks over 7 files with the plan and code already read; area validators and the final review stay independent subagents - costs a self-review blind spot if wrong, mitigated by the per-area reviewer and the final review
 T01: complete (commits 858a02d6..13b2dccf, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason 6/6 not implemented, validation at area end)
+T02: complete (commits 13b2dccf..91ddc0d2, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason - T07 body echoes details, T08 stores ../.env, validation at area end)
