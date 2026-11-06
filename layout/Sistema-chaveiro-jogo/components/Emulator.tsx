@@ -2,10 +2,14 @@
 
 import { useEffect, useState, useRef } from 'react';
 
+export type EmulatorStatus = 'booting' | 'running' | 'failed';
+
 interface EmulatorProps {
   gameSlug: string;
   gameTitle: string;
-  core?: string;
+  core: string;
+  // Reports the boot state to the page. `failed` is sent only once every core candidate failed.
+  onStatusChange?: (state: 'booting' | 'running' | 'failed', attempt: number, total: number, core: string) => void;
 }
 
 const FALLBACK_TIMEOUT_MS = 10000;
@@ -43,11 +47,17 @@ function getCoreCandidates(primaryCore?: string): string[] {
   return Array.from(new Set(candidates));
 }
 
-export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: EmulatorProps) {
+export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: EmulatorProps) {
   const [iframeUrl, setIframeUrl] = useState<string>('');
-  const [status, setStatus] = useState<string>('Preparing emulator...');
-  const romUrl = `/api/rom/${gameSlug}`;
+  const romUrl = `/api/rom/${encodeURIComponent(gameSlug)}`;
   const coreCandidates = getCoreCandidates(core);
+
+  // Held in a ref so a new callback identity never restarts the boot effect below.
+  const onStatusChangeRef = useRef(onStatusChange);
+  onStatusChangeRef.current = onStatusChange;
+  const reportStatus = (state: EmulatorStatus, attemptIndex: number, currentCore: string) => {
+    onStatusChangeRef.current?.(state, attemptIndex + 1, coreCandidates.length, currentCore);
+  };
 
   // Ref for iframe to manage focus
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -108,8 +118,8 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
     const currentCore = coreCandidates[attemptIndex];
     if (!currentCore) {
       logEmulator('error', 'No more cores available to try');
-      setStatus('Unable to initialize the emulator with the available cores.');
       stateRef.current = 'failed';
+      reportStatus('failed', attemptIndex, attemptRef.current.currentCore);
       return;
     }
 
@@ -118,7 +128,7 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
     attemptRef.current.currentCore = currentCore;
 
     logEmulator('info', `Trying core (${attemptIndex + 1}/${coreCandidates.length})`, { core: currentCore });
-    setStatus(`Trying ${currentCore} (${attemptIndex + 1}/${coreCandidates.length})...`);
+    reportStatus('booting', attemptIndex, currentCore);
     setIframeUrl('');
 
     // Delay before showing iframe to allow state cleanup
@@ -144,15 +154,14 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
         if (stateRef.current === 'loading') {
           logEmulator('warn', 'Core initialization timeout');
           stateRef.current = 'failed';
-          setStatus(`${currentCore} did not initialize within ${FALLBACK_TIMEOUT_MS}ms. Trying next core...`);
 
           const nextAttempt = attemptIndex + 1;
           if (nextAttempt < coreCandidates.length) {
             window.setTimeout(() => tryCore(nextAttempt), RETRY_DELAY_MS);
           } else {
             logEmulator('error', 'All cores exhausted - emulator initialization failed');
-            setStatus('All cores exhausted. Unable to initialize emulator.');
             stateRef.current = 'failed';
+            reportStatus('failed', attemptIndex, currentCore);
           }
         }
       }, FALLBACK_TIMEOUT_MS);
@@ -177,7 +186,7 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
 
         logEmulator('info', 'Core initialized successfully');
         logEmulator('info', `Running with core: ${attemptRef.current.currentCore}`);
-        setStatus(`Running: ${attemptRef.current.currentCore}`);
+        reportStatus('running', attemptRef.current.attemptIndex, attemptRef.current.currentCore);
       }
     };
 
@@ -192,21 +201,13 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
   }, [gameSlug, gameTitle, core]);
 
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950">
-      <div className="border-b border-zinc-800 bg-zinc-900/80 px-4 py-2 text-sm text-zinc-300">
-        {status}
-      </div>
+    <div className="h-full w-full overflow-hidden bg-black">
       {iframeUrl ? (
         <iframe
           ref={iframeRef}
           key={iframeUrl}
           src={iframeUrl}
-          style={{
-            width: '100%',
-            height: '600px',
-            border: 'none',
-            borderRadius: '0.5rem'
-          }}
+          className="block h-full w-full border-0"
           title={`Play ${gameTitle}`}
           allow="fullscreen"
           tabIndex={0}
@@ -226,21 +227,20 @@ export default function Emulator({ gameSlug, gameTitle, core = 'nes' }: Emulator
               const currentCore = attemptRef.current.currentCore;
 
               logEmulator('error', `iframe error - triggering fallback for core: ${currentCore}`);
-              setStatus(`${currentCore} failed to load. Trying next core...`);
 
               const nextAttempt = attemptIndex + 1;
               if (nextAttempt < coreCandidates.length) {
                 scheduleTimeout(() => tryCore(nextAttempt), RETRY_DELAY_MS);
               } else {
                 logEmulator('error', 'All cores exhausted on iframe error');
-                setStatus('All cores failed. Unable to initialize emulator.');
                 stateRef.current = 'failed';
+                reportStatus('failed', attemptIndex, currentCore);
               }
             }
           }}
         />
       ) : (
-        <div className="flex h-96 items-center justify-center text-zinc-400">
+        <div className="flex h-full items-center justify-center text-sm text-zinc-400">
           Loading emulator...
         </div>
       )}

@@ -9,3 +9,96 @@
 body {
   @apply min-h-screen bg-zinc-950 text-zinc-100 antialiased;
 }
+
+/*
+ * Play-screen console frames (0002F SF01, design.md Tokens).
+ * Values come from validated theme custom properties set inline by PlayStage (--t-*).
+ * The frame keeps the console aspect ratio inside the remaining stage area:
+ * width = min(area width, area height x ratio), height from aspect-ratio.
+ * No rule here draws text on --t-frame.
+ */
+@layer components {
+  .play-frame-area {
+    container-type: size;
+  }
+
+  [data-frame] {
+    box-sizing: border-box;
+    aspect-ratio: var(--t-ar);
+    width: min(100cqw, calc(100cqh * var(--t-ar)));
+    max-width: 100%;
+    max-height: 100%;
+    padding: clamp(8px, 1.5vmin, 20px);
+    background: var(--t-frame);
+    border: 1px solid var(--t-accent);
+    border-radius: var(--t-radius);
+    transition: box-shadow 200ms ease;
+  }
+
+  [data-frame='nes'] {
+    background: linear-gradient(180deg, var(--t-frame) 0 72%, #2f2f33 72% 100%);
+    box-shadow: inset 0 0 0 3px #8f8f93;
+  }
+
+  [data-frame='snes'] {
+    box-shadow: inset 0 0 0 4px #9a93b8, 0 6px 18px rgb(0 0 0 / 0.45);
+  }
+
+  [data-frame='n64'] {
+    background: linear-gradient(180deg, var(--t-frame) 0 88%, var(--t-accent) 88% 91%, var(--t-frame) 91% 100%);
+    box-shadow: inset 0 0 0 2px #1f1f1f;
+  }
+
+  [data-frame='dmg'] {
+    border-bottom-right-radius: calc(var(--t-radius) * 2.5);
+    box-shadow: inset 0 0 0 6px #5b5f6b;
+  }
+
+  [data-frame='gbc'] {
+    border-bottom-right-radius: calc(var(--t-radius) * 1.5);
+    box-shadow: inset 0 0 0 5px #4e2779, 0 4px 14px rgb(0 0 0 / 0.4);
+  }
+
+  [data-frame='gba'] {
+    padding-inline: clamp(14px, 4vmin, 48px);
+    box-shadow: inset 0 0 0 4px #2f2775;
+  }
+
+  [data-frame='sms'] {
+    background: linear-gradient(180deg, var(--t-accent) 0 4px, var(--t-frame) 4px 100%);
+    box-shadow: inset 0 0 0 2px #3a3a3a;
+  }
+
+  [data-frame='megadrive'] {
+    background: radial-gradient(circle at 50% 0%, #2a2a2a 0 18%, var(--t-frame) 19% 100%);
+    box-shadow: inset 0 0 0 2px #333333;
+  }
+
+  [data-frame='gamegear'] {
+    padding-inline: clamp(14px, 4vmin, 48px);
+    box-shadow: inset 0 0 0 4px #3c3c3c;
+  }
+
+  [data-frame='ps'] {
+    box-shadow: inset 0 0 0 4px #7d7d84, 0 6px 18px rgb(0 0 0 / 0.45);
+  }
+
+  [data-frame='arcade'] {
+    box-shadow: 0 0 24px color-mix(in srgb, var(--t-accent) 45%, transparent), inset 0 0 0 3px #12122a;
+  }
+
+  [data-frame='neogeo'] {
+    background: linear-gradient(180deg, var(--t-frame) 0 90%, var(--t-accent) 90% 92%, var(--t-frame) 92% 100%);
+    box-shadow: inset 0 0 0 2px #3a3a3a;
+  }
+
+  [data-frame='neutral'] {
+    box-shadow: inset 0 0 0 1px #3f3f46;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-frame] {
+    transition: none;
+  }
+}
