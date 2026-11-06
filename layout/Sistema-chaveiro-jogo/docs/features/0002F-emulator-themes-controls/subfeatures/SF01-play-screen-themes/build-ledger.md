@@ -18,3 +18,4 @@ Preflight: T10 — Files app/play/[slug]/page.tsx; Deps T03, T09 cover Consumes 
 Preflight: T11 — Files AGENTS.md; Deps T04, T05 — self-consistent
 Preflight: T06 type note — Emulator.core is optional today (`core?: string`); Produces declares `core: string`, the only caller passes a string — no conflict
 Impact: getCoreForSystem upstream LOW, 1 caller PlayPage (GitNexus, exact). Emulator upstream UNKNOWN (JSX not indexed); text search: 1 use app/play/[slug]/page.tsx:5
+T01: complete (commits f3e3c5b9..a199fe7a, BUILD_STATUS=n/a (test-only, RED confirmed: 3 resolveEmulatorSystem cases fail with TypeError, getCoreForSystem table green), validation at area end)
