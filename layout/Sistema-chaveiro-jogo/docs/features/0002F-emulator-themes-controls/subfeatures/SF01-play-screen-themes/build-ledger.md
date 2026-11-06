@@ -37,3 +37,8 @@ Validation gates: test 28/28 exit 0, build exit 0; detect-changes NOT VERIFIED (
 e2e: deferred to the last subfeature (qa-pipeline on; SF01 is not the epic's last row)
 Final review discard: FR-2 (OWASP minor, uppercase host accepted) — plan T13 and RN02 'em minúsculas' compare the lowercased host; URL lowercases it too, no security impact
 Final review discard: FR-3 (OWASP polish, branded validated type for playThemeCssVars) — the only SF01 caller passes resolvePlayTheme output; revisit when SF03 feeds external themes
+final-review: fix round 1/3 (frontend, test — 5 addressed, 0 open, 2 deferred; commits 5b69ec52..ff38df8b; re-review @reviewer-agent MODE re-review: FR-1, FR-4, FR-5, FR-6, FR-7 ADDRESSED, NEW_BREAKAGE none)
+final-review: minor (deferred): tests/play-theme-edges.test.ts case 'https://i.imgur.com\evil' has no real backslash in a single-quoted JS string; write it as '\' so the backslash rule is tested on its own
+final-review: minor (deferred): no test hits '(', ')' or \u007F individually in isAllowedImageUrl; the regex covers them
+Final review: passed (after review-000)
+Final review head: ff38df8b653dd10e768741d0afe7e452f09fe738

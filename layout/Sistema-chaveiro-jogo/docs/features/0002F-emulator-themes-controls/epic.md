@@ -16,7 +16,7 @@ Epic de 0002F-emulator-themes-controls: três subfeatures que, juntas, deixam o 
 
 | id | name | objective | status | dependencies | checkpoint |
 |---|---|---|---|---|---|
-| SF01 | play-screen-themes | Tela de jogo responsiva no PC e no celular com tema inspirado em cada um dos 12 consoles | pending | | |
+| SF01 | play-screen-themes | Tela de jogo responsiva no PC e no celular com tema inspirado em cada um dos 12 consoles | done | | 0002F-SF01-done |
 | SF02 | emulator-controls | Teclado, gamepad e controle virtual prontos para os 12 consoles, com legenda, remapeamento local e tela cheia no celular | pending | | |
 | SF03 | admin-customization | Aba no admin para tema e controles por console, tema por jogo e link de fundo, servidos por uma rota pública resolvida | pending | SF01, SF02 | |
 
