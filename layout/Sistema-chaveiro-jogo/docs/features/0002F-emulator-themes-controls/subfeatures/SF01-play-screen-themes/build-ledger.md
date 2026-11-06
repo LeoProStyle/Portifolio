@@ -29,3 +29,9 @@ T08: complete (commits 63eafd88..fac8a56b, BUILD_STATUS=pass, 13/13 [data-frame]
 T09: complete (commits fac8a56b..92883ce3, BUILD_STATUS=pass, validation at area end)
 T10: complete (commits 92883ce3..cf4006d9, BUILD_STATUS=pass, E2E play-screen --project=main 14/14 and --project=no-mongo 14/14; spec alert locators narrowed by text because of the Next.js route announcer, assertions unchanged; validation at area end)
 T11: complete (commits cf4006d9..494889ec, test gate 28/28 with no R2_* vars, validation at area end)
+frontend: tests generated (commits 494889ec..c0d60ff8, @test-agent 28 edge tests in tests/play-theme-edges.test.ts, npm test 99 pass / 0 fail / 1 skipped, BLOCKED none)
+frontend: validated (commits f3e3c5b9..c0d60ff8, 0 violations, SPEC_STATUS=COMPLETE)
+test: validated (commits f3e3c5b9..c0d60ff8, 0 violations, SPEC_STATUS=COMPLETE — same @reviewer-agent run as frontend)
+frontend: minor (deferred): components/ThemedFrame.tsx:16 Retry/Reload text is fixed #18181B on --t-accent; fine for the 13 defaults, recheck with pickTextColor(accent) when SF03 allows overrides
+Validation gates: test 28/28 exit 0, build exit 0; detect-changes NOT VERIFIED (no indexed symbols overlap the hunks); changed files: AGENTS.md app/globals.css app/play/[slug]/page.tsx components/Emulator.tsx components/PlayStage.tsx components/PlayTopBar.tsx components/StatusStrip.tsx components/ThemedFrame.tsx e2e/play-screen.qa.spec.ts lib/emulator-cores.ts lib/play-theme.ts tests/emulator-cores.test.ts tests/play-theme-edges.test.ts tests/play-theme.test.ts 
+e2e: deferred to the last subfeature (qa-pipeline on; SF01 is not the epic's last row)
