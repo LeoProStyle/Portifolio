@@ -26,3 +26,4 @@ T05: complete (commits c07cdb27..6014c879, BUILD_STATUS=pass, tests/play-theme.t
 T06: complete (commits 6014c879..fb412f14, BUILD_STATUS=pass, fallback constants and attempt order unchanged in diff; failed emitted in the 3 exhausted branches only, E2E T08 confirms at T10, validation at area end)
 T07: complete (commits fb412f14..63eafd88, BUILD_STATUS=pass, validation at area end)
 T08: complete (commits 63eafd88..fac8a56b, BUILD_STATUS=pass, 13/13 [data-frame] rules present, validation at area end)
+T09: complete (commits fac8a56b..92883ce3, BUILD_STATUS=pass, validation at area end)

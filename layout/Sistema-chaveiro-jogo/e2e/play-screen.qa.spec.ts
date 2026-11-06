@@ -141,8 +141,9 @@ test('T08 failed: the real core chain ends in failed and Reload restarts it in p
   await page.goto(`/play/${SLUG}`);
   await expect(page.locator('[data-frame="arcade"]')).toBeVisible();
   await expect(page.getByRole('status')).toHaveText(/Starting game/);
-  const alert = page.getByRole('alert');
-  await expect(alert).toContainText('Could not start this game', { timeout: 75_000 });
+  // Next.js adds its own empty role="alert" route announcer, so the alert is matched by its text.
+  const alert = page.getByRole('alert').filter({ hasText: 'Could not start this game' });
+  await expect(alert).toBeVisible({ timeout: 75_000 });
   await expect(page.getByRole('status')).toHaveText(/Failed/);
   const url = page.url();
   await page.getByRole('button', { name: 'Reload' }).click();
@@ -166,7 +167,7 @@ test('T17 metadata-error: a failed metadata request shows Retry, and Retry fetch
   await page.route('**/api/game/**', (route) => route.abort());
   await page.goto(`/play/${SLUG}`);
   await expect(page.locator('[data-frame="neutral"]')).toBeVisible();
-  await expect(page.getByRole('alert')).toContainText('Could not load game info.');
+  await expect(page.getByRole('alert').filter({ hasText: 'Could not load game info.' })).toBeVisible();
   await expect(page.locator('iframe')).toHaveCount(0);
   await page.unroute('**/api/game/**');
   await stubEmulatorReady(page);
