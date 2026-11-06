@@ -12,8 +12,11 @@ import {
 
 // Runs the throttle policy against the real MongoDB store (final review FR-1): it checks that the
 // aggregation pipeline in getMongoAttemptStore behaves like the in-memory store of
-// tests/login-throttle.test.ts. Skipped when MONGODB_URI is unset or the server does not answer.
-// Run it with the dev database: node --env-file=.env.local --import tsx --test tests/login-throttle-mongo.test.ts
+// tests/login-throttle.test.ts. Skipped when MONGODB_URI is unset, when MONGODB_DB is not a test
+// database (name ending in _e2e), or when the server does not answer.
+// Run it against the separate test database on the same cluster (the shell value wins over .env.local):
+//   bash:       MONGODB_DB=retrokey_e2e node --env-file=.env.local --import tsx --test tests/login-throttle-mongo.test.ts
+//   PowerShell: $env:MONGODB_DB='retrokey_e2e'; node --env-file=.env.local --import tsx --test tests/login-throttle-mongo.test.ts
 // Keys use the e2e-sf02- prefix and are deleted at the end.
 
 const T0 = new Date('2026-11-06T12:00:00.000Z');
@@ -21,8 +24,13 @@ const at = (seconds: number) => new Date(T0.getTime() + seconds * 1000);
 const RUN = `e2e-sf02-${Date.now().toString(36)}`;
 const usedKeys: string[] = [];
 
+/** Only a database whose name ends in _e2e is written to; the production database never is. */
+function isTestDatabase() {
+  return /_e2e$/.test(process.env.MONGODB_DB ?? '');
+}
+
 async function connect(): Promise<LoginAttemptStore | null> {
-  if (!process.env.MONGODB_URI) return null;
+  if (!process.env.MONGODB_URI || !isTestDatabase()) return null;
   try {
     return await Promise.race([
       getMongoAttemptStore(),
@@ -42,7 +50,7 @@ function key(name: string) {
 test('Mongo store mirrors the throttle policy', async (t) => {
   const store = await connect();
   if (!store) {
-    t.skip('MongoDB not reachable: set MONGODB_URI to a dev database to run this test');
+    t.skip('MongoDB not reachable or MONGODB_DB is not a test database (*_e2e): see the header for the command');
     return;
   }
   try {

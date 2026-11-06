@@ -3,8 +3,12 @@ import { resolve } from 'node:path';
 import { defineConfig } from '@playwright/test';
 
 // Admin credentials and the rest of the env come from .env.local (values are never printed).
-// The suite creates and deletes `e2e-sf01-*` records in the database .env.local points to:
-// run it only against a dev or test database, never production.
+// The suite creates and deletes `e2e-*` records and login attempts. It always uses the separate
+// `retrokey_e2e` database on the cluster MONGODB_URI points to, never the production database:
+// the value is set before .env.local loads, and an already-set variable is never overridden,
+// so the MONGODB_DB line in .env.local cannot win. The dev servers inherit it.
+export const E2E_MONGODB_DB = 'retrokey_e2e';
+process.env.MONGODB_DB = E2E_MONGODB_DB;
 const envFile = resolve(__dirname, '.env.local');
 if (existsSync(envFile)) {
   process.loadEnvFile(envFile);
