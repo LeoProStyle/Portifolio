@@ -144,6 +144,8 @@ test('T18 auth logs never carry the password, the hash or the expected username'
     }
     await checkCredentialsLock(callbackRequest({ username: 'intruder', password: 'guess9' }), deps(prodEnv(), store));
     await authorizeAdmin({ username: EXPECTED_USER, password: PASSWORD }, callbackRequest({}), deps(prodEnv(), store));
+    // A wrong password typed with the configured username must not put that username in the log.
+    await authorizeAdmin({ username: EXPECTED_USER, password: 'guess-real-user' }, callbackRequest({}), deps(prodEnv(), store));
     await authorizeAdmin({ username: EXPECTED_USER, password: PASSWORD }, callbackRequest({}), deps(prodEnv({ ADMIN_PASSWORD_HASH: undefined }), store));
     await authorizeAdmin({ username: 'intruder', password: 'guess' }, callbackRequest({}), deps(prodEnv(), failingStore));
   });
