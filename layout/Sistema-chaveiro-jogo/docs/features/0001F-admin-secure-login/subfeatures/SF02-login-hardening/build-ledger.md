@@ -12,3 +12,9 @@ Preflight: T12 - Deps T07-T11 cover every Consumes producer - self-consistent
 Preflight: T13, T15, T16 - Deps cover every Consumes producer - self-consistent
 Preflight: T13 and T16 both rely on e2e/login.qa.spec.ts (T06); no shared file edited twice - no conflict
 Ruling: the coordinator implements tasks directly instead of one implementer subagent per task - it already holds the full plan, research and NextAuth findings from planning, and a cold agent would re-derive them; area validators stay independent - costs a self-review blind spot if wrong, mitigated by the per-area reviewer and the final review
+T01: complete (commits a08a87dc..6161974a, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason, validation at area end)
+T02: complete (commits 6161974a..f3faa7ea, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason, validation at area end)
+T03: complete (commits f3faa7ea..6cc3f26b, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason, validation at area end)
+T04: complete (commits 6cc3f26b..80ea5089, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason, validation at area end)
+T05: complete (commits 80ea5089..d156dca9, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason, validation at area end)
+T06: complete (commits d156dca9..274318b8, BUILD_STATUS=pass via tsc --noEmit on a test-only batch, verify red for the right reason, validation at area end)
