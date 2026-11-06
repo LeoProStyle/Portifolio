@@ -18,12 +18,16 @@ function read(env: NodeJS.ProcessEnv, name: string): string {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+/**
+ * Fail closed: only NODE_ENV=development or test counts as a development environment. Any other
+ * value, or none, gets the production rules (final review FR-10).
+ */
 export function isProductionEnv(env: NodeJS.ProcessEnv = process.env): boolean {
-  return env.NODE_ENV === 'production';
+  return env.NODE_ENV !== 'development' && env.NODE_ENV !== 'test';
 }
 
 /**
- * Production: ADMIN_USERNAME, a well-formed ADMIN_PASSWORD_HASH and AUTH_SECRET are all required;
+ * Production (any NODE_ENV other than development or test): ADMIN_USERNAME, a well-formed ADMIN_PASSWORD_HASH and AUTH_SECRET are all required;
  * plain ADMIN_PASSWORD is ignored. Outside production: hash, then plain, then admin/admin123.
  */
 export function resolveAdminCredentials(env: NodeJS.ProcessEnv = process.env): AdminCredentialsResult {

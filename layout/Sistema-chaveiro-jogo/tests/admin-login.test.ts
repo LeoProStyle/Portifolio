@@ -188,3 +188,44 @@ test('T20 the pre-check passes every other request through', async () => {
   const { result } = await captureLogs(() => checkCredentialsLock(callbackRequest(fields), deps(prodEnv(), failingStore)));
   assert.equal(result, null);
 });
+
+test('T27 one IP is capped at 30 attempts across usernames, and oversized input is refused before any work', async () => {
+  const store = createMemoryAttemptStore();
+  const { logs } = await captureLogs(async () => {
+    for (let i = 0; i < 30; i += 1) {
+      assert.equal(await authorizeAdmin({ username: `rot-${i}`, password: 'x' }, callbackRequest({}), deps(prodEnv(), store)), null);
+    }
+    // 31st attempt, fresh username: denied by the IP key before its own key is even created.
+    assert.equal(await authorizeAdmin({ username: 'rot-new', password: 'x' }, callbackRequest({}), deps(prodEnv(), store)), null);
+  });
+  assert.equal(await store.get(throttleKey('rot-new', IP)), null);
+  const ipLocked = logs.filter((log) => String(log.args[0]).includes('locked'));
+  assert.equal(ipLocked.length, 1);
+  assert.deepEqual(ipLocked[0].args[1], { scope: 'ip', ip: IP });
+  const precheck = await checkCredentialsLock(callbackRequest({ username: 'rot-other', password: 'x' }), deps(prodEnv(), store));
+  assert.equal(precheck?.status, 429);
+
+  let touched = false;
+  const spyStore = async () => {
+    touched = true;
+    return createMemoryAttemptStore();
+  };
+  const { logs: longLogs } = await captureLogs(async () => {
+    assert.equal(await authorizeAdmin({ username: 'u'.repeat(257), password: 'x' }, callbackRequest({}), deps(prodEnv(), spyStore)), null);
+    assert.equal(await authorizeAdmin({ username: 'u', password: 'p'.repeat(1025) }, callbackRequest({}), deps(prodEnv(), spyStore)), null);
+  });
+  assert.equal(touched, false);
+  // Logged usernames are capped at 64 characters with control characters removed.
+  const failure = longLogs.find((log) => String(log.args[0]).includes('failure'));
+  assert.ok(failure);
+  const logged = (failure.args[1] as { username?: string }).username ?? '';
+  assert.ok(logged.length <= 64, `logged username length ${logged.length}`);
+});
+
+test('T27 logged usernames drop control characters', async () => {
+  const { logs } = await captureLogs(() =>
+    authorizeAdmin({ username: 'evil\nname\u0007', password: 'x' }, callbackRequest({}), deps(prodEnv(), createMemoryAttemptStore()))
+  );
+  const failure = logs.find((log) => String(log.args[0]).includes('failure'));
+  assert.deepEqual(failure?.args[1], { username: 'evilname', ip: IP });
+});

@@ -6,9 +6,14 @@
 import { createInterface } from 'node:readline';
 import { hashPassword } from '../lib/password';
 
+const MIN_PASSWORD_LENGTH = 12;
+
 function promptHidden(question: string): Promise<string> {
   return new Promise((resolve) => {
     const rl = createInterface({ input: process.stdin, output: process.stderr, terminal: true });
+    // _writeToOutput is a private readline method: overriding it hides the typed characters. If a
+    // Node release renames it, the input would echo to stderr. Check the TTY path by hand after a
+    // Node upgrade (the piped path is covered by tests/hash-script.test.ts).
     const output = rl as unknown as { _writeToOutput: (text: string) => void };
     let prompted = false;
     output._writeToOutput = (text: string) => {
@@ -45,8 +50,8 @@ async function main() {
     password = await readFirstLine();
   }
 
-  if (!password) {
-    process.stderr.write('Senha vazia: nada foi gerado.\n');
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    process.stderr.write(`A senha precisa ter pelo menos ${MIN_PASSWORD_LENGTH} caracteres: nada foi gerado.\n`);
     process.exit(1);
   }
 

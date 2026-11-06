@@ -5,7 +5,9 @@ import { parsePasswordHashFormat } from '@/lib/password-format';
 // Hash format: scrypt:<N>:<r>:<p>:<salt base64url>:<key base64url>
 // The ':' separator and base64url alphabet avoid '$', which the .env loader of Next expands as a variable.
 
-const SCRYPT_N = 16384;
+// OWASP minimum for scrypt (N=2^17, r=8, p=1); about 128 MiB per derivation. Older hashes keep
+// verifying because the format carries its own parameters.
+const SCRYPT_N = 131072;
 const SCRYPT_R = 8;
 const SCRYPT_P = 1;
 const SALT_BYTES = 16;
@@ -31,7 +33,12 @@ function parseHash(encoded: string): ParsedHash | null {
 
 export async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(SALT_BYTES);
-  const key = await deriveKey(password, salt, KEY_BYTES, { N: SCRYPT_N, r: SCRYPT_R, p: SCRYPT_P });
+  const key = await deriveKey(password, salt, KEY_BYTES, {
+    N: SCRYPT_N,
+    r: SCRYPT_R,
+    p: SCRYPT_P,
+    maxmem: 256 * SCRYPT_N * SCRYPT_R
+  });
   return ['scrypt', SCRYPT_N, SCRYPT_R, SCRYPT_P, salt.toString('base64url'), key.toString('base64url')].join(':');
 }
 

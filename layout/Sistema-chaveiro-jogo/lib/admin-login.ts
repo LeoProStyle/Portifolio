@@ -2,7 +2,9 @@ import { isProductionEnv, logAuthEvent, resolveAdminCredentials } from '@/lib/au
 import {
   clearLoginAttempts,
   getMongoAttemptStore,
+  ipThrottleKey,
   peekLoginLock,
+  registerIpAttempt,
   registerLoginAttempt,
   throttleKey,
   type LoginAttemptStore,
@@ -27,6 +29,11 @@ export type AdminLoginDeps = {
 };
 
 export const THROTTLE_TIMEOUT_MS = 5000;
+
+/** Longer input is refused before any store call or scrypt run (final review FR-8). */
+export const MAX_USERNAME_LENGTH = 256;
+export const MAX_PASSWORD_LENGTH = 1024;
+const MAX_LOGGED_USERNAME_LENGTH = 64;
 
 const ADMIN_USER: AdminUser = { id: 'admin', name: 'Admin', email: 'admin@retrokey.local' };
 const CREDENTIALS_CALLBACK_SUFFIX = '/callback/credentials';
@@ -59,11 +66,16 @@ function errorName(error: unknown): string {
   return error instanceof Error ? error.name : 'unknown';
 }
 
+/** Attacker-typed text in a log line: control characters removed, length capped. */
+function loggableUsername(username: string): string {
+  return username.replace(/[\u0000-\u001f\u007f]/g, '').slice(0, MAX_LOGGED_USERNAME_LENGTH);
+}
+
 function logIdentity(username: string, configuredUsername: string | null, ip: string): Record<string, unknown> {
   if (configuredUsername !== null && verifyPlainPassword(username, configuredUsername)) {
     return { usernameMatched: true, ip };
   }
-  return { username, ip };
+  return { username: loggableUsername(username), ip };
 }
 
 function logOutcome(outcome: Exclude<LoginOutcome, 'disabled'>, details: Record<string, unknown>) {
@@ -88,9 +100,21 @@ export async function authorizeAdmin(
   const key = throttleKey(username, ip);
   const identity = logIdentity(username, expected.username, ip);
 
+  if (username.length > MAX_USERNAME_LENGTH || password.length > MAX_PASSWORD_LENGTH) {
+    logOutcome('failure', identity);
+    return null;
+  }
+
   let throttleOn = true;
   let decision: ThrottleDecision;
   try {
+    // The IP key is checked first: a username-rotating flood stops here, before scrypt and before
+    // a new username+IP document is written.
+    const ipDecision = await withStore(resolvedDeps, (store) => registerIpAttempt(store, ip, resolvedDeps.now()));
+    if (!ipDecision.allowed) {
+      logOutcome('locked', { scope: 'ip', ip });
+      return null;
+    }
     decision = await withStore(resolvedDeps, (store) => registerLoginAttempt(store, key, resolvedDeps.now()));
   } catch (error) {
     if (isProductionEnv(resolvedDeps.env)) {
@@ -157,16 +181,26 @@ export async function checkCredentialsLock(request: Request, deps?: AdminLoginDe
   const resolvedDeps = resolveDeps(deps);
   const ip = getClientIp(request.headers);
   let decision: ThrottleDecision;
+  let ipLocked = false;
   try {
-    decision = await withStore(resolvedDeps, (store) => peekLoginLock(store, throttleKey(username, ip), resolvedDeps.now()));
+    const now = resolvedDeps.now();
+    const ipDecision = await withStore(resolvedDeps, (store) => peekLoginLock(store, ipThrottleKey(ip), now));
+    ipLocked = !ipDecision.allowed;
+    decision = ipLocked
+      ? ipDecision
+      : await withStore(resolvedDeps, (store) => peekLoginLock(store, throttleKey(username, ip), now));
   } catch {
     // authorizeAdmin decides on a store failure (refuse in production, skip outside it).
     return null;
   }
   if (decision.allowed) return null;
 
-  const expected = resolveAdminCredentials(resolvedDeps.env);
-  logOutcome('locked', logIdentity(username, expected.ok ? expected.username : null, ip));
+  if (ipLocked) {
+    logOutcome('locked', { scope: 'ip', ip });
+  } else {
+    const expected = resolveAdminCredentials(resolvedDeps.env);
+    logOutcome('locked', logIdentity(username, expected.ok ? expected.username : null, ip));
+  }
 
   // next-auth/react signIn() parses data.url; error=CredentialsSignin keeps the form message generic.
   const errorUrl = new URL('/api/auth/error', url.origin);

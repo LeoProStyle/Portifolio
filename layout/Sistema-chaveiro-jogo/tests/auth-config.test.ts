@@ -73,12 +73,15 @@ test('T07 outside production the order is hash, then plain, then the defaults', 
     secret: { kind: 'plain', value: 'admin123' },
     usingDefaults: true
   });
-  assert.deepEqual(resolveAdminCredentials(env({})), {
+  assert.deepEqual(resolveAdminCredentials(env({ NODE_ENV: 'test' })), {
     ok: true,
     username: 'admin',
     secret: { kind: 'plain', value: 'admin123' },
     usingDefaults: true
   });
+  // Fail closed on an unknown or missing NODE_ENV: only development and test get the defaults.
+  assert.deepEqual(resolveAdminCredentials(env({})), { ok: false, reason: 'missing-credentials' });
+  assert.deepEqual(resolveAdminCredentials(env({ NODE_ENV: 'staging' })), { ok: false, reason: 'missing-credentials' });
 });
 
 test('T08 the hint shows only for development defaults', () => {
@@ -86,6 +89,12 @@ test('T08 the hint shows only for development defaults', () => {
   assert.equal(getAdminLoginHint(env({ NODE_ENV: 'development', ADMIN_USERNAME: 'dev', ADMIN_PASSWORD: 'plain' })), null);
   assert.equal(getAdminLoginHint(env({ NODE_ENV: 'production' })), null);
   assert.equal(getAdminLoginHint(env(prodComplete)), null);
+  // Half-configured development: the hint would name the wrong credentials, so it is hidden.
+  assert.equal(getAdminLoginHint(env({ NODE_ENV: 'development', ADMIN_PASSWORD: 'plain' })), null);
+  assert.equal(getAdminLoginHint(env({ NODE_ENV: 'development', ADMIN_USERNAME: 'dev' })), null);
+  assert.equal(getAdminLoginHint(env({})), null);
   assert.equal(isProductionEnv(env({ NODE_ENV: 'production' })), true);
   assert.equal(isProductionEnv(env({ NODE_ENV: 'development' })), false);
+  assert.equal(isProductionEnv(env({ NODE_ENV: 'test' })), false);
+  assert.equal(isProductionEnv(env({})), true);
 });

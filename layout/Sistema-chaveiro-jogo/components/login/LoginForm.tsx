@@ -12,6 +12,12 @@ type LoginFormProps = {
 // One message for a wrong password and for a locked login (429), so the screen does not reveal the lock.
 const GENERIC_ERROR = 'Credenciais inválidas.';
 
+/** Only same-origin paths: '/x' is kept, '//host', 'http://host' and '/\\host' fall back to /admin. */
+function safeCallbackUrl(value: string | null): string {
+  if (!value || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return '/admin';
+  return value;
+}
+
 export default function LoginForm({ hint }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -26,7 +32,7 @@ export default function LoginForm({ hint }: LoginFormProps) {
     const formData = new FormData(event.currentTarget);
     const username = formData.get('username')?.toString() ?? '';
     const password = formData.get('password')?.toString() ?? '';
-    const callbackUrl = searchParams.get('callbackUrl') || '/admin';
+    const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'));
 
     console.info('[login] attempt', { callbackUrl });
 

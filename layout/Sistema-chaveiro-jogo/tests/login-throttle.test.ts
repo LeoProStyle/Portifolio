@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import {
   clearLoginAttempts,
   createMemoryAttemptStore,
+  ipThrottleKey,
   peekLoginLock,
+  registerIpAttempt,
   registerLoginAttempt,
   throttleKey
 } from '../lib/login-throttle';
@@ -67,4 +69,18 @@ test('T14 the key isolates user and IP', async () => {
   assert.deepEqual(await registerLoginAttempt(store, throttleKey('u', '2.2.2.2'), at(10)), { allowed: true });
   assert.deepEqual(await registerLoginAttempt(store, throttleKey('v', '1.1.1.1'), at(10)), { allowed: true });
   assert.notEqual(throttleKey('u', '1.1.1.1'), throttleKey('u', '2.2.2.2'));
+});
+
+test('T26 one IP gets at most 30 attempts in 15 minutes, whatever usernames it rotates', async () => {
+  const store = createMemoryAttemptStore();
+  for (let i = 0; i < 30; i += 1) {
+    assert.deepEqual(await registerIpAttempt(store, '7.7.7.7', at(i)), { allowed: true }, `attempt ${i + 1}`);
+  }
+  // The 30th attempt (t0+29s) starts a 15-minute lock on the IP key.
+  assert.deepEqual(await registerIpAttempt(store, '7.7.7.7', at(30)), { allowed: false, retryAfterSeconds: 900 - 1 });
+  assert.deepEqual(await peekLoginLock(store, ipThrottleKey('7.7.7.7'), at(30)), { allowed: false, retryAfterSeconds: 899 });
+  assert.deepEqual(await registerIpAttempt(store, '8.8.8.8', at(30)), { allowed: true });
+  // The IP key never collides with a username+IP key.
+  assert.notEqual(ipThrottleKey('7.7.7.7'), throttleKey('ip', '7.7.7.7'));
+  assert.deepEqual(await registerLoginAttempt(store, throttleKey('admin', '7.7.7.7'), at(31)), { allowed: true });
 });

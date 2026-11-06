@@ -6,7 +6,9 @@ import { ADMIN_SESSION_MAX_AGE_SECONDS, isAdminSessionExpired } from '@/lib/admi
 // node:crypto, mongodb or lib/auth-config: middleware runs on the edge runtime and loads this file.
 // secret, session options and the callbacks live only here; auth.ts must not override them.
 
-const isProduction = process.env.NODE_ENV === 'production';
+// Same rule as isProductionEnv in lib/auth-config.ts (not imported: this file must stay edge-safe):
+// only development and test get the dev secret; any other NODE_ENV, or none, fails closed.
+const isProduction = process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test';
 
 export const authConfig = {
   trustHost: true,

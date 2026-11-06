@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { hashPassword, verifyPasswordHash, verifyPlainPassword } from '../lib/password';
 
-const HASH_SHAPE = /^scrypt:16384:8:1:[A-Za-z0-9_-]+:[A-Za-z0-9_-]+$/;
+const HASH_SHAPE = /^scrypt:131072:8:1:[A-Za-z0-9_-]+:[A-Za-z0-9_-]+$/;
 
 test('T01 hash has the documented format, no $ and a unique salt', async () => {
   const first = await hashPassword('s3nh@-forte');
@@ -23,7 +23,7 @@ test('T02 verifyPasswordHash accepts the right password and rejects wrong ones',
 });
 
 test('T03 a malformed hash returns false and never throws', async () => {
-  for (const encoded of ['', 'plain', 'scrypt:x', 'scrypt:16384:8:1::', 'scrypt:16384:8:1:@@@:###', 'bcrypt:16384:8:1:abc:def']) {
+  for (const encoded of ['', 'plain', 'scrypt:x', 'scrypt:131072:8:1::', 'scrypt:131072:8:1:@@@:###', 'bcrypt:16384:8:1:abc:def']) {
     assert.equal(await verifyPasswordHash('anything', encoded), false, `expected false for "${encoded}"`);
   }
 });

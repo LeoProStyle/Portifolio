@@ -12,7 +12,7 @@ tags: [auth, login, password, throttle, session]
 > **Delivery:** confirm
 
 ## TL;DR
-Plano do SF02 de 0001F-admin-secure-login. A senha do admin passa a ser um hash scrypt em `ADMIN_PASSWORD_HASH`, comparado com `timingSafeEqual`. Um contador atômico no MongoDB bloqueia o par usuário+IP por 15 minutos após 5 falhas, e o callback de credenciais responde 429 com `Retry-After`. Em produção o login recusa tudo quando falta credencial, `AUTH_SECRET` ou MongoDB. A sessão termina 8 horas após o login, e a dica `admin/admin123` só aparece em desenvolvimento com os valores padrão. 24 testes de contrato (22 unitários, 2 E2E; IDs T01-T23 e T25, T24 não usado). A regressão do login do admin é o E2E T07 do SF01.
+Plano do SF02 de 0001F-admin-secure-login. A senha do admin passa a ser um hash scrypt em `ADMIN_PASSWORD_HASH`, comparado com `timingSafeEqual`. Um contador atômico no MongoDB bloqueia o par usuário+IP por 15 minutos após 5 falhas, e o callback de credenciais responde 429 com `Retry-After`. Em produção o login recusa tudo quando falta credencial, `AUTH_SECRET` ou MongoDB. A sessão termina 8 horas após o login, e a dica `admin/admin123` só aparece em desenvolvimento com os valores padrão. 26 testes de contrato (24 unitários, 2 E2E; IDs T01-T23 e T25-T27, T24 não usado), mais um teste do store contra o MongoDB real que é pulado sem banco acessível. A revisão final acrescentou um teto de 30 tentativas por IP e subiu o custo do scrypt para N=2^17. A regressão do login do admin é o E2E T07 do SF01.
 
 ## TOC
 - [Objective](#objective)
@@ -54,13 +54,13 @@ Once built: em produção nenhum login entra com senha padrão, sem segredo ou s
 
 | decision | rationale | alternatives rejected | triggering constraint |
 |---|---|---|---|
-| Formato do hash `scrypt:16384:8:1:<salt b64url>:<hash b64url>` (salt 16 bytes, chave 64 bytes) | Parâmetros dentro do valor permitem trocar o custo depois; `:` e base64url não têm `$`, que o carregador de `.env` do Next expande como variável | `$`-separado (estilo PHC) — vira texto vazio no `.env.local` | RF01; `@next/env` usa dotenv-expand |
+| Formato do hash `scrypt:131072:8:1:<salt b64url>:<hash b64url>` (salt 16 bytes, chave 64 bytes; N=2^17 é o mínimo OWASP, ~128 MiB por derivação — final review FR-9) | Parâmetros dentro do valor permitem trocar o custo depois; `:` e base64url não têm `$`, que o carregador de `.env` do Next expande como variável | `$`-separado (estilo PHC) — vira texto vazio no `.env.local` | RF01; `@next/env` usa dotenv-expand |
 | Lógica de login em `lib/admin-login.ts` com dependências injetadas (env, store, relógio) | `authorize` e a pré-checagem ficam testáveis com node:test, sem servidor nem Mongo | Testar só por E2E — o Mongo não responde nesta máquina | about.md Success Metrics |
 | Contador conta tentativas, não falhas: incremento atômico antes de conferir a senha; sucesso apaga o registro | Uma rajada paralela não passa de 5 tentativas; com o sucesso zerando, o efeito é igual a contar falhas | Ler, decidir e gravar em passos separados — rajada passa do limite | RF03, RN04 |
 | 429 sai de um wrapper do `POST` em `app/api/auth/[...nextauth]/route.ts`, só para `/callback/credentials` | `authorize` só devolve usuário ou null; o wrapper lê uma cópia do corpo e responde antes do NextAuth | Mudar o NextAuth; responder 429 de dentro do `authorize` (impossível) | about.md Observation sobre 429 |
 | Corpo do 429 inclui `url` com `error=CredentialsSignin` | `signIn()` do `next-auth/react` faz `new URL(data.url)`; sem `url` lança TypeError e a tela mostra "Erro inesperado" | Corpo só `{error}` | RF04 (mesma mensagem) |
 | Sessão de 8h absoluta: `session.maxAge = 28800` + claim `loginAt` checado no callback `jwt` | O NextAuth renova o `exp` a cada leitura de sessão (`@auth/core/lib/actions/session.js:33`); só `maxAge` deixaria a sessão deslizar além de 8h | Só `maxAge` | RF05 ("8 horas após o login") |
-| `secret` só cai em `'retrokey-dev-secret'` fora de produção | Em produção sem `AUTH_SECRET` o NextAuth recusa (MissingSecret) e o guard do SF01 responde 401 | Manter o literal em produção — JWT forjável | RN01 |
+| `secret` só cai em `'retrokey-dev-secret'` em `development`/`test` | Em produção sem `AUTH_SECRET` o NextAuth recusa (MissingSecret): o guard do SF01 responde 401 nas APIs e o middleware responde com erro nas páginas `/admin` — falha fechada em ambos [final review FR-7] | Manter o literal em produção — JWT forjável | RN01 |
 | Dica calculada no servidor (`app/login/page.tsx`) e passada ao `LoginForm` como prop | No browser as env vars não existem, então hoje a dica aparece sempre | Ler env no client | about.md Problem |
 | Chamadas ao store com limite de 5 s (`THROTTLE_TIMEOUT_MS`) | O driver espera até 30 s para achar o servidor; login não pode travar quando o Mongo cai | Mudar `serverSelectionTimeoutMS` global (afeta 13 fluxos) | RN03 |
 
@@ -88,7 +88,9 @@ Test IDs (T01-T23, T25) refer to the Test Specification below; execution IDs ref
 | IP falso via `x-forwarded-for` fora da Vercel | M | atacante troca de chave a cada tentativa | a Vercel sobrescreve o cabeçalho; limite documentado; scrypt + senha forte seguram ataque distribuído |
 | Ataque distribuído por muitos IPs contra o mesmo usuário | M | contador por par não segura | escopo do about.md (par usuário+IP); hash scrypt torna cada tentativa cara só offline — registrado como limite conhecido |
 | Usuário duplicado no form ou corpo JSON faz a pré-checagem ler outro nome e pular o 429 [build review F2] | L | atacante recebe CredentialsSignin em vez de 429 | aceito: `authorizeAdmin` conta a tentativa com o nome que o NextAuth leu, então o limite de 5 checagens vale |
-| Trocar de usuário a cada tentativa abre 5 tentativas por nome, cada uma com um scrypt (16 MiB) e um upsert [build review F3] | M | carga de CPU e de Mongo, sem furar o bloqueio do usuário real | aceito nesta SF; contador grosso por IP fica como melhoria futura; TTL limpa os documentos |
+| Trocar de usuário a cada tentativa abre 5 tentativas por nome [build review F3, final review FR-8] | M | carga de CPU, de Mongo e da threadpool | contador por IP (30 tentativas/15 min) checado antes do scrypt e da chave usuário+IP; usuário >256 ou senha >1024 recusados antes de qualquer trabalho |
+| Sem `x-forwarded-for` (fora da Vercel) todo cliente vira `unknown` e divide a mesma chave [final review FR-4] | L na Vercel | 5 tentativas de qualquer um bloqueiam o dono por 15 min | a Vercel sempre envia o cabeçalho; ao hospedar fora dela, configurar o proxy para enviá-lo |
+| `NODE_ENV` ausente ou com valor inesperado [final review FR-10] | L | antes cairia em `admin/admin123` e no segredo de dev | só `development` e `test` contam como dev; qualquer outro valor aplica as regras de produção |
 | `@next/env` expande `$` no `.env.local` | M | hash corrompido em dev | formato sem `$` (T01) |
 | Callback `jwt` devolvendo null quebra o middleware | L | redirect sem fim | null só depois de 8h ou sem `loginAt`; T21 cobre só o callback; o caminho do middleware é coberto pelo E2E SF01 T07 no caso não expirado e pela checagem manual de expiração em Validation |
 | `next build` com `NODE_ENV=production` sem `AUTH_SECRET` local | M | build local falha ao pré-renderizar | nada no build chama `auth()`; build é gate em toda tarefa |
@@ -111,7 +113,7 @@ Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (
 ### Contract Tests (from RFs/RNs)
 | ID | Test Case | Area | RF/RN | Input | Expected Output | Verify |
 |----|-----------|------|-------|-------|-----------------|--------|
-| T01 | Hash has documented format, unique salt | backend | RF01 | `hashPassword('s3nh@')` twice | `scrypt:16384:8:1:<salt>:<hash>`, no `$`, values differ | regex + inequality |
+| T01 | Hash has documented format, unique salt | backend | RF01 | `hashPassword('s3nh@')` twice | `scrypt:131072:8:1:<salt>:<hash>`, no `$`, values differ | regex + inequality |
 | T02 | Verify hash accepts right, rejects wrong | backend | RF01, RNF01 | right; wrong first char; wrong last char; longer | true / false / false / false | strict equality |
 | T03 | Malformed hash never throws | backend | RF01 | `''`, `'plain'`, `'scrypt:x'`, bad base64 | false | resolves false |
 | T04 | Plain compare is length-safe | backend | RN02, RNF01 | equal, different, different length | true / false / false | no throw |
@@ -134,7 +136,9 @@ Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (
 | T21 | Session ends 8h after login | backend | RF05 | `authConfig.session.maxAge`; jwt callback at sign-in, at +7h59m, at +8h01m; `isAdminSessionExpired(undefined, now)` | 28800; `loginAt` stamped; token kept; null; true | values |
 | T22 | Login page hides hint with configured creds | frontend | RN02, RF04 | dev server with `.env.local` creds; wrong password | no "admin123" text; "Credenciais inválidas." | page text |
 | T23 | 6th wrong login gets 429, same message | frontend | RF03, RF04 | 6 wrong logins, username `e2e-sf02-<ts>` | 6th callback response 429 + `Retry-After`; same "Credenciais inválidas." | network + text |
-| T25 | Hash script prints one verifiable value | backend | RF02 | `tsx scripts/hash-admin-password.ts` with password on stdin | one stdout line, T01 format, `verifyPasswordHash` true; password not in output | spawn + verify |
+| T25 | Hash script prints one verifiable value | backend | RF02 | `tsx scripts/hash-admin-password.ts` with password on stdin; empty and <12-char input | one stdout line, T01 format, `verifyPasswordHash` true; password not in output; short input refused | spawn + verify |
+| T26 | One IP capped at 30 attempts in 15 min | backend | RF03 | 31 `registerIpAttempt` from one IP, any usernames | 31st `allowed:false`, `retryAfterSeconds` from the 30th; other IP unaffected | decision |
+| T27 | IP cap and input limits before any work | backend | RF03, RN05 | 31 logins rotating usernames; username >256 or password >1024; username with control chars | 31st refused before its user key exists, log `locked {scope:'ip', ip}`; oversized input refused with no store call; logged name ≤64 chars, no control chars | store + log spy |
 
 ### Test File Mapping
 | Area | Test File | Test IDs |
@@ -142,8 +146,9 @@ Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (
 | backend | tests/password.test.ts | T01, T02, T03, T04 |
 | backend | tests/auth-config.test.ts (rewritten) | T05, T06, T07, T08 |
 | backend | tests/request-ip.test.ts | T09 |
-| backend | tests/login-throttle.test.ts | T10, T11, T12, T13, T14 |
-| backend | tests/admin-login.test.ts | T15, T16, T17, T18, T19, T20 |
+| backend | tests/login-throttle.test.ts | T10, T11, T12, T13, T14, T26 |
+| backend | tests/login-throttle-mongo.test.ts (skips without a reachable MongoDB) | T10-T13, T26, 10-parallel burst against the real store |
+| backend | tests/admin-login.test.ts | T15, T16, T17, T18, T19, T20, T27 |
 | backend | tests/admin-session.test.ts | T21 |
 | backend | tests/hash-script.test.ts | T25 |
 | frontend (E2E) | e2e/login.qa.spec.ts | T22, T23 |
@@ -153,7 +158,7 @@ Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (
 |-------|------------|--------|
 | RF01 | T01, T02, T03, T15 | ✅ |
 | RF02 | T25 | ✅ |
-| RF03 | T10-T14, T19, T20, T23 | ✅ |
+| RF03 | T10-T14, T19, T20, T23, T26, T27 | ✅ |
 | RF04 | T19 (body), T22, T23 | ✅ |
 | RF05 | T21 | ✅ |
 | RF06 | T05 | ✅ |
