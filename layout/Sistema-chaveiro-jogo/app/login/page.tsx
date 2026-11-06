@@ -1,7 +1,11 @@
 import { Suspense } from 'react';
 import LoginForm from '@/components/login/LoginForm';
+import { getAdminLoginHint } from '@/lib/auth-config';
 
 export default function LoginPage() {
+  // Server-side: env vars do not exist in the browser. Null in production and with configured credentials.
+  const hint = getAdminLoginHint();
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-white">
       <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8 shadow-2xl">
@@ -11,7 +15,7 @@ export default function LoginPage() {
         </p>
 
         <Suspense fallback={<p className="mt-8 text-sm text-slate-400">Carregando...</p>}>
-          <LoginForm />
+          <LoginForm hint={hint} />
         </Suspense>
       </div>
     </main>

@@ -3,14 +3,20 @@
 import { signIn } from 'next-auth/react';
 import { FormEvent, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getAdminLoginHint } from '@/lib/auth-config';
 
-export default function LoginForm() {
+type LoginFormProps = {
+  /** Computed on the server by getAdminLoginHint; null hides the line. */
+  hint: string | null;
+};
+
+// One message for a wrong password and for a locked login (429), so the screen does not reveal the lock.
+const GENERIC_ERROR = 'Credenciais inválidas.';
+
+export default function LoginForm({ hint }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const loginHint = getAdminLoginHint();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -22,7 +28,7 @@ export default function LoginForm() {
     const password = formData.get('password')?.toString() ?? '';
     const callbackUrl = searchParams.get('callbackUrl') || '/admin';
 
-    console.info('[login] attempt', { username, callbackUrl });
+    console.info('[login] attempt', { callbackUrl });
 
     try {
       const result = await signIn('credentials', {
@@ -32,15 +38,15 @@ export default function LoginForm() {
       });
 
       if (!result) {
-        console.error('[login] signIn returned no result', { username });
+        console.error('[login] signIn returned no result');
         setError('Erro ao processar login.');
         setLoading(false);
         return;
       }
 
-      if (result.error) {
-        console.error('[login] signIn failed', { error: result.error, username });
-        setError('Credenciais inválidas.');
+      if (result.error || !result.ok || result.status === 429) {
+        console.error('[login] signIn failed', { status: result.status });
+        setError(GENERIC_ERROR);
         setLoading(false);
         return;
       }
@@ -72,7 +78,7 @@ export default function LoginForm() {
 
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
 
-      <p className="text-xs text-slate-500">{loginHint}</p>
+      {hint ? <p className="text-xs text-slate-500">{hint}</p> : null}
 
       <button
         type="submit"
