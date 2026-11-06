@@ -3,6 +3,8 @@ import type { APIRequestContext, Page } from '@playwright/test';
 
 // SF02 login-hardening contract spec (RED-first: hint prop and 429 land in tasks.md T13 and T16).
 // Admin credentials come from ADMIN_USERNAME / ADMIN_PASSWORD (loaded from .env.local by playwright.config.ts).
+// When .env.local also sets ADMIN_PASSWORD_HASH, the hash wins in dev: ADMIN_PASSWORD must then be the
+// plain password that hash was generated from, or the Mongo probe below fails and T23 is skipped.
 // T23 uses a throwaway username per run, so the real admin user+IP key is never locked.
 
 const USERNAME = process.env.ADMIN_USERNAME ?? '';
