@@ -16,3 +16,8 @@ test: validated (commits 858a02d6..91ddc0d2, 0 blocking violations, 2 polish, SP
 test: minor (deferred): e2e/rom-path.qa.spec.ts T08 cleanup calls listGames with an expect in finally, which can mask the original failure (same pattern as SF01 cleanup)
 test: minor (deferred): T07 relies on public/roms/super-retro.bin being absent; documented in the spec header, not guarded
 T04: complete (commits 5832dcb9..794e48ae, BUILD_STATUS=pass via npm run build, verify e2e/rom-path.qa.spec.ts --project=main T07 green, T08 red until T05, validation at area end)
+T05: complete (commits 794e48ae..ca594f69, BUILD_STATUS=pass via npm run build (jose Edge warning pre-existing), verify e2e/rom-path.qa.spec.ts + e2e/admin.qa.spec.ts --project=main 13 passed 1 skipped (T17 no-mongo), guard lines unchanged, impact NOT VERIFIED by GitNexus - text search: callers are components/admin/GamesTab.tsx and the E2E specs, validation at area end)
+backend: validated (commits 91ddc0d2..ca594f69, 0 blocking violations, 3 polish, SPEC_STATUS=COMPLETE, no containment bypass found on POSIX or win32 semantics)
+backend: minor (deferred): classifyRomPath accepts Windows reserved device names such as /roms/CON on win32 dev; needs a hand-written stored value and does not apply to the Linux target
+backend: minor (deferred): fetchRomFromR2 logs the format-validated R2 key server-side; client bodies never carry it
+backend: minor (deferred): Content-Disposition filename is not escaped; only builder-generated names reach public/roms today

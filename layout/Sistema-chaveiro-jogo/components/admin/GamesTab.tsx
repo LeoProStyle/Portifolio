@@ -82,6 +82,8 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
       const formData = new FormData();
 
       Object.entries(form).forEach(([key, value]) => {
+        // The server derives romPath from romFile; the form only shows the current value.
+        if (key === 'romPath') return;
         if (typeof value === 'boolean') {
           formData.append(key, value ? 'true' : 'false');
         } else {
@@ -190,13 +192,6 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
               className="rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder-zinc-500"
               required
             />
-            <input
-              type="text"
-              placeholder="ROM path"
-              value={form.romPath}
-              onChange={(e) => setForm({ ...form, romPath: e.target.value })}
-              className="rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder-zinc-500"
-            />
           </div>
           <textarea
             placeholder="Description"
@@ -213,7 +208,7 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
               onChange={(e) => setRomFile(e.target.files?.[0] || null)}
               className="block w-full text-sm text-zinc-400 file:mr-4 file:rounded file:border-0 file:bg-cyan-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-zinc-950 hover:file:bg-cyan-400"
             />
-            {form.romPath ? <p className="mt-2 text-sm text-zinc-500">Current ROM path: {form.romPath}</p> : null}
+            {form.romPath ? <p className="mt-2 text-sm text-zinc-500">Caminho atual da ROM: {form.romPath}</p> : null}
           </div>
           {feedback ? <p className="text-sm text-cyan-400">{feedback}</p> : null}
 
