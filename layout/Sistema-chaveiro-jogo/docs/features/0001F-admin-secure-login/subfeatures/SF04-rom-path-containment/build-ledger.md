@@ -15,3 +15,4 @@ T04: impact NOT VERIFIED by GitNexus (git root two levels up, symbols unmapped) 
 test: validated (commits 858a02d6..91ddc0d2, 0 blocking violations, 2 polish, SPEC_STATUS=COMPLETE)
 test: minor (deferred): e2e/rom-path.qa.spec.ts T08 cleanup calls listGames with an expect in finally, which can mask the original failure (same pattern as SF01 cleanup)
 test: minor (deferred): T07 relies on public/roms/super-retro.bin being absent; documented in the spec header, not guarded
+T04: complete (commits 5832dcb9..794e48ae, BUILD_STATUS=pass via npm run build, verify e2e/rom-path.qa.spec.ts --project=main T07 green, T08 red until T05, validation at area end)

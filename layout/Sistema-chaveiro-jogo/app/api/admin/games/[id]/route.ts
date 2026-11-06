@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/auth-guard';
 import { getDb } from '@/lib/mongo';
 import { getAdminGamesStore } from '@/lib/admin-store';
 import { uploadRomToR2 } from '@/lib/r2';
+import { romPathForUpdate } from '@/lib/rom-path';
 import type { Game } from '@/models/game';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
@@ -35,7 +36,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   try {
     const contentType = request.headers.get('content-type') || '';
     let body: any;
-    let romPath: string | undefined;
+    // romPath changes only when a file is uploaded; body.romPath is never read (SF04 RF02, RF05).
+    let uploadedPath: string | undefined;
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
@@ -44,7 +46,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
       if (file && file.size > 0) {
         const fileBuffer = Buffer.from(await file.arrayBuffer());
-        romPath = await uploadRomToR2(fileBuffer, String(body.slug || 'game'), file.name);
+        uploadedPath = await uploadRomToR2(fileBuffer, String(body.slug || 'game'), file.name);
       }
     } else {
       body = await request.json();
@@ -68,7 +70,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             slug: body.slug,
             description: body.description,
             image: body.image,
-            romPath: romPath ?? body.romPath,
+            ...romPathForUpdate(uploadedPath),
             active: body.active
           }
         }
@@ -95,7 +97,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       slug: body.slug,
       description: body.description,
       image: body.image,
-      romPath: romPath ?? body.romPath,
+      ...romPathForUpdate(uploadedPath),
       active: body.active
     });
 

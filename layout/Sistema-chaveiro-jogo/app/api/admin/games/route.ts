@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/auth-guard';
 import { getDb } from '@/lib/mongo';
 import { getAdminGamesStore } from '@/lib/admin-store';
 import { uploadRomToR2 } from '@/lib/r2';
+import { romPathForCreate } from '@/lib/rom-path';
 import type { Game } from '@/models/game';
 
 export async function GET(request: Request) {
@@ -24,7 +25,8 @@ export async function POST(request: Request) {
   try {
     const contentType = request.headers.get('content-type') || '';
     let body: any;
-    let romPath = '';
+    // romPath comes only from an uploaded file; body.romPath is never read (SF04 RF02).
+    let uploadedPath: string | undefined;
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
@@ -33,11 +35,10 @@ export async function POST(request: Request) {
 
       if (file && file.size > 0) {
         const fileBuffer = Buffer.from(await file.arrayBuffer());
-        romPath = await uploadRomToR2(fileBuffer, String(body.slug || 'game'), file.name);
+        uploadedPath = await uploadRomToR2(fileBuffer, String(body.slug || 'game'), file.name);
       }
     } else {
       body = await request.json();
-      romPath = body.romPath || '';
     }
 
     let db;
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
       slug: body.slug,
       description: body.description,
       image: body.image || '',
-      romPath: romPath || body.romPath || '',
+      romPath: romPathForCreate(uploadedPath),
       active: body.active ?? true
     };
 
