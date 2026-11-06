@@ -2,7 +2,7 @@ import { getDb } from '@/lib/mongo';
 
 // Login throttle (SF02 RF03, RN04), two keys:
 // - username+IP (USER_POLICY): 5 attempts; a successful login clears it.
-// - IP alone (IP_POLICY): 30 attempts, never cleared by a success; it caps how much scrypt and
+// - IP alone (IP_POLICY): 30 attempts, cleared only by the owner's successful login; it caps how much scrypt and
 //   Mongo work one IP can cause by rotating usernames (final review FR-8).
 // Each counter counts ATTEMPTS and is incremented before the password is checked. Fixed window of
 // 15 minutes from the first attempt; the last allowed attempt starts a 15-minute lock; any attempt
@@ -39,9 +39,11 @@ export function throttleKey(username: string, ip: string): string {
   return `${username.trim().slice(0, MAX_USERNAME_KEY_LENGTH)}|${ip}`;
 }
 
-/** IP-only key. It has no '|', so it never equals a username+IP key. */
+const MAX_IP_KEY_LENGTH = 64;
+
+/** IP-only key. It has no '|', so it never equals a username+IP key; length capped for off-Vercel headers. */
 export function ipThrottleKey(ip: string): string {
-  return `ip:${ip.replace(/\|/g, '')}`;
+  return `ip:${ip.replace(/\|/g, '').slice(0, MAX_IP_KEY_LENGTH)}`;
 }
 
 function plusSeconds(date: Date, seconds: number): Date {
@@ -89,7 +91,7 @@ export async function registerLoginAttempt(store: LoginAttemptStore, key: string
   return decide(await store.increment(key, now, USER_POLICY), now, USER_POLICY);
 }
 
-/** Counts one attempt on the IP-only key (IP_POLICY). Never cleared by a successful login. */
+/** Counts one attempt on the IP-only key (IP_POLICY). authorizeAdmin clears it on a successful login. */
 export async function registerIpAttempt(store: LoginAttemptStore, ip: string, now: Date): Promise<ThrottleDecision> {
   return decide(await store.increment(ipThrottleKey(ip), now, IP_POLICY), now, IP_POLICY);
 }

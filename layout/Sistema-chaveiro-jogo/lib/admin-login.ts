@@ -141,7 +141,12 @@ export async function authorizeAdmin(
   if (userMatches && passwordMatches) {
     if (throttleOn) {
       try {
-        await withStore(resolvedDeps, (store) => clearLoginAttempts(store, key));
+        // Only the owner can succeed, so clearing the IP ceiling too keeps repeated owner logins from
+        // locking their own IP without giving a username-rotating attacker anything.
+        await withStore(resolvedDeps, async (store) => {
+          await clearLoginAttempts(store, key);
+          await clearLoginAttempts(store, ipThrottleKey(ip));
+        });
       } catch (error) {
         console.warn('[auth] login throttle clear failed', { error: errorName(error) });
       }

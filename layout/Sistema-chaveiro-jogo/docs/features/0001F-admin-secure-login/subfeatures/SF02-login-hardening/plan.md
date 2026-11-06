@@ -90,6 +90,8 @@ Test IDs (T01-T23, T25) refer to the Test Specification below; execution IDs ref
 | Usuário duplicado no form ou corpo JSON faz a pré-checagem ler outro nome e pular o 429 [build review F2] | L | atacante recebe CredentialsSignin em vez de 429 | aceito: `authorizeAdmin` conta a tentativa com o nome que o NextAuth leu, então o limite de 5 checagens vale |
 | Trocar de usuário a cada tentativa abre 5 tentativas por nome [build review F3, final review FR-8] | M | carga de CPU, de Mongo e da threadpool | contador por IP (30 tentativas/15 min) checado antes do scrypt e da chave usuário+IP; usuário >256 ou senha >1024 recusados antes de qualquer trabalho |
 | Sem `x-forwarded-for` (fora da Vercel) todo cliente vira `unknown` e divide a mesma chave [final review FR-4] | L na Vercel | 5 tentativas de qualquer um bloqueiam o dono por 15 min | a Vercel sempre envia o cabeçalho; ao hospedar fora dela, configurar o proxy para enviá-lo |
+| scrypt N=2^17 usa ~128 MiB por derivação; 4 logins simultâneos na mesma instância somam ~512 MiB [final review, re-review] | L | instância sem memória sob ataque distribuído | memória padrão das funções da Vercel cobre o pico; o teto por IP limita cada origem; revisar se a Vercel acusar OOM |
+| Sem `x-forwarded-for`, a chave `ip:unknown` também é compartilhada: 30 tentativas de qualquer um bloqueiam o login por 15 min [final review, re-review] | L na Vercel | dono bloqueado fora da Vercel | mesma mitigação da linha do IP `unknown` acima |
 | `NODE_ENV` ausente ou com valor inesperado [final review FR-10] | L | antes cairia em `admin/admin123` e no segredo de dev | só `development` e `test` contam como dev; qualquer outro valor aplica as regras de produção |
 | `@next/env` expande `$` no `.env.local` | M | hash corrompido em dev | formato sem `$` (T01) |
 | Callback `jwt` devolvendo null quebra o middleware | L | redirect sem fim | null só depois de 8h ou sem `loginAt`; T21 cobre só o callback; o caminho do middleware é coberto pelo E2E SF01 T07 no caso não expirado e pela checagem manual de expiração em Validation |
@@ -108,7 +110,7 @@ Test IDs (T01-T23, T25) refer to the Test Specification below; execution IDs ref
 
 ## Test Specification
 
-Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (`npm test`); E2E = `npx playwright test e2e/login.qa.spec.ts`. Dependencies (env, store, clock, console) injected; no test touches a real MongoDB.
+Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (`npm test`); E2E = `npx playwright test e2e/login.qa.spec.ts`. Dependencies (env, store, clock, console) injected; only `tests/login-throttle-mongo.test.ts` touches a real MongoDB, and it skips when none answers.
 
 ### Contract Tests (from RFs/RNs)
 | ID | Test Case | Area | RF/RN | Input | Expected Output | Verify |
@@ -138,6 +140,7 @@ Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (
 | T23 | 6th wrong login gets 429, same message | frontend | RF03, RF04 | 6 wrong logins, username `e2e-sf02-<ts>` | 6th callback response 429 + `Retry-After`; same "Credenciais inválidas." | network + text |
 | T25 | Hash script prints one verifiable value | backend | RF02 | `tsx scripts/hash-admin-password.ts` with password on stdin; empty and <12-char input | one stdout line, T01 format, `verifyPasswordHash` true; password not in output; short input refused | spawn + verify |
 | T26 | One IP capped at 30 attempts in 15 min | backend | RF03 | 31 `registerIpAttempt` from one IP, any usernames | 31st `allowed:false`, `retryAfterSeconds` from the 30th; other IP unaffected | decision |
+| T28 | Post-login redirect stays on the same origin | frontend | RF04 | `safeCallbackUrl` with `/admin`, `//host`, `/\host`, `/<TAB>/host`, absolute URLs | same-origin path kept; every other value → `/admin` | strict equality |
 | T27 | IP cap and input limits before any work | backend | RF03, RN05 | 31 logins rotating usernames; username >256 or password >1024; username with control chars | 31st refused before its user key exists, log `locked {scope:'ip', ip}`; oversized input refused with no store call; logged name ≤64 chars, no control chars | store + log spy |
 
 ### Test File Mapping
@@ -151,6 +154,7 @@ Scope: SF02 login-hardening. Unit = `node --import tsx --test tests/*.test.ts` (
 | backend | tests/admin-login.test.ts | T15, T16, T17, T18, T19, T20, T27 |
 | backend | tests/admin-session.test.ts | T21 |
 | backend | tests/hash-script.test.ts | T25 |
+| frontend | tests/safe-callback-url.test.ts | T28 |
 | frontend (E2E) | e2e/login.qa.spec.ts | T22, T23 |
 
 ### Coverage vs Requirements

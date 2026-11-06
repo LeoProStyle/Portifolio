@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { authorizeAdmin, checkCredentialsLock, type AdminLoginDeps } from '../lib/admin-login';
-import { createMemoryAttemptStore, registerLoginAttempt, throttleKey, type LoginAttemptStore } from '../lib/login-throttle';
+import { createMemoryAttemptStore, ipThrottleKey, registerLoginAttempt, throttleKey, type LoginAttemptStore } from '../lib/login-throttle';
 import { hashPassword } from '../lib/password';
 
 // Fixture values only: none of these is a real credential.
@@ -91,6 +91,8 @@ test('T15 a valid hashed login returns the admin user and clears the counter', a
   );
   assert.deepEqual(result, ADMIN_USER);
   assert.equal(await store.get(key), null);
+  // Only the owner can succeed, so a success also resets the IP ceiling (repeated owner logins never lock the IP).
+  assert.equal(await store.get(ipThrottleKey(IP)), null);
 });
 
 test('T16 production without configuration refuses, logs the reason and leaves the store alone', async () => {

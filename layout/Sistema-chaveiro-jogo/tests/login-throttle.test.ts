@@ -82,5 +82,6 @@ test('T26 one IP gets at most 30 attempts in 15 minutes, whatever usernames it r
   assert.deepEqual(await registerIpAttempt(store, '8.8.8.8', at(30)), { allowed: true });
   // The IP key never collides with a username+IP key.
   assert.notEqual(ipThrottleKey('7.7.7.7'), throttleKey('ip', '7.7.7.7'));
+  assert.ok(ipThrottleKey('x'.repeat(500)).length <= 67, 'IP key length is capped');
   assert.deepEqual(await registerLoginAttempt(store, throttleKey('admin', '7.7.7.7'), at(31)), { allowed: true });
 });

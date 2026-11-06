@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react';
 import { FormEvent, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { safeCallbackUrl } from '@/lib/safe-callback-url';
 
 type LoginFormProps = {
   /** Computed on the server by getAdminLoginHint; null hides the line. */
@@ -12,11 +13,6 @@ type LoginFormProps = {
 // One message for a wrong password and for a locked login (429), so the screen does not reveal the lock.
 const GENERIC_ERROR = 'Credenciais inválidas.';
 
-/** Only same-origin paths: '/x' is kept, '//host', 'http://host' and '/\\host' fall back to /admin. */
-function safeCallbackUrl(value: string | null): string {
-  if (!value || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return '/admin';
-  return value;
-}
 
 export default function LoginForm({ hint }: LoginFormProps) {
   const router = useRouter();
@@ -32,7 +28,7 @@ export default function LoginForm({ hint }: LoginFormProps) {
     const formData = new FormData(event.currentTarget);
     const username = formData.get('username')?.toString() ?? '';
     const password = formData.get('password')?.toString() ?? '';
-    const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'));
+    const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'), window.location.origin);
 
     console.info('[login] attempt', { callbackUrl });
 
