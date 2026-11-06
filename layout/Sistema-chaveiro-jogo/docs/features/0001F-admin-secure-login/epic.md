@@ -27,3 +27,4 @@ Epic de 0001F-admin-secure-login: quatro subfeatures que, juntas, fazem só o ad
 - SF03 lê a identidade do guard de SF01 e os eventos de login de SF02.
 - Ordem de execução: SF01 → SF02 → SF04 → SF03. SF01 e SF04 editam os mesmos handlers de jogos (`app/api/admin/games/route.ts`, `app/api/admin/games/[id]/route.ts`); SF04 roda depois de SF01 para não reeditar o guard.
 - Fora do código e antes do deploy: o dono do projeto troca as credenciais expostas e tira `.env` e `cookies.txt` do git.
+- 2026-11-06: merge parcial no `main` de SF01, SF02 e SF04 (checkpoints convergidos), a pedido do dono, para verificar em produção as correções de segurança. SF03 continua nesta branch e entra num merge seguinte. `.env`, `.env.local` e `cookies.txt` já não estão rastreados (restam no histórico antigo).
