@@ -5,7 +5,7 @@ slug: rom-path-containment
 status: pending
 branch: feature/0001F-admin-secure-login
 created: 2026-11-05
-updated: 2026-11-05
+updated: 2026-11-06
 related: [0001F]
 tags: [rom, path-traversal, security]
 ---
@@ -52,8 +52,8 @@ Um `romPath` arbitrário permite ler qualquer arquivo do servidor.
 - **RF05:** Uma edição (PUT) sem arquivo novo preserva o `romPath` gravado.
 - **RF06:** Reenviar o arquivo numa edição gera um `romPath` novo; esse é o caminho para recuperar um jogo legado que passou a responder 404.
 - **RN01:** `/api/rom/[slug]` continua acessível sem login.
-- **RN03:** Regra para separar R2 de local: `romPath` sem `/` inicial que começa com `roms/` é chave R2 (fluxo R2 atual); `romPath` que começa com `/roms/` é arquivo local e passa pela regra de RN02.
-- **RN02:** `romPath` aceito = caminho local que, resolvido contra `public`, fica dentro de `public/roms`, com ou sem `/` inicial (o formato atual `/roms/x` é aceito). Uma chave R2 segue o fluxo R2 atual. Todo o resto, inclusive registros legados, não é lido e responde 404 com log `[rom]`.
+- **RN03:** Regra para separar R2 de local: `romPath` sem `/` inicial no formato exato que `buildRomObjectKey` gera (`roms/<slug>.<ext>`, `^roms/[a-z0-9-]+\.[a-z0-9]+$`) é chave R2 (fluxo R2 atual); `romPath` que começa com `/roms/` é arquivo local e passa pela regra de RN02; qualquer outra forma com `roms/` é recusada.
+- **RN02:** `romPath` aceito = caminho local que começa com `/roms/` e, resolvido contra `public`, fica dentro de `public/roms` (o formato atual `/roms/x` é aceito). Uma chave R2 segue o fluxo R2 atual. Todo o resto, inclusive registros legados, não é lido e responde 404 com log `[rom]`.
 
 ### Decisions
 
