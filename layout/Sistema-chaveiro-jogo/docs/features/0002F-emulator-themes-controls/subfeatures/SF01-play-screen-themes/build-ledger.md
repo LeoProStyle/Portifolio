@@ -28,3 +28,4 @@ T07: complete (commits fb412f14..63eafd88, BUILD_STATUS=pass, validation at area
 T08: complete (commits 63eafd88..fac8a56b, BUILD_STATUS=pass, 13/13 [data-frame] rules present, validation at area end)
 T09: complete (commits fac8a56b..92883ce3, BUILD_STATUS=pass, validation at area end)
 T10: complete (commits 92883ce3..cf4006d9, BUILD_STATUS=pass, E2E play-screen --project=main 14/14 and --project=no-mongo 14/14; spec alert locators narrowed by text because of the Next.js route announcer, assertions unchanged; validation at area end)
+T11: complete (commits cf4006d9..494889ec, test gate 28/28 with no R2_* vars, validation at area end)
