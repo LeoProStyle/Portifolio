@@ -264,7 +264,7 @@ Reference: `components/login/LoginForm.tsx:13,41-46,74`, `app/login/page.tsx:13-
 | RN05 | Logs sem senha, hash ou usuário esperado | YES | Backend | T18 | tasks.md T04, T12 |
 | RNF01 | Tempo não depende da posição do erro | YES | Backend | T02, T04 + review | tasks.md T01, T07 |
 | Scope | `tests/auth-config.test.ts` reescrito | YES | Test | T05-T08 | tasks.md T02 |
-| Scope | script `test` cobre `tests/*.test.ts` | YES (delivered by SF01) | Tooling | — | SF01 tasks.md T04 |
+| Scope | script `test` cobre `tests/*.test.ts` | YES | Tooling (entregue pelo SF01) | — | SF01 tasks.md T04 |
 | Scope | `.env.example` só com nomes | YES | Tooling | — | tasks.md T15 |
 
 Coverage: 100% (13/13 requirements + 3 scope items).

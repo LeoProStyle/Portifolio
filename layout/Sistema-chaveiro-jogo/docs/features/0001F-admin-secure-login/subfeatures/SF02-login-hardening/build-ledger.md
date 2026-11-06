@@ -54,3 +54,4 @@ final-review: fix round 3/3 (1 addressed, 0 open; commits 9feaef2d..68a520c2)
 Final review: ruled 4 (after review-000)
 Final review head: 68a520c2b221cd8ea450a1ce89465479b9b030c3
 Ruling: RF04 acceptance ticked on T19 (server 429 body) plus new E2E T29 (browser shows the generic message for an intercepted 429) instead of waiting for T23; T-TEST-08 stays open until T23 runs with MongoDB - the two halves of the contract are each proven by a running test - costs a 429 mismatch between the real throttle and the intercepted body if wrong, which T23 catches before merge
+e2e: T29 added (commits 68a520c2..5d4b1fb1; e2e/login.qa.spec.ts --project=main T22, T29 green, T23 skipped - MongoDB unreachable)
