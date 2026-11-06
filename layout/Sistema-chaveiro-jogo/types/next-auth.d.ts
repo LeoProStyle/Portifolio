@@ -13,5 +13,7 @@ declare module 'next-auth' {
 declare module '@auth/core/jwt' {
   interface JWT {
     role?: string;
+    /** Seconds since epoch of the sign-in; the 8h session limit is measured from it. */
+    loginAt?: number;
   }
 }

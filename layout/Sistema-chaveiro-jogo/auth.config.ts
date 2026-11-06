@@ -1,22 +1,35 @@
 import type { NextAuthConfig } from 'next-auth';
+import { ADMIN_SESSION_MAX_AGE_SECONDS, isAdminSessionExpired } from '@/lib/admin-session';
 
 // Edge-safe configuration shared by middleware.ts and auth.ts.
-// Keep this file free of node:crypto, mongodb and lib/auth-config imports:
-// middleware runs on the edge runtime and loads only this file.
+// Import only edge-safe modules with no imports of their own (lib/admin-session.ts); never
+// node:crypto, mongodb or lib/auth-config: middleware runs on the edge runtime and loads this file.
 // secret, session options and the callbacks live only here; auth.ts must not override them.
-// session.maxAge is not set yet (library default, about 30 days); SF02 sets the 8h session here.
+
+const isProduction = process.env.NODE_ENV === 'production';
+
 export const authConfig = {
   trustHost: true,
-  secret: process.env.AUTH_SECRET || 'retrokey-dev-secret',
-  session: { strategy: 'jwt' },
+  // Production without AUTH_SECRET gets no secret: NextAuth refuses (MissingSecret) and the
+  // admin guard answers 401. The literal fallback exists only outside production (SF02 RN01).
+  secret: process.env.AUTH_SECRET || (isProduction ? undefined : 'retrokey-dev-secret'),
+  session: { strategy: 'jwt', maxAge: ADMIN_SESSION_MAX_AGE_SECONDS },
   pages: {
     signIn: '/login'
   },
   providers: [],
   callbacks: {
     async jwt({ token, user }) {
+      const nowSeconds = Math.floor(Date.now() / 1000);
       if (user) {
         token.role = 'admin';
+        token.loginAt = nowSeconds;
+        return token;
+      }
+      // NextAuth renews exp on every session read; loginAt keeps the 8h limit absolute.
+      // Returning null makes NextAuth drop the session cookie.
+      if (isAdminSessionExpired(token.loginAt, nowSeconds)) {
+        return null;
       }
       return token;
     },
