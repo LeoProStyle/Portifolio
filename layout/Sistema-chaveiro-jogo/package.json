@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start -p 3001",
     "seed": "tsx scripts/seed.ts",
+    "hash-password": "tsx scripts/hash-admin-password.ts",
     "test": "node --import tsx --test \"tests/*.test.ts\"",
     "test:auth": "node --import tsx --test tests/auth-config.test.ts"
   },
