@@ -26,3 +26,4 @@ Ruling: the success login log carries {id: admin, ip} and never the typed userna
 test: fix round 1/3 (2 addressed, 0 open, 2 deferred; commits 9b7db1f5..bee94bb1)
 test: minor (deferred): plan.md TL;DR does not mention the success-log identity ruling; it lives in Modules and the ledger
 Ruling: a failure or locked log whose typed username equals the configured one logs {usernameMatched: true, ip} instead of the name, and T18 gains that case in T12 - RN05 forbids the configured username in logs even when an attacker typed it - costs SF03 an audit row without the typed name when it was the real one, which the configured value already identifies
+T09: complete (commits bee94bb1..9220f4e3, BUILD_STATUS=pass via tsc --noEmit (module not imported by the app yet), verify tests/request-ip.test.ts 1/1, validation at area end)
