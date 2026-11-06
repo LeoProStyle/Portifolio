@@ -48,6 +48,40 @@ function normalizeSystemValue(system?: string | null) {
   return (system || '').trim().toLowerCase();
 }
 
+type SystemMatch = { system: EmulatorSystem; legacyLabel?: string };
+
+// Ordered alias rules. The order matters: 'snes' must win over 'nes', 'gba'/'gbc' over 'game boy'.
+const legacySystemRules: { test: (normalized: string) => boolean; system: EmulatorSystem; label: string }[] = [
+  { test: (n) => n.includes('arcade') || n.includes('fbneo'), system: 'Arcade (FBNeo)', label: 'arcade' },
+  { test: (n) => n.includes('mega') || n.includes('genesis') || n.includes('drive'), system: 'Mega Drive / Genesis', label: 'Genesis/Mega Drive' },
+  { test: (n) => n.includes('nintendo 64') || n.includes('n64'), system: 'Nintendo 64', label: 'Nintendo 64' },
+  { test: (n) => n.includes('game boy advance') || n.includes('gba'), system: 'Game Boy Advance', label: 'GBA' },
+  { test: (n) => n.includes('game boy color') || n.includes('gbc'), system: 'Game Boy Color', label: 'Game Boy Color' },
+  { test: (n) => n.includes('game boy') || n === 'gb', system: 'Game Boy', label: 'Game Boy' },
+  { test: (n) => n.includes('snes') || n.includes('super nintendo') || n.includes('sfc'), system: 'SNES', label: 'SNES' },
+  { test: (n) => n.includes('nes'), system: 'NES', label: 'NES' },
+  { test: (n) => n.includes('playstation') || n.includes('psx'), system: 'PlayStation', label: 'PlayStation' },
+  { test: (n) => n.includes('neo geo'), system: 'Neo Geo', label: 'Neo Geo' }
+];
+
+function matchEmulatorSystem(normalized: string): SystemMatch | null {
+  if (!normalized) return null;
+
+  const exactMatch = (Object.keys(systemToCoreMap) as EmulatorSystem[]).find(
+    (key) => key.toLowerCase() === normalized
+  );
+  if (exactMatch) return { system: exactMatch };
+
+  const rule = legacySystemRules.find((candidate) => candidate.test(normalized));
+  return rule ? { system: rule.system, legacyLabel: rule.label } : null;
+}
+
+// Maps a stored system or console name (exact or legacy alias) to the EmulatorSystem it means.
+// Returns null for an empty or unknown value. Pure: no logging.
+export function resolveEmulatorSystem(system?: string | null): EmulatorSystem | null {
+  return matchEmulatorSystem(normalizeSystemValue(system))?.system ?? null;
+}
+
 export function getCoreForSystem(system?: string | null): string {
   const normalized = normalizeSystemValue(system);
 
@@ -56,67 +90,19 @@ export function getCoreForSystem(system?: string | null): string {
     return defaultEmulatorCore;
   }
 
-  const exactMatch = Object.entries(systemToCoreMap).find(
-    ([key]) => key.toLowerCase() === normalized
-  );
+  const match = matchEmulatorSystem(normalized);
 
-  if (exactMatch) {
-    return exactMatch[1];
+  if (!match) {
+    console.warn('[emulator cores] Unknown system selected, falling back to default core', {
+      system,
+      fallback: defaultEmulatorCore
+    });
+    return defaultEmulatorCore;
   }
 
-  if (normalized.includes('arcade') || normalized.includes('fbneo')) {
-    console.info('[emulator cores] Legacy arcade system detected, using fbneo', { system });
-    return 'fbneo';
+  const core = systemToCoreMap[match.system] ?? defaultEmulatorCore;
+  if (match.legacyLabel) {
+    console.info(`[emulator cores] Legacy ${match.legacyLabel} system detected, using ${core}`, { system });
   }
-
-  if (normalized.includes('mega') || normalized.includes('genesis') || normalized.includes('drive')) {
-    console.info('[emulator cores] Legacy Genesis/Mega Drive system detected, using genesis_plus_gx', { system });
-    return 'genesis_plus_gx';
-  }
-
-  if (normalized.includes('nintendo 64') || normalized.includes('n64')) {
-    console.info('[emulator cores] Legacy Nintendo 64 system detected, using mupen64plus_next', { system });
-    return 'mupen64plus_next';
-  }
-
-  if (normalized.includes('game boy advance') || normalized.includes('gba')) {
-    console.info('[emulator cores] Legacy GBA system detected, using mgba', { system });
-    return 'mgba';
-  }
-
-  if (normalized.includes('game boy color') || normalized.includes('gbc')) {
-    console.info('[emulator cores] Legacy Game Boy Color system detected, using gambatte', { system });
-    return 'gambatte';
-  }
-
-  if (normalized.includes('game boy') || normalized === 'gb') {
-    console.info('[emulator cores] Legacy Game Boy system detected, using gambatte', { system });
-    return 'gambatte';
-  }
-
-  if (normalized.includes('snes') || normalized.includes('super nintendo') || normalized.includes('sfc')) {
-    console.info('[emulator cores] Legacy SNES system detected, using snes9x', { system });
-    return 'snes9x';
-  }
-
-  if (normalized.includes('nes')) {
-    console.info('[emulator cores] Legacy NES system detected, using fceumm', { system });
-    return 'fceumm';
-  }
-
-  if (normalized.includes('playstation') || normalized.includes('psx')) {
-    console.info('[emulator cores] Legacy PlayStation system detected, using pcsx_rearmed', { system });
-    return 'pcsx_rearmed';
-  }
-
-  if (normalized.includes('neo geo')) {
-    console.info('[emulator cores] Legacy Neo Geo system detected, using fbneo', { system });
-    return 'fbneo';
-  }
-
-  console.warn('[emulator cores] Unknown system selected, falling back to default core', {
-    system,
-    fallback: defaultEmulatorCore
-  });
-  return defaultEmulatorCore;
+  return core;
 }
