@@ -135,6 +135,6 @@ export async function GET(_request: Request, { params }: { params: { slug: strin
     const message = error instanceof Error ? error.message : String(error);
     console.error('[rom] Unexpected error while fetching ROM for', params.slug, message);
     console.info('[rom] Returning JSON error response', { status: 500, contentType: 'application/json' });
-    return NextResponse.json({ error: 'Failed to fetch ROM', details: message }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch ROM' }, { status: 500 });
   }
 }

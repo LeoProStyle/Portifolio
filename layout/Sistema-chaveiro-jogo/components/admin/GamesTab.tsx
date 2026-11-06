@@ -208,7 +208,11 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
               onChange={(e) => setRomFile(e.target.files?.[0] || null)}
               className="block w-full text-sm text-zinc-400 file:mr-4 file:rounded file:border-0 file:bg-cyan-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-zinc-950 hover:file:bg-cyan-400"
             />
-            {form.romPath ? <p className="mt-2 text-sm text-zinc-500">Caminho atual da ROM: {form.romPath}</p> : null}
+            {form.romPath ? (
+              <p className="mt-2 text-sm text-zinc-500">Caminho atual da ROM: {form.romPath}</p>
+            ) : romFile ? null : (
+              <p className="mt-2 text-sm text-amber-400">Envie um arquivo de ROM para o jogo funcionar.</p>
+            )}
           </div>
           {feedback ? <p className="text-sm text-cyan-400">{feedback}</p> : null}
 

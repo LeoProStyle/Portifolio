@@ -7,7 +7,9 @@ import type { APIRequestContext } from '@playwright/test';
 // T07 reads the `super-retro` game, present in the mock catalog (lib/mock-data.ts) and in the seed;
 // its file public/roms/super-retro.bin is not in the repository, so the read fails with 404.
 // T08 creates `e2e-sf04-*` games and deletes them at the end.
-// Run in the main project only: `npx playwright test e2e/rom-path.qa.spec.ts --project=main`.
+// T09 edits the mock game `game-1` in the in-memory store of the no-mongo server (MONGODB_URI empty),
+// so it never writes to a database; the [id] route bundle holds its own copy of the mock catalog.
+// Run one project at a time: `--project=main` (T07, T08), then `--project=no-mongo` (T09).
 
 const PREFIX = 'e2e-sf04-';
 const USERNAME = process.env.ADMIN_USERNAME ?? '';
@@ -49,7 +51,7 @@ test.beforeAll(async ({}, testInfo) => {
   test.setTimeout(180_000);
   const api = await pwRequest.newContext({ baseURL: baseURLOf(testInfo) });
   try {
-    for (const path of ['/login', '/api/auth/csrf', '/api/auth/session', '/api/admin/games', '/api/admin/games/warmup', '/api/rom/warmup']) {
+    for (const path of ['/login', '/api/auth/csrf', '/api/auth/session', '/api/admin/games', '/api/admin/games/game-1', '/api/rom/warmup']) {
       await api.get(path, { maxRedirects: 0, timeout: 120_000 }).catch(() => {});
     }
   } finally {
@@ -58,7 +60,9 @@ test.beforeAll(async ({}, testInfo) => {
 });
 
 test.beforeEach(async ({}, testInfo) => {
-  test.skip(testInfo.project.name !== 'main', 'runs only in the main project');
+  const isNoMongo = testInfo.project.name === 'no-mongo';
+  const isT09 = testInfo.title.startsWith('T09');
+  test.skip(isNoMongo !== isT09, isT09 ? 'T09 runs only in the no-mongo project' : 'runs only in the main project');
 });
 
 test('T07 ROM route stays public and never echoes a path', async ({ request }) => {
@@ -92,6 +96,39 @@ test('T08 romPath in the request body is ignored on create', async ({}, testInfo
     for (const g of await listGames(admin)) {
       if (String(g.slug ?? '').startsWith(PREFIX)) await admin.delete(`/api/admin/games/${g.id}`);
     }
+    await admin.dispose();
+  }
+});
+
+test('T09 edit without a file keeps the stored romPath and ignores romPath in the body', async ({}, testInfo) => {
+  const admin = await adminApi(baseURLOf(testInfo));
+  try {
+    const readGame = async (): Promise<Item> => {
+      const res = await admin.get('/api/admin/games/game-1');
+      expect(res.status(), 'admin GET /api/admin/games/game-1').toBe(200);
+      return res.json();
+    };
+    const before = await readGame();
+    expect(before.romPath).toBe('/roms/super-retro.bin');
+    const fields = {
+      title: String(before.title),
+      system: String(before.system),
+      console: String(before.console),
+      slug: String(before.slug),
+      description: String(before.description),
+      image: String(before.image)
+    };
+
+    const json = await admin.put('/api/admin/games/game-1', { data: { ...fields, active: true, romPath: '../.env' } });
+    expect(json.status()).toBe(200);
+    expect(await json.json()).toEqual({ updated: true });
+    expect((await readGame()).romPath, 'JSON edit').toBe(before.romPath);
+
+    const multipart = await admin.put('/api/admin/games/game-1', { multipart: { ...fields, active: 'true', romPath: '../.env' } });
+    expect(multipart.status()).toBe(200);
+    expect(await multipart.json()).toEqual({ updated: true });
+    expect((await readGame()).romPath, 'multipart edit without romFile').toBe(before.romPath);
+  } finally {
     await admin.dispose();
   }
 });
