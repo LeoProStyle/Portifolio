@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import GamesTab from '@/components/admin/GamesTab';
 import CartridgesTab from '@/components/admin/CartridgesTab';
+import BezelsTab from '@/components/admin/BezelsTab';
 import { ADMIN_LOGIN_URL, type AdminAuthStatus } from '@/lib/admin-api';
 
 const AUTH_ERROR_MESSAGES: Record<AdminAuthStatus, string> = {
@@ -15,7 +16,7 @@ const AUTH_ERROR_MESSAGES: Record<AdminAuthStatus, string> = {
 export default function AdminPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [activeTab, setActiveTab] = useState<'games' | 'cartridges'>('games');
+  const [activeTab, setActiveTab] = useState<'games' | 'cartridges' | 'bezels'>('games');
   const [authError, setAuthError] = useState<AdminAuthStatus | null>(null);
 
   useEffect(() => {
@@ -91,11 +92,22 @@ export default function AdminPage() {
               >
                 Cartridges
               </button>
+              <button
+                onClick={() => setActiveTab('bezels')}
+                className={`px-4 py-2 font-medium transition ${
+                  activeTab === 'bezels'
+                    ? 'border-b-2 border-cyan-400 text-cyan-400'
+                    : 'text-zinc-400 hover:text-zinc-300'
+                }`}
+              >
+                Bezels
+              </button>
             </div>
 
             <div className="mt-8">
               {activeTab === 'games' && <GamesTab onAuthError={setAuthError} />}
               {activeTab === 'cartridges' && <CartridgesTab onAuthError={setAuthError} />}
+              {activeTab === 'bezels' && <BezelsTab onAuthError={setAuthError} />}
             </div>
           </>
         )}

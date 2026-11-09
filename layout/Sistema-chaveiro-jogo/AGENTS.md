@@ -98,7 +98,7 @@ NFC-style cartridge (`/nfc/[id]`) validated against a game, then launched in an 
 {"dev":"npm run dev (port 3001)","seed":"npm run seed","e2e":"npx playwright test e2e/"}
 
 ### Validation Gates
-{"validation_gates":{"build":"npm run build","test":"node --import tsx --test tests/auth-config.test.ts tests/r2-rom.test.ts tests/rooms-data.test.ts tests/play-theme.test.ts tests/emulator-cores.test.ts"}}
+{"validation_gates":{"build":"npm run build","test":"node --import tsx --test tests/auth-config.test.ts tests/r2-rom.test.ts tests/rooms-data.test.ts tests/play-theme.test.ts tests/emulator-cores.test.ts tests/bezel.test.ts"}}
 
 Typecheck runs inside `next build`. No lint or format gate exists.
 

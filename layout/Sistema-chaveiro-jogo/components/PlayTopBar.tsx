@@ -22,11 +22,11 @@ export default function PlayTopBar({ title, systemLabel, children }: PlayTopBarP
         <span>Back home</span>
       </Link>
       <div className="flex min-w-0 flex-1 flex-col [@media(max-height:480px)]:flex-row [@media(max-height:480px)]:items-baseline [@media(max-height:480px)]:gap-2">
-        <h1 className="truncate text-lg font-semibold text-[color:var(--t-text)] sm:text-2xl [@media(max-height:480px)]:text-base">
+        <h1 className="truncate text-lg font-semibold text-[color:var(--t-text)] wide:text-2xl">
           {title}
         </h1>
         {systemLabel ? (
-          <p className="truncate text-xs uppercase tracking-[0.2em] text-[color:var(--t-accent)]">{systemLabel}</p>
+          <p className="hidden truncate text-xs uppercase wide:block tracking-[0.2em] text-[color:var(--t-accent)]">{systemLabel}</p>
         ) : null}
       </div>
       <div data-slot="fullscreen" className="h-11 w-11 shrink-0">
