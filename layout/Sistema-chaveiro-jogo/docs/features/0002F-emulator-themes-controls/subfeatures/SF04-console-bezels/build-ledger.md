@@ -83,3 +83,10 @@ infra: validated (commits 77524d381129e15421fcc137ac77814b5f016e78..fc11c47d62ac
 frontend: validated (commits 6acd3dbea23b0df1048db95a7fe87d6261d914c4..77524d381129e15421fcc137ac77814b5f016e78, 0 violations, SPEC_STATUS=complete)
 tasks.md: merged ticks from test, backend, frontend, infra validators; §1 recomputed (11/11); §5 gates run this session — test gate 64/64 exit 0, npm run build exit 0, detect-changes NOT VERIFIED per task with git diff lists recorded
 e2e: deferred to the last subfeature (qa-pipeline delivery authoring) — SF02 and SF03 rows still pending; SF04 specs authored and green via T02/T09/T10
+Ruling: FR-1 (minor) components/PlayStage.tsx bezel effect lists `ready` in deps without reading it — kept as is, harmless and bezelId already depends on ready — costs one extra effect run per ready change if wrong
+Ruling: FR-2 (minor) lib/bezel-routes.ts 304 response omits X-Content-Type-Options: nosniff — kept as is, a 304 has no body and the 200 carries nosniff; plan.md lists headers for 200 only — costs nothing observable if wrong
+Ruling: FR-3 (minor, OWASP A04) chunked upload without Content-Length is buffered by formData() before the 2 MB check — kept as plan.md Backend "Body bound" and Risks accept it; admin-only path — costs memory of one admin request up to the platform cap if wrong
+Ruling: FR-4 (minor, OWASP A04) public GET does a full GetObject per request even for 304 (no CDN cache, no rate limit) — kept as plan.md Architecture Decisions chose one GetObject over HeadObject+GetObject to avoid a race; bezels are <=2 MB and the play screen requests one per boot — costs R2 reads and function invocations under abuse if wrong; follow-up option HeadObject first or s-maxage
+Ruling: FR-5 (minor, OWASP A04/A08, needs-verification) PNG check is signature + size only, no IHDR dimension cap — not in about.md RN02; admin-trusted input — costs client memory on /play if an admin uploads a PNG with huge declared dimensions; follow-up option cap IHDR at 4096 px
+Final review: ruled 5 (after review-001)
+Final review head: 5e9f20c41dcb17f56e721f172955a6692f2f4293
