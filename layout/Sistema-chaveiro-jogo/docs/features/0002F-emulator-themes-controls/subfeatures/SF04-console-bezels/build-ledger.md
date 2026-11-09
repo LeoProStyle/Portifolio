@@ -73,3 +73,8 @@ Ruling: BezelsTab derives the aspect warning from the selected file's measured s
 Ruling: statuses outside design.md's table (e.g. 500) show "Upload failed. Try again." / "Remove failed. Try again." — design.md has no copy for them — costs a copy change if the owner wants other text
 T10: detect-changes NOT VERIFIED (new untracked file) — git diff list: components/admin/BezelsTab.tsx, app/admin/page.tsx; CartridgesTab.tsx and GamesTab.tsx absent from diff
 T10: e2e admin --project=main 23 passed, 1 skipped (no-mongo-only T17), clean .next, MONGODB_DB=retrokey_e2e, ports free after
+test: spec fix T45 (commits d103864ccce92337589b72d8578fda5008dc8240..0a710d7c69e750aa9cf5ae3b64e0abb5bbec90d9, build-only — admin e2e main green)
+T10: complete (commits 0a710d7c69e750aa9cf5ae3b64e0abb5bbec90d9..77524d381129e15421fcc137ac77814b5f016e78, BUILD_STATUS=pass, validation at area end)
+Ruling: no @test-agent for the frontend area — the project has no component test runner (node:test without DOM) and e2e/play-screen + e2e/admin specs (T23-T48) cover every frontend acceptance item — costs uncovered unit-level edge cases in BezelsTab/PlayStage if wrong
+Ruling: T11 done inline (one-line AGENTS.md edit); plan.md Global Constraints keeps the old five-file command because plan.md is a frozen spec and AGENTS.md is the source it cites — costs a stale quote in plan.md if a reader trusts it over AGENTS.md
+T11: detect-changes NOT VERIFIED (docs-only change) — git diff list: AGENTS.md; six-file gate exit 0, 64 pass, 0 R2_* vars in shell
