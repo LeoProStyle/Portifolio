@@ -194,6 +194,8 @@ Codebase discovery for the console bezel subfeature (2026-11-06, read-only disco
 {"create":["lib/bezel.ts","app/api/admin/bezels/[console]/route.ts","app/api/bezel/[console]/route.ts","components/admin/BezelsSection.tsx","components/PlayBezel.tsx","tests/bezel.test.ts","e2e/bezel.qa.spec.ts"],"modify":["lib/r2.ts (additive exports only)","components/admin/CartridgesTab.tsx","components/PlayStage.tsx","components/ThemedFrame.tsx","components/StatusStrip.tsx","app/globals.css","e2e/play-screen.qa.spec.ts","playwright.config.ts (only if an E2E bucket/prefix override is chosen)"]}
 ```
 
+Superseded by the SF04 plan (2026-11-09): the admin UI is `components/admin/BezelsTab.tsx`, mounted as a third tab by `app/admin/page.tsx` (owner decision); `components/admin/CartridgesTab.tsx` is not touched; there is no `e2e/bezel.qa.spec.ts` — the E2E cases go to `e2e/play-screen.qa.spec.ts` and `e2e/admin.qa.spec.ts`; `lib/bezel-console.ts` and `lib/bezel-routes.ts` are added, plus `components/useWideScreen.ts`, `app/admin/page.tsx` and `tailwind.config.ts`. See `subfeatures/SF04-console-bezels/plan.md`.
+
 ### Existing Patterns (SF04)
 - Admin card: `form` and `feedback` state (`CartridgesTab.tsx:16-22`), `fetch` then `getAdminAuthStatus(response)` (`:60-73`, `lib/admin-api.ts:13-18`), `onAuthError` prop from `app/admin/page.tsx:19, 58-59, 98`.
 - Multipart upload: `FormData` without a `Content-Type` header (`GamesTab.tsx:82-100`); server branches on `multipart/form-data` (`games/route.ts:26-31`).

@@ -4,13 +4,13 @@ type: feature-design
 created: 2026-11-09
 updated: 2026-11-09
 related: [0002F]
-provenance: sha256:a0d018e3b9209ffc63cb7c457651fe4db24d119c52cb4f5237747c5ad24eb1f9
+provenance: sha256:634f42a364912bb2246ae7065ace9e18a747186fca2d98d9b5cc6241fa6055f0
 ---
 
 # Design: SF04 Console Bezels
 
 ## TL;DR
-Design contract da SF04 do {{doc:0002F}}. Ele parte do contrato da SF01 ({{doc:0002F-SF01}}, `subfeatures/SF01-play-screen-themes/design.md`) e muda três coisas. Primeiro, em telas largas com mouse (`Wide`), um bezel PNG por console aparece atrás do jogo numa área 16:9. Segundo, fora de `Wide` (celular, retrato ou paisagem) o jogo fica sem bezel e sem moldura CSS, na maior área possível. Terceiro, a aba Cartuchos do admin ganha o bloco "Bezel por console". Os seis estados da SF01 e os espaços da SF02 continuam. O contrato também fecha os achados QA-04, QA-08, QA-10, QA-11, QA-12, QA-13 do review-001.
+Design contract da SF04 do {{doc:0002F}}. Ele parte do contrato da SF01 ({{doc:0002F-SF01}}, `subfeatures/SF01-play-screen-themes/design.md`) e muda três coisas. Primeiro, em telas largas com mouse (`Wide`), um bezel PNG por console aparece atrás do jogo numa área 16:9. Segundo, fora de `Wide` (celular, retrato ou paisagem) o jogo fica sem bezel e sem moldura CSS, na maior área possível. Terceiro, o admin ganha uma aba própria "Bezels" com o bloco "Bezel por console"; a aba Cartridges não muda. Os seis estados da SF01 e os espaços da SF02 continuam. O contrato também fecha os achados QA-04, QA-08, QA-10, QA-11, QA-12, QA-13 do review-001.
 
 ## TOC
 - [Screens](#screens)
@@ -22,7 +22,7 @@ Design contract da SF04 do {{doc:0002F}}. Ele parte do contrato da SF01 ({{doc:0
 - [Design Review](#design-review)
 
 ## Screens
-A SF04 não cria rota nova. Ela muda `/play/[slug]` em três ramos e acrescenta um bloco à aba Cartuchos de `/admin`.
+A SF04 não cria rota de página nova. Ela muda `/play/[slug]` em três ramos e acrescenta a terceira aba, "Bezels", a `/admin` (depois de Games e Cartridges).
 
 **`Wide`** = a media query `(min-width: 1024px) and (pointer: fine)`. **Celular** = qualquer viewport fora de `Wide`. Isso inclui 844×390 com mouse (o viewport do E2E) e uma janela de desktop com menos de 1024px de largura.
 
@@ -31,7 +31,7 @@ A SF04 não cria rota nova. Ela muda `/play/[slug]` em três ramos e acrescenta 
 | `/play/[slug]` Wide + bezel | Jogo dentro da arte do console | Por estado (tabela de estados da SF01; Back home da barra não é primário) | `/`, `/rooms/[slug]`, `/nfc/[id]`, URL |
 | `/play/[slug]` Wide sem bezel | Moldura CSS da SF01, sem mudança | Por estado | mesmo |
 | `/play/[slug]` celular (390×844, 844×390) | Jogo na maior área, sem moldura, sem rolagem | Por estado | mesmo |
-| `/admin` → aba Cartuchos → "Bezel por console" | Ver, enviar e remover o bezel de um console | Upload bezel | login admin → aba Cartuchos |
+| `/admin` → aba Bezels → "Bezel por console" | Ver, enviar e remover o bezel de um console | Upload bezel | login admin → botão de aba "Bezels" |
 
 Layout trees (base mobile 320px). Ordem das regiões = ordem no DOM:
 
@@ -39,7 +39,7 @@ Layout trees (base mobile 320px). Ordem das regiões = ordem no DOM:
 {"screen":"play-wide-bezel","regions":[{"role":"header","order":1,"span":{"mobile":"full","desktop":"full"},"component":"PlayTopBar","contains":["back-link","game-title","system-label","fullscreen-slot"]},{"role":"stage","order":2,"span":{"mobile":"full","desktop":"full"},"component":"ThemedFrame","contains":["bezel-area","PlayBezel","game-window","Emulator","state-panel"],"primaryCta":"state-panel action"},{"role":"status","order":3,"span":{"mobile":"overlay","desktop":"full"},"component":"StatusStrip","contains":["status-text"]},{"role":"legend","order":4,"span":{"mobile":"hidden","desktop":"full"},"component":"legend-slot","contains":["SF02 key legend"]}]}
 {"screen":"play-wide-no-bezel","regions":[{"role":"header","order":1,"span":{"mobile":"full","desktop":"full"},"component":"PlayTopBar","contains":["back-link","game-title","system-label","fullscreen-slot"]},{"role":"stage","order":2,"span":{"mobile":"full","desktop":"full"},"component":"ThemedFrame","contains":["data-frame","Emulator","state-panel"],"primaryCta":"state-panel action"},{"role":"status","order":3,"span":{"mobile":"overlay","desktop":"full"},"component":"StatusStrip","contains":["status-text"]},{"role":"legend","order":4,"span":{"mobile":"hidden","desktop":"full"},"component":"legend-slot","contains":["SF02 key legend"]}]}
 {"screen":"play-phone","regions":[{"role":"header","order":1,"span":{"mobile":"full","desktop":"n/a"},"component":"PlayTopBar","contains":["back-link","game-title"]},{"role":"stage","order":2,"span":{"mobile":"full","desktop":"n/a"},"component":"ThemedFrame","contains":["game-window","Emulator","state-panel"],"primaryCta":"state-panel action"},{"role":"overlay","order":3,"span":{"mobile":"full","desktop":"n/a"},"component":"touch-overlay-slot","contains":["SF02 virtual controller"]},{"role":"status","order":4,"span":{"mobile":"overlay","desktop":"n/a"},"component":"StatusStrip","contains":["status-text"]}]}
-{"screen":"admin-bezels-block","regions":[{"role":"form","order":1,"span":{"mobile":"full","desktop":"full"},"component":"BezelsSection","contains":["console-select","current-bezel-preview","remove-bezel","read-retry","png-file-input","new-file-preview","aspect-warning","upload-bezel","feedback"],"primaryCta":"upload-bezel"}]}
+{"screen":"admin-bezels-tab","regions":[{"role":"nav","order":1,"span":{"mobile":"full","desktop":"full"},"component":"AdminPage tab bar","contains":["games-tab","cartridges-tab","bezels-tab"]},{"role":"form","order":2,"span":{"mobile":"full","desktop":"full"},"component":"BezelsTab","contains":["console-select","current-bezel-preview","remove-bezel","read-retry","png-file-input","new-file-preview","aspect-warning","upload-bezel","feedback"],"primaryCta":"upload-bezel"}]}
 ```
 
 **PlayTopBar no celular:** a barra fica com Back home, o título e o `fullscreen-slot`. O rótulo do sistema some (QA-12). O título fica em `text-lg`, numa linha só, com reticências. A barra tem a altura do alvo de 44px.
@@ -110,12 +110,12 @@ Textos de erro. 401 e 403 chamam o `onAuthError` existente, em envio e remoção
 | rede | "Could not reach the server." | mesmo texto |
 
 ## Components
-Dois componentes novos, um hook novo e cinco componentes alterados; o `Emulator` só muda o tipo do callback (CR-3).
+Dois componentes novos, um hook novo, quatro componentes e a página `/admin` alterados; o `Emulator` só muda o tipo do callback (CR-3).
 
 - `PlayBezel` — new, `components/PlayBezel.tsx` — props: `consoleId: string`, `onLoaded(): void`, `onFailed(): void` — estados: pending, loaded, failed — `<img src="/api/bezel/<id>" alt="" aria-hidden="true">` com `object-fit: fill`; só é montado quando `useWideScreen()` é `true`, o console é conhecido e o bezel ainda não foi recusado — composed-of: [img]
 - `useWideScreen` — new, `components/useWideScreen.ts` — retorna `boolean` de `matchMedia('(min-width: 1024px) and (pointer: fine)')` com listener de `change`; `false` no primeiro render (sem diferença de hidratação) — composed-of: []
-- `BezelsSection` — new, `components/admin/BezelsSection.tsx` — props: `onAuthError(): void` — estados: os 12 da tabela do bloco admin — cartão `rounded-2xl p-6` como `CartridgesTab`; select com os 12 consoles (rótulo de `systemOptions`, valor = id de moldura); input de arquivo dentro de um `label` com estilo de botão (min-h-11); Upload (cyan-500, único primário); Remove (texto red-400, `confirm()` como o Delete de cartucho); linha de feedback logo abaixo do Upload — composed-of: [select, label+input file, img (prévia atual), img (prévia nova), button Upload, button Remove, button Try again, feedback]
-- `CartridgesTab` — existing, `components/admin/CartridgesTab.tsx` — monta `<BezelsSection onAuthError={onAuthError} />` entre o cartão "Create new cartridge" e o cartão da lista; formulário de cartucho sem mudança — composed-of: [BezelsSection]
+- `BezelsTab` — new, `components/admin/BezelsTab.tsx` — props: `onAuthError(status: AdminAuthStatus): void` (mesmo tipo de `GamesTab` e `CartridgesTab`) — estados: os 12 da tabela do bloco admin — cartão `rounded-2xl p-6` como `CartridgesTab`; select com os 12 consoles (rótulo de `systemOptions`, valor = id de moldura); input de arquivo dentro de um `label` com estilo de botão (min-h-11); Upload (cyan-500, único primário); Remove (texto red-400, `confirm()` como o Delete de cartucho); linha de feedback logo abaixo do Upload — composed-of: [select, label+input file, img (prévia atual), img (prévia nova), button Upload, button Remove, button Try again, feedback]
+- `AdminPage` — existing, `app/admin/page.tsx` — `activeTab` ganha o valor `'bezels'`; terceiro botão de aba "Bezels" com a mesma classe dos outros dois; monta `<BezelsTab onAuthError={setAuthError} />`; Games e Cartridges sem mudança — composed-of: [GamesTab, CartridgesTab, BezelsTab]
 - `PlayStage` — existing, `components/PlayStage.tsx` — novo estado `bezel: 'none' | 'pending' | 'adopted' | 'refused'`; `wide = useWideScreen()`; renderiza `PlayBezel` dentro do `ThemedFrame` quando `wide && ready`; adota o bezel só se `onLoaded` chega antes de `running`; legenda só em `Wide`; status com o tipo `EmulatorStatus` (CR-3); `getCoreForSystem` só com metadados ok (CR-2); sem o ramo inalcançável `metaState === 'ok' ? 'loading'` (CR-1) — composed-of: [PlayTopBar, ThemedFrame, PlayBezel, StatusStrip, Emulator]
 - `ThemedFrame` — existing, `components/ThemedFrame.tsx` — modos: `frame` (Wide sem bezel, `[data-frame]` da SF01), `bezel` (Wide com bezel adotado: área 16:9 + janela, sem `[data-frame]`), `bare` (celular: janela sem moldura); no CSS, o modo celular vale fora da media `Wide`, então o tamanho segue a media mesmo antes da hidratação; skeleton 4/3; painel not-found com Back home; `ACTION_CLASS` com `px-6` — composed-of: [StatePanel, children]
 - `StatusStrip` — existing, `components/StatusStrip.tsx` — linha `h-8` em `Wide`; faixa sobreposta no celular; texto `sr-only` em running no celular — composed-of: []
@@ -126,7 +126,7 @@ Três fluxos: admin envia, jogador abre em `Wide`, jogador abre no celular.
 
 ```mermaid
 flowchart LR
-  Admin["/admin Cartuchos: escolhe console"] --> Check["GET /api/bezel/id"]
+  Admin["/admin aba Bezels: escolhe console"] --> Check["GET /api/bezel/id"]
   Check -->|200| Has["has-bezel"]
   Check -->|404| Empty["empty"]
   Check -->|502/rede| ReadErr["read-error → Try again"]
@@ -204,4 +204,5 @@ Os 16 itens da crítica do @ux-agent (modo crítica) e as 3 perguntas do @ux-lay
 | D16 — corrida ao trocar de console no admin | polish | accepted | Resposta de GET para console diferente do selecionado é ignorada |
 | P1 — bezel que chega depois de running | — | accepted | Fica a moldura CSS até a próxima abertura; mantém a caixa estável no jogo e cumpre a métrica "3 s de atraso → sem bezel" |
 | P2 — hook `matchMedia` | — | accepted | `useWideScreen` em `components/` evita o pedido de bezel fora de `Wide`; `<picture>` sem `src` foi recusado por não decidir o modo do quadro |
+| Dono, 2026-11-09 — bloco na aba Cartridges | — | changed | O dono pediu aba própria "Bezels"; `BezelsSection` dentro de `CartridgesTab` virou `BezelsTab` montado por `app/admin/page.tsx`; Cartridges sem mudança, remoção dela é trabalho separado |
 | P3 — skeleton na proporção do console | — | accepted (com ajuste) | O console é desconhecido em loading-metadata; o skeleton usa 4/3 e a mesma regra de tamanho; a métrica QA-13 do about.md é lida como "caixa 4/3 com a regra da janela" |

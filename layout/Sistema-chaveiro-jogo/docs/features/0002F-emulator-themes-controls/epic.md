@@ -2,7 +2,7 @@
 id: 0002F
 type: epic
 created: 2026-11-06
-updated: 2026-11-06
+updated: 2026-11-09
 related: [0002F]
 tags: [emulator, ui, mobile, controls, themes, admin]
 ---
@@ -19,7 +19,7 @@ Epic de 0002F-emulator-themes-controls: três subfeatures que, juntas, deixam o 
 | SF01 | play-screen-themes | Tela de jogo responsiva no PC e no celular com tema inspirado em cada um dos 12 consoles | done | | 0002F-SF01-done |
 | SF02 | emulator-controls | Teclado, gamepad e controle virtual prontos para os 12 consoles, com legenda, remapeamento local e tela cheia no celular | pending | | |
 | SF03 | admin-customization | Aba no admin para tema e controles por console, tema por jogo e link de fundo, servidos por uma rota pública resolvida | pending | SF01, SF02 | |
-| SF04 | console-bezels | Bezel PNG por console enviado pelo admin (aba Cartuchos, R2, sem MongoDB), atrás do jogo em telas largas; no celular o jogo ocupa a tela sem moldura | pending | SF01 | |
+| SF04 | console-bezels | Bezel PNG por console enviado pelo admin (aba própria Bezels, R2, sem MongoDB), atrás do jogo em telas largas; no celular o jogo ocupa a tela sem moldura | pending | SF01 | |
 
 ## Notes
 - Os três SFs compartilham a branch `feature/0002F-emulator-themes-controls`.
@@ -32,3 +32,4 @@ Epic de 0002F-emulator-themes-controls: três subfeatures que, juntas, deixam o 
 - SF04 libera, só para a rota nova `app/api/admin/bezels/[console]`, a restrição de não mexer em `app/api/admin/**`; as rotas admin existentes, `lib/mongo.ts`, login e middleware continuam intocados. O envio de bezel não tem auditoria até o 0001F SF03.
 - SF04 muda o layout do celular da SF01: sem bezel e sem moldura CSS, jogo na maior área possível. Os espaços da SF02 (legenda, controle virtual, tela cheia) continuam.
 - O envio de bezel em arquivo (SF04) substitui o "link de fundo" previsto na SF03; a SF03 não traz mais imagem de fundo por link.
+- 2026-11-09 — decisão do dono, no `/add-plan` da SF04: os bezels ficam numa aba própria "Bezels" do admin, não na aba Cartridges. A aba Cartridges não é usada (o dono grava o link do jogo direto na tag NFC); a remoção dela, das rotas `app/api/admin/cartridges/**` e do fluxo `/nfc/[id]` é um trabalho separado, fora deste epic até o dono abrir.
