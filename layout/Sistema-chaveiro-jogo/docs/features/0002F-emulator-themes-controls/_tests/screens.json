@@ -3,6 +3,19 @@
   "screens": [
     { "id": "play", "sf": "SF01", "name": "Play screen", "kind": "route",
       "path": "/play/super-retro", "auth": false,
-      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF01-play-screen-themes/design.md" }
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF01-play-screen-themes/design.md" },
+    { "id": "play-wide-bezel", "sf": "SF04", "name": "Play screen, Wide with bezel", "kind": "route",
+      "path": "/play/super-retro", "auth": false,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF04-console-bezels/design.md" },
+    { "id": "play-wide-no-bezel", "sf": "SF04", "name": "Play screen, Wide without bezel", "kind": "route",
+      "path": "/play/super-retro", "auth": false,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF04-console-bezels/design.md" },
+    { "id": "play-phone", "sf": "SF04", "name": "Play screen, phone (bare)", "kind": "route",
+      "path": "/play/super-retro", "auth": false,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF04-console-bezels/design.md" },
+    { "id": "admin-bezels-block", "sf": "SF04", "name": "Admin Cartridges tab, Bezel por console block", "kind": "overlay",
+      "open": [{ "goto": "/admin" }, { "click": "role=button[name=Cartridges]" }],
+      "auth": true,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF04-console-bezels/design.md" }
   ]
 }
