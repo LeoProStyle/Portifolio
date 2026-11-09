@@ -43,3 +43,9 @@ T03: detect-changes NOT VERIFIED (new untracked file) — git diff list: lib/bez
 T03: complete (commits d99c5a7d047636045987b4668885fe32832c4df6..ab53d380938686a88e25fbdca6d45ab4bd48dce7, BUILD_STATUS=pass, validation at area end)
 Ruling: T04 implemented inline by the coordinator, not by a subagent — a 15-line additive export whose impact was already measured and recorded; the skill's When NOT to Use names a single trivial task — costs a missed review only until the backend area validator reads AREA_BASE..HEAD
 T04: detect-changes NOT VERIFIED (index behind HEAD) — git diff list: lib/r2.ts (15 added, 0 removed); scratch check createR2Client() null without R2_* exit 0
+T04: complete (commits ab53d380938686a88e25fbdca6d45ab4bd48dce7..02440b14d438c089ab6bb6016b2cf5417572288f, BUILD_STATUS=pass, validation at area end)
+test: validated (commits e3e114f5300a1150c990a7d2d3958d6e86074bdb..d99c5a7d047636045987b4668885fe32832c4df6, 3 violations, SPEC_STATUS=INCOMPLETE)
+test: minor (deferred): TV-2 e2e/play-screen.qa.spec.ts:590-596 T27 position check walks 3 ancestors instead of the strip wrapper
+test: minor (deferred): TV-3 e2e/admin.qa.spec.ts T44 "Removing..." asserts Upload disabled with no file chosen; file input not asserted (needs-verification)
+test: fix round 1/3 (1 addressed, 0 open; commits 02440b14d438c089ab6bb6016b2cf5417572288f..b7ee50e70ac65614870c556d7820242cbeabb665) — re-review TV-1 ADDRESSED [evidence: tests/bezel.test.ts:564-573; test: tests/bezel.test.ts T12]
+T05: detect-changes NOT VERIFIED (new untracked file) — git diff list: lib/bezel.ts; bezel group 9/9, bezel-console 7/7, routes cancelled (module absent until T06)
