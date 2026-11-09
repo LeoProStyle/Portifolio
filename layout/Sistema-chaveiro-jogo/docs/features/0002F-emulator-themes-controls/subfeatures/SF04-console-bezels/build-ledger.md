@@ -54,3 +54,8 @@ T06: middleware matcher re-read ['/admin/:path*'] (middleware.ts:19, read only) 
 T06: detect-changes NOT VERIFIED (new untracked files) — git diff list: lib/bezel-routes.ts, app/api/admin/bezels/[console]/route.ts, app/api/bezel/[console]/route.ts; tests/bezel.test.ts 36/36 without R2_*
 T06: complete (commits 9f8ddd2d2dc5e60883681ddb19c2fe9d7de987a9..37f1d85b1f3e27aa7a47f9852743bf66585cd2d1, BUILD_STATUS=pass, validation at area end)
 Ruling: tests/bezel-gaps.test.ts stays out of the AGENTS.md test gate; T11 Verify fixes the exact gate command and plan.md lists six files — the gap file still runs under npm test (tests/*.test.ts) — costs the 9 gap cases not running in the validation gate if wrong
+backend: test-agent complete (commits 37f1d85b1f3e27aa7a47f9852743bf66585cd2d1..6acd3dbea23b0df1048db95a7fe87d6261d914c4, 9 gap tests, 45/45 green, BLOCKED none)
+backend: validated (commits d99c5a7d047636045987b4668885fe32832c4df6..6acd3dbea23b0df1048db95a7fe87d6261d914c4, 0 violations, SPEC_STATUS=complete)
+backend: minor (deferred): lib/bezel-routes.ts:231-243 chunked body without Content-Length is parsed by formData() before file.size check — matches plan.md order and Risks row; bounded by platform cap
+Ruling: validator's first npm run build failure (next-font-manifest MODULE_NOT_FOUND) treated as a .next race with the T07 agent's concurrent build, not a defect — the re-run and the coordinator's sequential build both exit 0 — costs a hidden build flake if wrong, caught by the clean-.next E2E runs in T09/T10
+T07: detect-changes NOT VERIFIED (new untracked files) — git diff list: components/Emulator.tsx (1 line), components/useWideScreen.ts, components/PlayBezel.tsx

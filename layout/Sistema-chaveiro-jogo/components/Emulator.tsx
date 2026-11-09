@@ -9,7 +9,7 @@ interface EmulatorProps {
   gameTitle: string;
   core: string;
   // Reports the boot state to the page. `failed` is sent only once every core candidate failed.
-  onStatusChange?: (state: 'booting' | 'running' | 'failed', attempt: number, total: number, core: string) => void;
+  onStatusChange?: (state: EmulatorStatus, attempt: number, total: number, core: string) => void;
 }
 
 const FALLBACK_TIMEOUT_MS = 10000;
