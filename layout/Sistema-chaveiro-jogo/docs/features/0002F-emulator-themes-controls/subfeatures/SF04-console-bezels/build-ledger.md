@@ -62,3 +62,7 @@ T07: detect-changes NOT VERIFIED (new untracked files) — git diff list: compon
 T07: complete (commits 6acd3dbea23b0df1048db95a7fe87d6261d914c4..9db6f277b411d1c17ed9162cc178958db687f09b, BUILD_STATUS=pass, validation at area end)
 Ruling: T08 implemented inline by the coordinator — three class-level edits whose exact strings plan.md and tasks.md fix; impact for StatusStrip and PlayTopBar already recorded (UNKNOWN, caller PlayStage/ThemedFrame by text search) — costs a missed per-task review only until the frontend area validator reads the range
 T08: detect-changes NOT VERIFIED (index behind HEAD) — git diff list: tailwind.config.ts, components/StatusStrip.tsx, components/PlayTopBar.tsx; generated CSS holds (min-width:1024px) and (pointer:fine) with wide\: bg-transparent, block, not-sr-only, shrink-0, static, text-2xl
+T08: complete (commits 9db6f277b411d1c17ed9162cc178958db687f09b..d73e33b3200e228a8fe1dc414f734060f78d5351, BUILD_STATUS=pass, validation at area end)
+T09: detect-changes NOT VERIFIED (index behind HEAD) — git diff list: components/ThemedFrame.tsx, components/PlayStage.tsx, app/globals.css
+T09: e2e play-screen --project=main 38/38, --project=no-mongo 38/38 (clean .next, MONGODB_DB=retrokey_e2e, ports free after)
+T09: note — loading-metadata skeleton .play-frame-area carries no data-mode, so the first observed mode in T29 is frame; frontend validator to confirm against plan.md
