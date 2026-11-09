@@ -52,3 +52,5 @@ T05: detect-changes NOT VERIFIED (new untracked file) — git diff list: lib/bez
 T05: complete (commits b7ee50e70ac65614870c556d7820242cbeabb665..9f8ddd2d2dc5e60883681ddb19c2fe9d7de987a9, BUILD_STATUS=pass, validation at area end)
 T06: middleware matcher re-read ['/admin/:path*'] (middleware.ts:19, read only) — /api/bezel/[console] and /api/admin/bezels/[console] are outside it; admin route guarded by requireAdmin in lib/bezel-routes.ts
 T06: detect-changes NOT VERIFIED (new untracked files) — git diff list: lib/bezel-routes.ts, app/api/admin/bezels/[console]/route.ts, app/api/bezel/[console]/route.ts; tests/bezel.test.ts 36/36 without R2_*
+T06: complete (commits 9f8ddd2d2dc5e60883681ddb19c2fe9d7de987a9..37f1d85b1f3e27aa7a47f9852743bf66585cd2d1, BUILD_STATUS=pass, validation at area end)
+Ruling: tests/bezel-gaps.test.ts stays out of the AGENTS.md test gate; T11 Verify fixes the exact gate command and plan.md lists six files — the gap file still runs under npm test (tests/*.test.ts) — costs the 9 gap cases not running in the validation gate if wrong
