@@ -711,7 +711,12 @@ test.describe('SF04 admin Bezels tab', () => {
           await expect(currentPreview(page)).toBeVisible();
           await removeButton(page).click();
         }
-        await expect(page.getByRole('alert').filter({ hasText: 'Sua sessão expirou. Entre novamente para continuar.' })).toBeVisible();
+        // Same panel as the other admin tabs: app/admin/page.tsx AUTH_ERROR_MESSAGES text per status.
+        const authText =
+          status === 401
+            ? 'Sua sessão expirou. Entre novamente para continuar.'
+            : 'Sua conta não tem permissão de administrador. Entre com a conta de admin.';
+        await expect(page.getByRole('alert').filter({ hasText: authText })).toBeVisible();
         await expect(page.getByRole('button', { name: 'Bezels', exact: true })).toHaveCount(0);
         await expect(page.getByRole('button', { name: 'Entrar novamente' })).toBeVisible();
       });
