@@ -1,1 +1,2 @@
 {"ts":"2026-11-06T19:14:24Z","agent":"/dev","type":"add","slug":"play-screen-themes","sf":"SF01","what":"Themed full-viewport play stage for 12 consoles","files":["lib/play-theme.ts","lib/emulator-cores.ts","components/Emulator.tsx","components/PlayStage.tsx","components/ThemedFrame.tsx","components/StatusStrip.tsx","components/PlayTopBar.tsx","app/play/[slug]/page.tsx","app/globals.css"]}
+{"ts":"2026-11-06T19:46:11Z","agent":"/add-review","type":"review","slug":"code-review","what":"Reviewed and routed findings","files":[]}

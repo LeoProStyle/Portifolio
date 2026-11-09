@@ -167,5 +167,51 @@ Layout: `app/layout.tsx:5-42` inline devtools guard script, injected at :53. `ap
 | Test gate lists 3 tests (AGENTS.md validation_gates) | package.json test script globs all `tests/*.test.ts` | `package.json` scripts.test |
 | "Admin route handlers call lib/mongo.ts directly" (conventions.md) | Still accurate | `app/api/admin/*` imports `@/lib/mongo` |
 
+## SF04 console-bezels
+
+Codebase discovery for the console bezel subfeature (2026-11-06, read-only discovery-agent, branch `feature/0002F-emulator-themes-controls` after the SF01 checkpoint). Component claims are text-search only (JSX not indexed by GitNexus).
+
+### Prerequisites (SF04)
+
+| Requirement | Prerequisite | Exists? | Evidence | Action |
+|---|---|---|---|---|
+| Upload and read bezels on R2 | `R2_ACCOUNT_ID` or `R2_ENDPOINT`, `R2_BUCKET_NAME`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | Yes in code; production values UNVERIFIED | `lib/r2.ts:12-28, 53-60`, `.env.example` (names only) | Confirm in Vercel before deploy |
+| Remove a bezel | R2 DeleteObject helper | No | `lib/r2.ts:1` imports only Get/Put/S3Client | Create |
+| Tell a missing bezel from an outage | GetObject that separates NoSuchKey from other errors | No | `app/api/rom/[slug]/route.ts:74-78` returns `null` on every error | Create a separate read path |
+| Admin auth without MongoDB | `requireAdmin` | Yes | `lib/auth-guard.ts:5-6, 62-79` | Reuse |
+| Admin UI host | Cartridges tab | Yes | `components/admin/CartridgesTab.tsx:126-178` (create card), `:180` (list) | Insert a block after `:178` |
+| 12 consoles | `systemOptions` | Yes | `lib/emulator-cores.ts:15-28` | Reuse for labels |
+| Console → URL-safe id and aspect ratio | `DEFAULT_PLAY_THEMES[...].frame` / `.ar` | Yes | `lib/play-theme.ts:41-54` (12 frame ids map 1:1 to the 12 systems) | Reuse |
+| Multipart parsing | `request.formData()` | Yes | `app/api/admin/games/route.ts:26-38` | Reuse the pattern |
+| File type and size check | PNG signature + server size cap | No | only client `accept` (`components/admin/GamesTab.tsx:207`) and `file.size > 0` (`games/route.ts:36`) | Create |
+| Body size limit | Route-level cap | No | no `next.config.*`; `vercel.json` has build settings only | App-level cap; platform cap ~4.5 MB UNVERIFIED |
+| Unit tests without production R2 | Injectable R2 client | No | `tests/r2-rom.test.ts:3-13` tests only `buildRomObjectKey`; injection precedent in `lib/auth-guard.ts:54, 64` | Create |
+| E2E without production R2 | Bucket/prefix override or fake store | No | env override precedent `playwright.config.ts:49`; upload runs on the server, so `page.route` cannot intercept it | Decide in the plan |
+
+### Files Mapping (SF04)
+
+```json
+{"create":["lib/bezel.ts","app/api/admin/bezels/[console]/route.ts","app/api/bezel/[console]/route.ts","components/admin/BezelsSection.tsx","components/PlayBezel.tsx","tests/bezel.test.ts","e2e/bezel.qa.spec.ts"],"modify":["lib/r2.ts (additive exports only)","components/admin/CartridgesTab.tsx","components/PlayStage.tsx","components/ThemedFrame.tsx","components/StatusStrip.tsx","app/globals.css","e2e/play-screen.qa.spec.ts","playwright.config.ts (only if an E2E bucket/prefix override is chosen)"]}
+```
+
+### Existing Patterns (SF04)
+- Admin card: `form` and `feedback` state (`CartridgesTab.tsx:16-22`), `fetch` then `getAdminAuthStatus(response)` (`:60-73`, `lib/admin-api.ts:13-18`), `onAuthError` prop from `app/admin/page.tsx:19, 58-59, 98`.
+- Multipart upload: `FormData` without a `Content-Type` header (`GamesTab.tsx:82-100`); server branches on `multipart/form-data` (`games/route.ts:26-31`).
+- Admin handler: `requireAdmin` first, return `guard.response` (`app/api/admin/cartridges/route.ts:7-8, 20-21`).
+- ROM streaming: `GetObjectCommand` + `transformToByteArray` (`rom/[slug]/route.ts:64-73`), headers `Content-Type`, `Content-Length`, `Cache-Control: public, max-age=86400` (`:89-94`), fixed 404 body (`:83`).
+- Media gating: Tailwind arbitrary variants `[@media(pointer:fine)]`, `[@media(pointer:coarse)]` (`PlayStage.tsx:82-83`), `[@media(max-height:480px)]` (`PlayTopBar.tsx:16, 24-25`); no `matchMedia` in the repo.
+- Frame sizing: `.play-frame-area { container-type: size }` and `[data-frame]` width `min(100cqw, calc(100cqh * var(--t-ar)))` (`app/globals.css:21-36`).
+- `middleware.ts:18-20` matches only `/admin/:path*`; a new public `/api/bezel` route needs no middleware change.
+
+### Risks / Edge Cases (SF04)
+- `uploadRomToR2` falls back to `public/roms` without R2 or on a Put failure (`lib/r2.ts:118-119, 148`); the bezel path must not reuse it and must fail loudly.
+- Shared bucket: `roms/<slug>.<ext>` (`lib/r2.ts:50`) and `rooms.json` (`:30-32`); `bezels/` does not collide. `tests/rooms-data.test.ts:4-7` reads the real bucket when R2 is configured.
+- Key from the frame id only; display names contain `/` and spaces (`lib/emulator-cores.ts:9`). Reject any `[console]` outside the 12 ids before building a key.
+- Cache: a re-upload under the same key goes stale with `max-age=86400`; use revalidation (ETag) or a version query. 404 must be `no-store`.
+- The bezel request must never block the game: `<img>` hidden on error, not part of `ready`.
+- `e2e/play-screen.qa.spec.ts:55, 76, 96` assume a `[data-frame]` on phones; the phone branch changes those assertions. `844x390` runs with a fine pointer (`:19`), so the wide-screen rule needs a width condition, not `pointer:fine` alone.
+- GitNexus upstream impact: `getR2BucketName` HIGH (10 callers), `getR2Endpoint` HIGH (10) — reused, not edited; `uploadRomToR2` LOW (2); `buildRomObjectKey` LOW (4); `classifyRomPath` not in the index (text search: `rom/[slug]/route.ts:5, 109`, `games/route.ts:6`).
+- Unverified: Vercel body limit (~4.5 MB), AWS SDK `NoSuchKey` name and `ETag` field, production R2 values, bezel window geometry (artist must centre the hole).
+
 ## Metadata
 {"updated":"2026-11-06","feature":"0002F-emulator-themes-controls","by":"discovery-agent","gitnexus":{"repo":"Portifolio","emulator_incoming":"UNKNOWN (JSX usage not indexed; grep confirms app/play/[slug]/page.tsx:5,55)","getCoreForSystem":"LOW, 1 direct caller PlayPage"},"unverified":["EmulatorJS EJS_color, EJS_backgroundImage, EJS_backgroundColor, EJS_VirtualGamepadSettings, EJS_Buttons, EJS_defaultControls value shapes, touch gamepad on mobile","stable CDN version pin","R2 public bucket access","undefined in Mongo $set","SameSite cookie default","Vercel fs persistence"]}
