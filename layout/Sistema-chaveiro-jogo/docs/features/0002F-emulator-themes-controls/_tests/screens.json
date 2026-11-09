@@ -16,6 +16,24 @@
     { "id": "admin-bezels-tab", "sf": "SF04", "name": "Admin Bezels tab, Bezel por console block", "kind": "overlay",
       "open": [{ "goto": "/admin" }, { "click": "role=button[name=Bezels]" }],
       "auth": true,
-      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF04-console-bezels/design.md" }
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF04-console-bezels/design.md" },
+    { "id": "play-wide-legend", "sf": "SF02", "name": "Play screen, Wide controls legend", "kind": "route",
+      "path": "/play/super-retro", "auth": false,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF02-emulator-controls/design.md" },
+    { "id": "keys-panel", "sf": "SF02", "name": "Keys panel (remap dialog, Wide)", "kind": "modal",
+      "open": [{ "goto": "/play/super-retro" }, { "click": "role=button[name=Edit keys]" }],
+      "auth": false,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF02-emulator-controls/design.md" },
+    { "id": "virtual-controller", "sf": "SF02", "name": "Virtual controller, touch portrait and landscape", "kind": "route",
+      "path": "/play/super-retro", "auth": false,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF02-emulator-controls/design.md" },
+    { "id": "rotate-hint", "sf": "SF02", "name": "Rotate hint, touch portrait", "kind": "overlay",
+      "open": [{ "goto": "/play/super-retro" }],
+      "auth": false,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF02-emulator-controls/design.md" },
+    { "id": "fullscreen-toggle", "sf": "SF02", "name": "Fullscreen toggle (top bar slot)", "kind": "overlay",
+      "open": [{ "goto": "/play/super-retro" }],
+      "auth": false,
+      "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF02-emulator-controls/design.md" }
   ]
 }
