@@ -38,3 +38,5 @@ T01: complete (commits e3e114f5300a1150c990a7d2d3958d6e86074bdb..af265648ce7f8b9
 T02: detect-changes NOT VERIFIED (index 2+ commits behind; spec files only) — git diff list: e2e/admin.qa.spec.ts, e2e/play-screen.qa.spec.ts
 T02: red run --project=main 62 tests, 12 passed, 49 failed, 1 skipped — failures on missing Bezels tab, [data-window], .play-frame-area[data-mode], .play-skeleton, panel Back home, title 16px
 T02: spec assumes for T10 — Upload button name starts "Upload", Remove starts "Remove", "Try again", text "New file", one combobox, input[type=file], current preview img[src^="blob:"], checking skeleton has animate-pulse
+T02: complete (commits af265648ce7f8b93989ae1366dd5f815b053e3a0..d99c5a7d047636045987b4668885fe32832c4df6, BUILD_STATUS=pass, validation at area end)
+T03: detect-changes NOT VERIFIED (new untracked file) — git diff list: lib/bezel-console.ts; Verify pattern RF02|RN06 exit 0 (3 pass)
