@@ -59,6 +59,21 @@ function hasR2Config() {
   );
 }
 
+export function createR2Client(): S3Client | null {
+  if (!hasR2Config()) {
+    return null;
+  }
+
+  return new S3Client({
+    region: 'auto',
+    endpoint: getR2Endpoint(),
+    credentials: {
+      accessKeyId: getEnvVar('R2_ACCESS_KEY_ID'),
+      secretAccessKey: getEnvVar('R2_SECRET_ACCESS_KEY')
+    }
+  });
+}
+
 export async function readRoomsFromR2(): Promise<Room[] | null> {
   if (!hasR2Config()) {
     console.info('[r2] R2 not configured; skipping readRoomsFromR2');

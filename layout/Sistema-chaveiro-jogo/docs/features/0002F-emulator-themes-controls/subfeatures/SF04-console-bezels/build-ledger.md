@@ -40,3 +40,6 @@ T02: red run --project=main 62 tests, 12 passed, 49 failed, 1 skipped — failur
 T02: spec assumes for T10 — Upload button name starts "Upload", Remove starts "Remove", "Try again", text "New file", one combobox, input[type=file], current preview img[src^="blob:"], checking skeleton has animate-pulse
 T02: complete (commits af265648ce7f8b93989ae1366dd5f815b053e3a0..d99c5a7d047636045987b4668885fe32832c4df6, BUILD_STATUS=pass, validation at area end)
 T03: detect-changes NOT VERIFIED (new untracked file) — git diff list: lib/bezel-console.ts; Verify pattern RF02|RN06 exit 0 (3 pass)
+T03: complete (commits d99c5a7d047636045987b4668885fe32832c4df6..ab53d380938686a88e25fbdca6d45ab4bd48dce7, BUILD_STATUS=pass, validation at area end)
+Ruling: T04 implemented inline by the coordinator, not by a subagent — a 15-line additive export whose impact was already measured and recorded; the skill's When NOT to Use names a single trivial task — costs a missed review only until the backend area validator reads AREA_BASE..HEAD
+T04: detect-changes NOT VERIFIED (index behind HEAD) — git diff list: lib/r2.ts (15 added, 0 removed); scratch check createR2Client() null without R2_* exit 0
