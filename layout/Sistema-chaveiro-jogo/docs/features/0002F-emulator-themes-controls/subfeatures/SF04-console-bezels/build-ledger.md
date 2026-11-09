@@ -78,3 +78,8 @@ T10: complete (commits 0a710d7c69e750aa9cf5ae3b64e0abb5bbec90d9..77524d381129e15
 Ruling: no @test-agent for the frontend area — the project has no component test runner (node:test without DOM) and e2e/play-screen + e2e/admin specs (T23-T48) cover every frontend acceptance item — costs uncovered unit-level edge cases in BezelsTab/PlayStage if wrong
 Ruling: T11 done inline (one-line AGENTS.md edit); plan.md Global Constraints keeps the old five-file command because plan.md is a frozen spec and AGENTS.md is the source it cites — costs a stale quote in plan.md if a reader trusts it over AGENTS.md
 T11: detect-changes NOT VERIFIED (docs-only change) — git diff list: AGENTS.md; six-file gate exit 0, 64 pass, 0 R2_* vars in shell
+T11: complete (commits 77524d381129e15421fcc137ac77814b5f016e78..fc11c47d62ac2026bca320bf1228716134edaa95, BUILD_STATUS=pass, validation at area end)
+infra: validated (commits 77524d381129e15421fcc137ac77814b5f016e78..fc11c47d62ac2026bca320bf1228716134edaa95, 0 violations, SPEC_STATUS=complete) — coordinator check: AGENTS.md validation_gates.test holds exactly the six-file command, gate run exit 0
+frontend: validated (commits 6acd3dbea23b0df1048db95a7fe87d6261d914c4..77524d381129e15421fcc137ac77814b5f016e78, 0 violations, SPEC_STATUS=complete)
+tasks.md: merged ticks from test, backend, frontend, infra validators; §1 recomputed (11/11); §5 gates run this session — test gate 64/64 exit 0, npm run build exit 0, detect-changes NOT VERIFIED per task with git diff lists recorded
+e2e: deferred to the last subfeature (qa-pipeline delivery authoring) — SF02 and SF03 rows still pending; SF04 specs authored and green via T02/T09/T10
