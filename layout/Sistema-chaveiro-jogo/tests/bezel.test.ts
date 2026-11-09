@@ -561,13 +561,16 @@ describe('bezel-routes', () => {
   test('T12 backend-RN02-over-limit-413: Content-Length over BEZEL_MAX_REQUEST_BYTES answers 413 before reading the body', async () => {
     const fake = createFakeR2();
     let pulls = 0;
-    const body = new ReadableStream<Uint8Array>({
-      pull(controller) {
-        pulls += 1;
-        controller.enqueue(new Uint8Array(16));
-        controller.close();
-      }
-    });
+    const body = new ReadableStream<Uint8Array>(
+      {
+        pull(controller) {
+          pulls += 1;
+          controller.enqueue(new Uint8Array(16));
+          controller.close();
+        }
+      },
+      { highWaterMark: 0 }
+    );
     const request = new Request('http://localhost/api/admin/bezels/nes', {
       method: 'POST',
       headers: {
