@@ -26,16 +26,22 @@ function labelFor(state: PlayScreenState, attempt?: number, total?: number) {
   return LABELS[state];
 }
 
-// One fixed-height row, so a state change never moves the frame.
+// Phone: an 8-unit strip laid over the bottom of the stage, so it never moves the game window;
+// its text is visually hidden while running. Wide: one fixed-height row in the page flow.
+// The role=status node stays mounted in every state.
 export default function StatusStrip({ state, attempt, total, coreName }: StatusStripProps) {
   const running = state === 'running';
   return (
-    <div className="flex h-8 shrink-0 items-center justify-center px-4">
+    <div
+      className={`pointer-events-none absolute inset-x-0 bottom-0 flex h-8 items-center justify-center px-4 wide:static wide:shrink-0 wide:bg-transparent ${
+        running ? 'bg-transparent' : 'bg-[color:var(--t-bg)]'
+      }`}
+    >
       <p
         role="status"
         className={
           running
-            ? 'truncate text-xs text-[color:var(--t-muted)]'
+            ? 'sr-only truncate text-xs text-[color:var(--t-muted)] wide:not-sr-only'
             : 'truncate text-sm text-[color:var(--t-text)]'
         }
       >
