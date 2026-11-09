@@ -13,8 +13,8 @@
     { "id": "play-phone", "sf": "SF04", "name": "Play screen, phone (bare)", "kind": "route",
       "path": "/play/super-retro", "auth": false,
       "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF04-console-bezels/design.md" },
-    { "id": "admin-bezels-block", "sf": "SF04", "name": "Admin Cartridges tab, Bezel por console block", "kind": "overlay",
-      "open": [{ "goto": "/admin" }, { "click": "role=button[name=Cartridges]" }],
+    { "id": "admin-bezels-tab", "sf": "SF04", "name": "Admin Bezels tab, Bezel por console block", "kind": "overlay",
+      "open": [{ "goto": "/admin" }, { "click": "role=button[name=Bezels]" }],
       "auth": true,
       "design": "docs/features/0002F-emulator-themes-controls/subfeatures/SF04-console-bezels/design.md" }
   ]

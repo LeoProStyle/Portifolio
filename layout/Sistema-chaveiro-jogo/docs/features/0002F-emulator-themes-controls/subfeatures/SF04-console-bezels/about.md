@@ -5,7 +5,7 @@ slug: console-bezels
 status: pending
 branch: feature/0002F-emulator-themes-controls
 created: 2026-11-06
-updated: 2026-11-06
+updated: 2026-11-09
 related: [0002F, 0002F-SF01, 0002F-SF03, 0001F-SF03]
 tags: [emulator, ui, mobile, bezel, admin, storage]
 intent: none
@@ -14,7 +14,7 @@ intent: none
 # SF04 — Console Bezels
 
 ## TL;DR
-Subfeature de 0002F que deixa o admin subir uma imagem de bezel (arte PNG 16:9 com o centro transparente) para cada um dos 12 consoles, na aba Cartuchos. A imagem fica no R2, sem MongoDB, e aparece atrás do jogo em telas largas com mouse. No celular o jogo passa a ocupar a tela, sem bezel e sem a moldura CSS da SF01.
+Subfeature de 0002F que deixa o admin subir uma imagem de bezel (arte PNG 16:9 com o centro transparente) para cada um dos 12 consoles, numa aba própria "Bezels" do admin. A imagem fica no R2, sem MongoDB, e aparece atrás do jogo em telas largas com mouse. No celular o jogo passa a ocupar a tela, sem bezel e sem a moldura CSS da SF01.
 
 ## TOC
 - [Objective](#objective)
@@ -48,7 +48,7 @@ A tela de jogo não tem como mostrar arte de bezel, e no celular a moldura gasta
 | Jogador no celular | Jogo grande, sem enfeite em volta | Moldura e fundo roubam espaço |
 
 ## Requirements
-- **RF01:** Na aba Cartuchos do admin, um bloco "Bezel por console", abaixo de "Create new cartridge", deixa escolher um dos 12 consoles, enviar um arquivo PNG, ver a prévia do bezel atual (lida da rota pública) e remover o bezel. O formulário de cartucho não muda.
+- **RF01:** Uma aba nova "Bezels" no admin (terceira aba de `/admin`, ao lado de Games e Cartridges) mostra o bloco "Bezel por console". Ele deixa escolher um dos 12 consoles, enviar um arquivo PNG, ver a prévia do bezel atual (lida da rota pública) e remover o bezel. A aba Cartridges não muda.
 - **RF02:** O bezel enviado fica no R2 com a chave `bezels/<id>.png`, onde `<id>` é o id curto do console: `nes`, `snes`, `n64`, `dmg`, `gbc`, `gba`, `sms`, `megadrive`, `gamegear`, `ps`, `arcade`, `neogeo` (os ids de moldura de `lib/play-theme.ts`). Um novo envio substitui o anterior.
 - **RF03:** A rota pública `GET /api/bezel/<id>` (arquivo `app/api/bezel/[console]/route.ts`, fora de `app/api/admin/**`) devolve o bezel sem login. Ela fica fora do `matcher` de `middleware.ts` (`/admin/:path*`), que não é alterado.
 - **RF04:** Quando a condição `(min-width: 1024px) and (pointer: fine)` é verdadeira e o console tem bezel, a tela de jogo mostra o bezel atrás do jogo numa área 16:9. A área 16:9 é o maior retângulo 16:9 que cabe no palco abaixo da barra de topo (sem contar a faixa de status e a linha da legenda), centralizado. A janela do jogo é o maior retângulo na proporção do console com **100% da altura da área 16:9**, centralizado na horizontal. Em 1920x1080 o buraco transparente da arte é 1440x1080 (4/3), 1200x1080 (10/9) ou 1620x1080 (3/2). Sem bezel, fica a moldura CSS da SF01.
@@ -73,7 +73,8 @@ A tela de jogo não tem como mostrar arte de bezel, e no celular a moldura gasta
 | Decision | Rationale | Alternative rejected |
 |---|---|---|
 | Bezel por console, enviado pelo admin, sem arte embutida | As imagens são de responsabilidade do dono | Arte de bezel no repositório — direito de uso é do dono decidir |
-| Bloco próprio na aba Cartuchos | Bezel é do console, não do cartucho | Campo dentro de "Create new cartridge" — criar cartucho trocaria o bezel do console |
+| Aba própria "Bezels" no admin (decisão do dono, 2026-11-09, no `/add-plan`) | Bezel é do console; a aba Cartridges só cuida do vínculo tag NFC → jogo e o dono não a usa (grava o link do jogo direto na tag) | Bloco dentro da aba Cartridges — mistura dois assuntos; campo dentro de "Create new cartridge" — criar cartucho trocaria o bezel do console |
+| Remoção da aba Cartridges fica fora da SF04 (decisão do dono, 2026-11-09) | A remoção toca as rotas `app/api/admin/cartridges/**`, o fluxo `/nfc/[id]` e o E2E do admin, que esta SF não muda | Remover junto na SF04 — quebra a restrição "rotas admin existentes não mudam" |
 | Chave fixa no R2 como registro, sem MongoDB | Funciona sem banco; a existência do arquivo é o dado | Coleção no MongoDB — exige o 0001F inteiro e a 0002F-SF03 |
 | Duas rotas novas: `app/api/admin/bezels/[console]` (POST, DELETE, `requireAdmin`) e `app/api/bezel/[console]` (GET público); rotas admin existentes intactas | O dono aprovou as duas; a leitura pública fica fora do prefixo admin | GET público dentro da rota admin — mistura acesso livre e protegido no mesmo arquivo |
 | Leitura por rota que lê o R2 | Não depende de bucket público nem de URL pública do R2 | Link público do R2 — não há URL pública configurada |
@@ -85,7 +86,7 @@ A tela de jogo não tem como mostrar arte de bezel, e no celular a moldura gasta
 
 ## Scope
 ### Includes
-- Bloco de upload, prévia e remoção na aba Cartuchos.
+- Aba "Bezels" no admin com upload, prévia e remoção.
 - Rota admin de envio e remoção e rota pública de leitura do bezel, com R2.
 - Validação do arquivo no servidor (assinatura PNG, 2 MB, console da lista) e aviso de proporção no admin.
 - Camada de bezel na tela de jogo para telas largas e layout sem moldura no celular.
@@ -109,6 +110,7 @@ A tela de jogo não tem como mostrar arte de bezel, e no celular a moldura gasta
 - Auditoria das alterações — fica com o 0001F-SF03.
 - Tela cheia real e controle virtual — 0002F-SF02.
 - Mudar as rotas admin existentes, `lib/mongo.ts`, login ou `middleware.ts`.
+- Remover a aba Cartridges, suas rotas e o fluxo `/nfc/[id]` — trabalho separado, pedido pelo dono em 2026-11-09.
 
 ## Success Metrics
 
@@ -127,7 +129,7 @@ A tela de jogo não tem como mostrar arte de bezel, e no celular a moldura gasta
 | Bezel visível atrás do jogo em 1366x768, janela do jogo com 100% da altura da área 16:9 e centralizada | sim | E2E com `page.route` servindo um PNG em `/api/bezel/**` |
 | Bezel 404, 500 ou com 3 s de atraso: jogo inicia normalmente, sem bezel | sim | E2E com `page.route` |
 | Celular (390x844 e 844x390): sem bezel, sem `[data-frame]`, sem rolagem, jogo na proporção, Back home 44px | sim | E2E |
-| Bloco do admin: prévia e remoção | sim | E2E com `page.route` nas rotas `/api/admin/bezels/**` e `/api/bezel/**` |
+| Aba Bezels do admin: prévia, envio e remoção | sim | E2E com `page.route` nas rotas `/api/admin/bezels/**` e `/api/bezel/**` |
 | Gravação no R2 de produção durante testes | 0 — o cliente R2 dos testes de servidor é sempre o falso injetado, e o E2E só usa `page.route` | testes e E2E |
 
 ## Relations
