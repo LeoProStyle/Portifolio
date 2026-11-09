@@ -34,3 +34,7 @@ Impact: PlayStage UNKNOWN — text search callers: app/play/[slug]/page.tsx
 Impact: AdminPage UNKNOWN — text search: default export of app/admin/page.tsx, page route /admin, no importer
 Middleware: matcher ['/admin/:path*'] (middleware.ts:19, read only) — /api/bezel/** and /api/admin/bezels/** are outside it
 T01: detect-changes NOT VERIFIED (0 changes seen; untracked file not indexed) — git diff list: tests/bezel.test.ts, docs/features/0002F-emulator-themes-controls/subfeatures/SF04-console-bezels/build-ledger.md
+T01: complete (commits e3e114f5300a1150c990a7d2d3958d6e86074bdb..af265648ce7f8b93989ae1366dd5f815b053e3a0, BUILD_STATUS=pass, validation at area end)
+T02: detect-changes NOT VERIFIED (index 2+ commits behind; spec files only) — git diff list: e2e/admin.qa.spec.ts, e2e/play-screen.qa.spec.ts
+T02: red run --project=main 62 tests, 12 passed, 49 failed, 1 skipped — failures on missing Bezels tab, [data-window], .play-frame-area[data-mode], .play-skeleton, panel Back home, title 16px
+T02: spec assumes for T10 — Upload button name starts "Upload", Remove starts "Remove", "Try again", text "New file", one combobox, input[type=file], current preview img[src^="blob:"], checking skeleton has animate-pulse

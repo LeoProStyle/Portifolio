@@ -1,5 +1,7 @@
 import { expect, request as pwRequest, test } from '@playwright/test';
 import type { APIRequestContext, Page } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { deflateSync } from 'node:zlib';
 
 // SF01 admin-api-guard contract spec (RED-first: guard/middleware/panel land in tasks.md T06-T12).
 // Credentials come from ADMIN_USERNAME / ADMIN_PASSWORD (loaded from .env.local by playwright.config.ts).
@@ -393,5 +395,399 @@ test.describe('no-mongo project', () => {
       await anon.dispose();
       await admin.dispose();
     }
+  });
+});
+
+// ====================================================================================================
+// SF04 console-bezels admin tab (plan.md Test Specification T39-T45, T47, T48; no T46)
+// Bezel data reaches the page only through page.route on `**/api/bezel/**` and `**/api/admin/bezels/**`:
+// no real R2 read or write ever happens. Runs in the `main` project (the title does not start with T17).
+// ====================================================================================================
+
+const crcTable = Array.from({ length: 256 }, (_, n) => {
+  let c = n;
+  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+  return c >>> 0;
+});
+function crc32(buf: Buffer) {
+  let c = 0xffffffff;
+  for (const byte of buf) c = crcTable[(c ^ byte) & 0xff] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+}
+function pngChunk(type: string, data: Buffer) {
+  const length = Buffer.alloc(4);
+  length.writeUInt32BE(data.length);
+  const body = Buffer.concat([Buffer.from(type, 'ascii'), data]);
+  const crc = Buffer.alloc(4);
+  crc.writeUInt32BE(crc32(body));
+  return Buffer.concat([length, body, crc]);
+}
+/** Valid solid-colour RGB PNG, zlib-compressed, so the browser decodes the natural size. */
+function solidPng(width: number, height: number, rgb: [number, number, number] = [40, 80, 160]) {
+  const row = Buffer.alloc(1 + width * 3);
+  for (let x = 0; x < width; x++) row.set(rgb, 1 + x * 3);
+  const raw = Buffer.concat(Array.from({ length: height }, () => row));
+  const header = Buffer.alloc(13);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  header.set([8, 2, 0, 0, 0], 8);
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    pngChunk('IHDR', header),
+    pngChunk('IDAT', deflateSync(raw)),
+    pngChunk('IEND', Buffer.alloc(0))
+  ]);
+}
+
+const CONSOLE_IDS = ['nes', 'snes', 'n64', 'dmg', 'gbc', 'gba', 'sms', 'megadrive', 'gamegear', 'ps', 'arcade', 'neogeo'];
+const IMAGE_A = solidPng(800, 450, [200, 40, 40]);
+const IMAGE_B = solidPng(1920, 1080, [40, 200, 40]);
+const PNG_16_9 = { name: 'bezel.png', mimeType: 'image/png', buffer: solidPng(1920, 1080) };
+const PNG_4_3 = { name: 'off-ratio.png', mimeType: 'image/png', buffer: solidPng(1024, 768) };
+
+type Read = 200 | 404 | 502 | 'abort';
+/** Scripted `/api/bezel/<id>` for the admin preview, plus the recorded GET urls and a hold per console. */
+class BezelApi {
+  gets: string[] = [];
+  image: Buffer = IMAGE_A;
+  private script = new Map<string, Read[]>();
+  private holds = new Map<string, Promise<void>>();
+  set(id: string, ...reads: Read[]) {
+    this.script.set(id, reads);
+  }
+  hold(id: string) {
+    let release: () => void = () => {};
+    this.holds.set(id, new Promise<void>((resolve) => (release = resolve)));
+    return release;
+  }
+  getsFor(id: string) {
+    return this.gets.filter((url) => new URL(url).pathname === `/api/bezel/${id}`);
+  }
+  async install(page: Page) {
+    await page.route('**/api/bezel/**', async (route) => {
+      const url = route.request().url();
+      this.gets.push(url);
+      const id = new URL(url).pathname.split('/').pop() ?? '';
+      const hold = this.holds.get(id);
+      if (hold) await hold;
+      const reads = this.script.get(id) ?? [404];
+      const next = reads.length > 1 ? reads.shift()! : reads[0];
+      if (next === 'abort') return route.abort();
+      if (next === 200) {
+        return route.fulfill({ status: 200, contentType: 'image/png', headers: { 'Cache-Control': 'no-store' }, body: this.image });
+      }
+      return route.fulfill({ status: next, contentType: 'application/json', body: '{"error":"x"}' });
+    });
+  }
+}
+
+type Write = { status: number; abort?: boolean };
+class AdminBezelWrites {
+  posts: Array<{ url: string; body: Buffer | null }> = [];
+  deletes: string[] = [];
+  post: Write = { status: 201 };
+  del: Write = { status: 204 };
+  releasePost: Promise<void> | null = null;
+  releaseDelete: Promise<void> | null = null;
+  onPostOk: (() => void) | null = null;
+  onDeleteOk: (() => void) | null = null;
+  async install(page: Page) {
+    await page.route('**/api/admin/bezels/**', async (route) => {
+      const request = route.request();
+      if (request.method() === 'POST') {
+        this.posts.push({ url: request.url(), body: request.postDataBuffer() });
+        if (this.releasePost) await this.releasePost;
+        if (this.post.abort) return route.abort();
+        if (this.post.status === 201) this.onPostOk?.();
+        return route.fulfill({ status: this.post.status, contentType: 'application/json', body: '{"console":"nes","key":"bezels/nes.png"}' });
+      }
+      if (request.method() === 'DELETE') {
+        this.deletes.push(request.url());
+        if (this.releaseDelete) await this.releaseDelete;
+        if (this.del.abort) return route.abort();
+        if (this.del.status === 204) this.onDeleteOk?.();
+        return route.fulfill({ status: this.del.status, contentType: this.del.status === 204 ? undefined : 'application/json', body: this.del.status === 204 ? '' : '{"error":"x"}' });
+      }
+      return route.continue();
+    });
+  }
+}
+
+async function openBezelsTab(page: Page, api: BezelApi, writes?: AdminBezelWrites) {
+  await loginAdminUi(page);
+  await api.install(page);
+  await writes?.install(page);
+  await page.getByRole('button', { name: 'Bezels', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Bezel por console' })).toBeVisible();
+}
+
+const consoleSelect = (page: Page) => page.getByRole('combobox');
+const fileInput = (page: Page) => page.locator('input[type="file"]');
+const uploadButton = (page: Page) => page.getByRole('button', { name: /^Upload/i });
+const removeButton = (page: Page) => page.getByRole('button', { name: /^Remove/i });
+const currentPreview = (page: Page) => page.locator('img[src^="blob:"]');
+const adminAlert = (page: Page, text: string) => page.getByRole('alert').filter({ hasText: text });
+const EMPTY_COPY = 'No bezel for this console yet.';
+
+test.describe('SF04 admin Bezels tab', () => {
+  test('SF04-T39 the Bezels tab is third, shows the block with 12 consoles, Cartridges is unchanged', async ({ page }) => {
+    const api = new BezelApi();
+    await openBezelsTab(page, api);
+    const tabs = await page.getByRole('button', { name: /^(Games|Cartridges|Bezels)$/ }).allInnerTexts();
+    expect(tabs.map((text) => text.trim())).toEqual(['Games', 'Cartridges', 'Bezels']);
+    const values = await consoleSelect(page).locator('option').evaluateAll((options) => options.map((option) => (option as HTMLOptionElement).value));
+    expect(values).toEqual(CONSOLE_IDS);
+    await page.getByRole('button', { name: 'Cartridges', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Create new cartridge' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Cartridges list' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Bezel por console' })).toHaveCount(0);
+  });
+
+  test('SF04-T40 the current preview shows checking, has-bezel, empty and read-error with Try again', async ({ page }) => {
+    const api = new BezelApi();
+    api.set('nes', 200);
+    api.set('snes', 404);
+    api.set('gba', 502, 200);
+    const release = api.hold('nes');
+    await openBezelsTab(page, api);
+    const skeleton = page.locator('[class*="animate-pulse"]');
+    await expect(skeleton).toBeVisible();
+    const skeletonBox = await skeleton.boundingBox();
+    expect(Math.abs(skeletonBox!.width / skeletonBox!.height / (16 / 9) - 1)).toBeLessThanOrEqual(0.02);
+    release();
+    await expect(currentPreview(page)).toBeVisible();
+    await expect(removeButton(page)).toBeEnabled();
+
+    await consoleSelect(page).selectOption('snes');
+    await expect(page.getByText(EMPTY_COPY)).toBeVisible();
+    await expect(removeButton(page)).toBeDisabled();
+
+    await consoleSelect(page).selectOption('gba');
+    await expect(page.getByText('Could not read this bezel.')).toBeVisible();
+    await fileInput(page).setInputFiles(PNG_16_9);
+    await expect(uploadButton(page)).toBeEnabled();
+    expect(api.getsFor('gba')).toHaveLength(1);
+    await page.getByRole('button', { name: 'Try again' }).click();
+    await expect(currentPreview(page).first()).toBeVisible();
+    await expect(removeButton(page)).toBeEnabled();
+    expect(api.getsFor('gba')).toHaveLength(2);
+  });
+
+  test('SF04-T41 a late response for the previous console is dropped', async ({ page }) => {
+    const api = new BezelApi();
+    api.set('nes', 200);
+    api.set('snes', 404);
+    const release = api.hold('nes');
+    await openBezelsTab(page, api);
+    await consoleSelect(page).selectOption('snes');
+    await expect(page.getByText(EMPTY_COPY)).toBeVisible();
+    release();
+    await expect.poll(() => api.getsFor('nes').length).toBeGreaterThan(0);
+    await page.waitForTimeout(500);
+    await expect(page.getByText(EMPTY_COPY)).toBeVisible();
+    await expect(currentPreview(page)).toHaveCount(0);
+    await expect(removeButton(page)).toBeDisabled();
+  });
+
+  test('SF04-T42 uploading over an existing bezel replaces the preview', async ({ page }) => {
+    const api = new BezelApi();
+    api.set('nes', 200);
+    const writes = new AdminBezelWrites();
+    writes.onPostOk = () => {
+      api.image = IMAGE_B;
+    };
+    let releasePost: () => void = () => {};
+    writes.releasePost = new Promise<void>((resolve) => (releasePost = resolve));
+    await openBezelsTab(page, api, writes);
+    await expect(currentPreview(page)).toBeVisible();
+    await expect.poll(() => currentPreview(page).evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(800);
+
+    await fileInput(page).setInputFiles(PNG_16_9);
+    await expect(page.getByText('New file')).toBeVisible();
+    await expect(page.getByRole('status').filter({ hasText: /16:9/ })).toHaveCount(0);
+    const getsBefore = api.getsFor('nes').length;
+    await uploadButton(page).click();
+
+    await expect(page.getByText('Uploading...').first()).toBeVisible();
+    await expect(consoleSelect(page)).toBeDisabled();
+    await expect(fileInput(page)).toBeDisabled();
+    await expect(uploadButton(page)).toBeDisabled();
+    await expect(removeButton(page)).toBeDisabled();
+    releasePost();
+
+    await expect(page.getByRole('status').filter({ hasText: 'Bezel saved for NES.' })).toBeVisible();
+    expect(writes.posts).toHaveLength(1);
+    expect(writes.posts[0].url).toContain('/api/admin/bezels/nes');
+    expect(writes.posts[0].body?.toString('latin1')).toContain('name="file"');
+    expect(await fileInput(page).evaluate((input: HTMLInputElement) => input.files?.length ?? 0)).toBe(0);
+    await expect.poll(() => api.getsFor('nes').length).toBeGreaterThan(getsBefore);
+    expect(api.getsFor('nes').pop()).toMatch(/\?v=\d+/);
+    await expect.poll(() => currentPreview(page).first().evaluate((img: HTMLImageElement) => img.naturalWidth)).toBe(1920);
+  });
+
+  test('SF04-T43 every upload failure shows its copy, keeps the file and keeps Upload enabled', async ({ page }) => {
+    const api = new BezelApi();
+    api.set('nes', 404);
+    const writes = new AdminBezelWrites();
+    await openBezelsTab(page, api, writes);
+    await fileInput(page).setInputFiles(PNG_16_9);
+    const cases: Array<[Write, string]> = [
+      [{ status: 400 }, 'Choose a PNG file first.'],
+      [{ status: 404 }, 'Unknown console.'],
+      [{ status: 413 }, 'File is over 2 MB.'],
+      [{ status: 415 }, 'This file is not a PNG.'],
+      [{ status: 502 }, 'Storage failed. Nothing was saved. Try again.'],
+      [{ status: 503 }, 'Storage is not configured. Nothing was saved.'],
+      [{ status: 0, abort: true }, 'Could not reach the server.']
+    ];
+    for (const [write, text] of cases) {
+      writes.post = write;
+      await uploadButton(page).click();
+      await expect(adminAlert(page, text), text).toBeVisible();
+      expect(await fileInput(page).evaluate((input: HTMLInputElement) => input.files?.length ?? 0)).toBe(1);
+      await expect(uploadButton(page)).toBeEnabled();
+    }
+  });
+
+  test('SF04-T44 Remove asks for confirmation, shows Removing..., and reports every outcome', async ({ page }) => {
+    const api = new BezelApi();
+    api.set('nes', 200);
+    const writes = new AdminBezelWrites();
+    await openBezelsTab(page, api, writes);
+    await expect(currentPreview(page)).toBeVisible();
+
+    const messages: string[] = [];
+    let accept = false;
+    page.on('dialog', (dialog) => {
+      messages.push(dialog.message());
+      return accept ? dialog.accept() : dialog.dismiss();
+    });
+    await removeButton(page).click();
+    expect(messages).toEqual(['Remove the bezel for NES?']);
+    expect(writes.deletes).toHaveLength(0);
+
+    accept = true;
+    const errors: Array<[number, string]> = [
+      [404, 'This console has no bezel.'],
+      [502, 'Storage failed. Nothing was saved. Try again.'],
+      [503, 'Storage is not configured. Nothing was saved.']
+    ];
+    for (const [status, text] of errors) {
+      writes.del = { status };
+      await removeButton(page).click();
+      await expect(adminAlert(page, text), text).toBeVisible();
+      await expect(removeButton(page)).toBeEnabled();
+      await expect(currentPreview(page)).toBeVisible();
+    }
+
+    let releaseDelete: () => void = () => {};
+    writes.releaseDelete = new Promise<void>((resolve) => (releaseDelete = resolve));
+    writes.del = { status: 204 };
+    writes.onDeleteOk = () => api.set('nes', 404);
+    await removeButton(page).click();
+    await expect(page.getByText('Removing...').first()).toBeVisible();
+    await expect(consoleSelect(page)).toBeDisabled();
+    await expect(uploadButton(page)).toBeDisabled();
+    await expect(removeButton(page)).toBeDisabled();
+    releaseDelete();
+    await expect(page.getByRole('status').filter({ hasText: 'Bezel removed for NES.' })).toBeVisible();
+    await expect(page.getByText(EMPTY_COPY)).toBeVisible();
+  });
+
+  for (const action of ['upload', 'remove'] as const) {
+    for (const status of [401, 403]) {
+      test(`SF04-T45 a ${status} on ${action} raises the session-expired panel`, async ({ page }) => {
+        const api = new BezelApi();
+        api.set('nes', action === 'remove' ? 200 : 404);
+        const writes = new AdminBezelWrites();
+        writes.post = { status };
+        writes.del = { status };
+        await openBezelsTab(page, api, writes);
+        page.on('dialog', (dialog) => dialog.accept());
+        if (action === 'upload') {
+          await fileInput(page).setInputFiles(PNG_16_9);
+          await uploadButton(page).click();
+        } else {
+          await expect(currentPreview(page)).toBeVisible();
+          await removeButton(page).click();
+        }
+        await expect(page.getByRole('alert').filter({ hasText: 'Sua sessão expirou. Entre novamente para continuar.' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'Bezels', exact: true })).toHaveCount(0);
+        await expect(page.getByRole('button', { name: 'Entrar novamente' })).toBeVisible();
+      });
+    }
+  }
+
+  test('SF04-T47 an off-ratio PNG warns in amber and still uploads', async ({ page }) => {
+    const api = new BezelApi();
+    api.set('nes', 404);
+    const writes = new AdminBezelWrites();
+    await openBezelsTab(page, api, writes);
+    await fileInput(page).setInputFiles(PNG_4_3);
+    const warning = page.getByRole('status').filter({ hasText: '1024×768' });
+    await expect(warning).toBeVisible();
+    await expect(warning).toContainText('not 16:9');
+    await expect(uploadButton(page)).toBeEnabled();
+    await uploadButton(page).click();
+    await expect.poll(() => writes.posts.length).toBe(1);
+  });
+
+  test('SF04-T48 the bezel block has no axe violations and meets 44px targets in six states', async ({ page }) => {
+    const api = new BezelApi();
+    api.set('nes', 200);
+    api.set('snes', 404);
+    api.set('gba', 502);
+    const writes = new AdminBezelWrites();
+    await openBezelsTab(page, api, writes);
+    const violations: Record<string, string[]> = {};
+    const check = async (name: string) => {
+      const results = await new AxeBuilder({ page }).analyze();
+      violations[name] = results.violations.map((violation) => violation.id);
+    };
+    const heights = async (name: string, locators: Array<ReturnType<Page['locator']>>) => {
+      for (const locator of locators) {
+        const b = await locator.boundingBox();
+        expect(b, `${name} target`).not.toBeNull();
+        expect(b!.height, `${name} target height`).toBeGreaterThanOrEqual(44);
+      }
+    };
+    const fileLabel = page.locator('label').filter({ has: fileInput(page) });
+
+    await consoleSelect(page).selectOption('snes');
+    await expect(page.getByText(EMPTY_COPY)).toBeVisible();
+    await check('empty');
+    await heights('empty', [consoleSelect(page), fileLabel, uploadButton(page), removeButton(page)]);
+
+    await consoleSelect(page).selectOption('nes');
+    await expect(currentPreview(page)).toBeVisible();
+    await check('has-bezel');
+    await heights('has-bezel', [removeButton(page)]);
+
+    await consoleSelect(page).selectOption('gba');
+    await expect(page.getByText('Could not read this bezel.')).toBeVisible();
+    await check('read-error');
+    await heights('read-error', [page.getByRole('button', { name: 'Try again' })]);
+
+    await fileInput(page).setInputFiles(PNG_16_9);
+    await expect(page.getByText('New file')).toBeVisible();
+    await check('file-selected');
+
+    await fileInput(page).setInputFiles(PNG_4_3);
+    await expect(page.getByRole('status').filter({ hasText: '1024×768' })).toBeVisible();
+    await check('aspect-warning');
+
+    writes.post = { status: 415 };
+    await uploadButton(page).click();
+    await expect(adminAlert(page, 'This file is not a PNG.')).toBeVisible();
+    await check('upload-error');
+
+    expect(violations).toEqual({
+      empty: [],
+      'has-bezel': [],
+      'read-error': [],
+      'file-selected': [],
+      'aspect-warning': [],
+      'upload-error': []
+    });
   });
 });
