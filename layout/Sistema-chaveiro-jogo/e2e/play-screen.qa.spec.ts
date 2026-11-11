@@ -103,7 +103,7 @@ async function stubEmulatorHeld(page: Page) {
   await page.route(/\/emulator\.html/, (route) =>
     route.fulfill({
       contentType: 'text/html',
-      body: '<!doctype html><html><body style="margin:0;background:#000"><script>window.addEventListener("message",function(e){if(e.data==="sf04-release"){parent.postMessage({ type: "EMULATOR_CANVAS_READY" }, "*");}});</script></body></html>'
+      body: '<!doctype html><html><body style="margin:0;background:#000"><script>window.addEventListener("message",function(e){if(e.data==="sf04-release"){parent.postMessage({ type: "EMULATOR_CANVAS_READY" }, location.origin);}});</script></body></html>'
     })
   );
 }
@@ -158,7 +158,7 @@ async function stubEmulatorReady(page: Page) {
   await page.route(/\/emulator\.html/, (route) =>
     route.fulfill({
       contentType: 'text/html',
-      body: '<!doctype html><html><body style="margin:0;background:#000"><script>parent.postMessage({ type: "EMULATOR_CANVAS_READY" }, "*");</script></body></html>'
+      body: '<!doctype html><html><body style="margin:0;background:#000"><script>parent.postMessage({ type: "EMULATOR_CANVAS_READY" }, location.origin);</script></body></html>'
     })
   );
 }
@@ -187,6 +187,18 @@ async function frameRatio(page: Page) {
   expect(box, 'frame box').not.toBeNull();
   return box!.width / box!.height;
 }
+
+// The play session (demo per IP, 30 min cooldown, lib/play-access.ts) is answered here, so repeated
+// runs from one machine never reach the locked state. The ROM URL has no ticket: the real emulator
+// still fails to load it, which is what T08 expects.
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/play/*/session', (route) =>
+    route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({ mode: 'demo', romUrl: `/api/rom/${SLUG}`, remainingSeconds: 180 })
+    })
+  );
+});
 
 test.beforeAll(async ({}, testInfo) => {
   test.setTimeout(180_000);
@@ -228,7 +240,7 @@ for (const viewport of VIEWPORTS) {
   test.describe(`viewport ${viewport.name}, touch pointer`, () => {
     test.use({ viewport: { width: viewport.width, height: viewport.height }, hasTouch: true, isMobile: true });
 
-    test(`T06 running: touch overlay shown over the stage, legend hidden, window box unchanged (${viewport.name})`, async ({ page }) => {
+    test(`T06 running: touch overlay shown, legend hidden, window keeps its ratio (${viewport.name})`, async ({ page }) => {
       state('running');
       await openRunning(page);
       await expect(page.locator('[data-slot="touch-overlay"]')).toBeVisible();
@@ -236,7 +248,10 @@ for (const viewport of VIEWPORTS) {
       const overlayPosition = await page
         .locator('[data-slot="touch-overlay"]')
         .evaluate((element) => getComputedStyle(element).position);
-      expect(overlayPosition).toBe('absolute');
+      // 0002F SF02 (owner, 2026-11-11): upright with touch the controller is the handheld deck, in the
+      // flow below the screen; in landscape it stays an overlay beside the window.
+      const portrait = viewport.height > viewport.width;
+      expect(overlayPosition).toBe(portrait ? 'relative' : 'absolute');
       expect(Math.abs((await frameRatio(page)) / (4 / 3) - 1)).toBeLessThanOrEqual(0.02);
       await expect(page.locator('[data-frame]')).toHaveCount(0);
       await expectNoScroll(page);
@@ -254,7 +269,9 @@ test('T07 running: background and frame are drawn by the page around the iframe'
   await expect(iframe).toHaveAttribute('title', 'Play Super Retro');
   const src = (await iframe.getAttribute('src')) ?? '';
   const params = new URL(src, 'http://localhost').searchParams;
-  expect([...params.keys()].sort()).toEqual(['core', 'rom', 'title']);
+  // 0002F SF02 FD5 adds the console id (one of 12 fixed ids); theme values still never reach the iframe.
+  expect([...params.keys()].sort()).toEqual(['console', 'core', 'rom', 'title']);
+  expect(params.get('console')).toBe('arcade');
   expect(src.toLowerCase()).not.toContain('0b0b1a');
   expect(src).not.toContain('--t-');
 });
@@ -654,3 +671,277 @@ for (const view of [
     });
   });
 }
+
+// --- 0002F SF02 emulator controls ---------------------------------------------------------------
+// Handheld body (portrait + touch), side bands (landscape + touch), touch input, key legend and the
+// Keys panel (Wide). Data only through page.route; every Wide test calls routeBezel.
+
+const SF02_SYSTEMS = {
+  nes: 'NES',
+  snes: 'SNES',
+  n64: 'Nintendo 64',
+  dmg: 'Game Boy',
+  gbc: 'Game Boy Color',
+  gba: 'Game Boy Advance',
+  sms: 'Master System',
+  megadrive: 'Mega Drive / Genesis',
+  gamegear: 'Game Gear',
+  ps: 'PlayStation',
+  arcade: 'Arcade (FBNeo)',
+  neogeo: 'Neo Geo'
+} as const;
+// Buttons drawn at once: BUTTONS_BY_CONSOLE length, N64 minus the 4 directions of the hidden pad.
+const SF02_BUTTON_COUNT: Record<keyof typeof SF02_SYSTEMS, number> = {
+  nes: 8,
+  snes: 12,
+  n64: 14,
+  dmg: 8,
+  gbc: 8,
+  gba: 10,
+  sms: 7,
+  megadrive: 8,
+  gamegear: 7,
+  ps: 14,
+  arcade: 10,
+  neogeo: 10
+};
+
+/** /emulator.html stub that posts ready with the app origin and records what it receives. */
+async function stubEmulatorRecorder(page: Page) {
+  await page.route(/\/emulator\.html/, (route) =>
+    route.fulfill({
+      contentType: 'text/html',
+      body:
+        '<!doctype html><html><body style="margin:0;background:#000"><script>' +
+        'window.__rk={messages:[],keys:[]};' +
+        'window.addEventListener("message",function(e){window.__rk.messages.push({data:e.data,origin:e.origin,fromParent:e.source===parent})});' +
+        'window.addEventListener("keydown",function(e){window.__rk.keys.push(e.code)});' +
+        'parent.postMessage({ type: "EMULATOR_CANVAS_READY" }, location.origin);' +
+        '</script></body></html>'
+    })
+  );
+}
+
+type Recorded = { messages: Array<{ data: any; origin: string; fromParent: boolean }>; keys: string[] };
+async function received(page: Page): Promise<Recorded> {
+  const frame = page.frames().find((candidate) => candidate.url().includes('/emulator.html'));
+  if (!frame) return { messages: [], keys: [] };
+  return frame.evaluate(() => (window as unknown as { __rk: Recorded }).__rk);
+}
+
+async function openSf02(page: Page, system: string) {
+  await routeBezel(page, 'missing');
+  await mockGame(page, system);
+  await stubEmulatorRecorder(page);
+  await page.goto(`/play/${SLUG}`);
+  await expect(page.getByRole('status')).toHaveText(/Running/);
+}
+
+function intersects(a: { x: number; y: number; width: number; height: number }, b: { x: number; y: number; width: number; height: number }) {
+  const w = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
+  const h = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
+  return { w: Math.max(0, w), h: Math.max(0, h) };
+}
+
+test.describe('SF02 handheld 390x844 touch', () => {
+  test.use({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+
+  for (const [id, system] of Object.entries(SF02_SYSTEMS) as [keyof typeof SF02_SYSTEMS, string][]) {
+    test(`SF02-T40/T41 ${id}: handheld body, every button >= 44px, below the screen glass`, async ({ page }) => {
+      state(`running (handheld, ${id})`);
+      await openSf02(page, system);
+      await expect(page.locator('.play-shell')).toHaveCSS('display', 'flex');
+      const buttons = page.locator('[data-slot="touch-overlay"] [data-button]');
+      await expect(buttons).toHaveCount(SF02_BUTTON_COUNT[id]);
+      const glass = await box(page.locator('.play-screen'));
+      const win = await box(page.locator('[data-window]'));
+      expect(win.y + win.height).toBeLessThanOrEqual(glass.y + glass.height);
+      for (const handle of await buttons.all()) {
+        const b = await box(handle);
+        expect(b.width, `${await handle.getAttribute('data-button')} width`).toBeGreaterThanOrEqual(44);
+        expect(b.height, `${await handle.getAttribute('data-button')} height`).toBeGreaterThanOrEqual(44);
+        expect(b.y, 'button below the glass').toBeGreaterThanOrEqual(glass.y + glass.height);
+        expect(b.x).toBeGreaterThanOrEqual(0);
+        expect(b.x + b.width).toBeLessThanOrEqual(390);
+        expect(b.y + b.height).toBeLessThanOrEqual(844);
+        await expect(handle).toHaveAttribute('aria-label', /.+/);
+      }
+      await expectNoScroll(page);
+    });
+  }
+
+  test('SF02-T43 touch input: booting is inert, running posts RK_INPUT press and release', async ({ page }) => {
+    state('booting -> running (handheld, nes)');
+    await routeBezel(page, 'missing');
+    await mockGame(page, 'NES');
+    await stubEmulatorHeld(page);
+    await page.goto(`/play/${SLUG}`);
+    await expect(page.getByRole('status')).toHaveText(/Starting game/);
+    const a = page.locator('[data-button="a"]');
+    await expect(a).toHaveAttribute('aria-disabled', 'true');
+    await releaseReady(page);
+    await expect(page.getByRole('status')).toHaveText(/Running/);
+    await expect(a).not.toHaveAttribute('aria-disabled', 'true');
+
+    await page.unroute(/\/emulator\.html/);
+    await stubEmulatorRecorder(page);
+    await page.reload();
+    await expect(page.getByRole('status')).toHaveText(/Running/);
+    await a.dispatchEvent('pointerdown', { pointerId: 7, isPrimary: true, pointerType: 'touch' });
+    await expect(a).toHaveAttribute('data-pressed', 'true');
+    await a.dispatchEvent('pointerup', { pointerId: 7, isPrimary: true, pointerType: 'touch' });
+    await expect
+      .poll(async () => (await received(page)).messages.filter((m) => m.data?.type === 'RK_INPUT').map((m) => m.data))
+      .toEqual([
+        { type: 'RK_INPUT', index: 8, pressed: true },
+        { type: 'RK_INPUT', index: 8, pressed: false }
+      ]);
+    const all = await received(page);
+    for (const message of all.messages) {
+      expect(message.fromParent).toBe(true);
+      expect(message.origin).toBe(new URL(page.url()).origin);
+    }
+  });
+
+  test('SF02-T24 the iframe gets console=nes and one RK_CONTROLS object after ready', async ({ page }) => {
+    state('running (handheld, nes)');
+    await openSf02(page, 'NES');
+    await expect(page.locator('iframe')).toHaveAttribute('src', /console=nes/);
+    await expect
+      .poll(async () => (await received(page)).messages.filter((m) => m.data?.type === 'RK_CONTROLS').length)
+      .toBe(1);
+    const controls = (await received(page)).messages.find((m) => m.data?.type === 'RK_CONTROLS')!.data;
+    expect(typeof controls).toBe('object');
+    expect(controls.console).toBe('nes');
+    expect(controls.bindings).toContainEqual(['KeyX', 8]);
+    expect(controls.bindings).toContainEqual(['KeyZ', 0]);
+  });
+
+  test('SF02-T49 the controller buttons are hidden when the game is not found', async ({ page }) => {
+    state('not-found (handheld)');
+    await page.route('**/api/game/**', (route) => route.fulfill({ status: 404, contentType: 'application/json', body: '{"error":"Not found"}' }));
+    await page.goto(`/play/${SLUG}`);
+    await expect(page.getByRole('heading', { name: 'Game not found' })).toBeVisible();
+    await expect(page.locator('[data-button]')).toHaveCount(0);
+  });
+});
+
+test.describe('SF02 landscape 844x390 touch', () => {
+  test.use({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
+
+  for (const [id, system] of Object.entries(SF02_SYSTEMS) as [keyof typeof SF02_SYSTEMS, string][]) {
+    test(`SF02-T40/T41 ${id}: side bands, overlap with the window <= 24px`, async ({ page }) => {
+      state(`running (landscape, ${id})`);
+      await openSf02(page, system);
+      await expect(page.locator('.play-shell')).toHaveCSS('display', 'contents');
+      const buttons = page.locator('[data-slot="touch-overlay"] [data-button]');
+      await expect(buttons).toHaveCount(SF02_BUTTON_COUNT[id]);
+      const win = await box(page.locator('[data-window]'));
+      for (const handle of await buttons.all()) {
+        const b = await box(handle);
+        expect(b.width).toBeGreaterThanOrEqual(44);
+        expect(b.height).toBeGreaterThanOrEqual(44);
+        const overlap = intersects(b, win);
+        expect(Math.min(overlap.w, overlap.h), `${await handle.getAttribute('data-button')} overlap`).toBeLessThanOrEqual(24);
+      }
+      await expectNoScroll(page);
+    });
+  }
+});
+
+test.describe('SF02 Wide 1366x768 legend and Keys panel', () => {
+  test.use({ viewport: { width: 1366, height: 768 } });
+
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      try {
+        window.localStorage.removeItem('retrokey:controls:v1:nes');
+      } catch {
+        // ignore
+      }
+    });
+  });
+
+  test('SF02-T21 legend shows the NES keys; controller hidden on a fine pointer', async ({ page }) => {
+    state('running (wide, nes)');
+    await openSf02(page, 'NES');
+    const legend = page.locator('[data-slot="legend"]');
+    await expect(legend).toBeVisible();
+    await expect(legend.getByRole('listitem')).toHaveText(['D-pad↑ ↓ ← →', 'BZ', 'AX', 'SelectSpace', 'StartEnter']);
+    await expect(page.locator('[data-slot="touch-overlay"]')).toBeHidden();
+    await expect(page.getByRole('button', { name: 'Edit keys' })).toBeEnabled();
+  });
+
+  for (const [id, system] of Object.entries(SF02_SYSTEMS)) {
+    test(`SF02-T22 ${id}: no legend chip is clipped`, async ({ page }) => {
+      state(`running (wide legend, ${id})`);
+      await openSf02(page, system);
+      const row = page.locator('[data-slot="legend"] ul');
+      const fits = await row.evaluate((element) => element.scrollWidth <= element.clientWidth);
+      expect(fits).toBe(true);
+      await expect(page.getByRole('button', { name: 'Edit keys' })).toBeVisible();
+    });
+  }
+
+  test('SF02-T32/T33/T35 remap, swap, reject and reset in the Keys panel', async ({ page }) => {
+    state('keys panel idle -> capture -> saved -> swapped -> reset');
+    await openSf02(page, 'NES');
+    await page.getByRole('button', { name: 'Edit keys' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Keys' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Reset to default' })).toBeDisabled();
+
+    await dialog.locator('[data-key-row="a"]').click();
+    await expect(dialog.getByRole('status')).toHaveText('Press a key for A. Esc cancels.');
+    await page.keyboard.press('Tab');
+    await expect(dialog.getByRole('status')).toHaveText("That key can't be used. Pick another.");
+    await page.keyboard.press('KeyV');
+    await expect(dialog.getByRole('status')).toHaveText('Saved.');
+    await expect(dialog.locator('[data-key-row="a"]')).toHaveText('V');
+    expect(await page.evaluate(() => window.localStorage.getItem('retrokey:controls:v1:nes'))).toContain('"a":"KeyV"');
+    await expect
+      .poll(async () =>
+        (await received(page)).messages.filter((m) => m.data?.type === 'RK_CONTROLS').some((m) =>
+          (m.data.bindings as [string, number][]).some(([code, index]) => code === 'KeyV' && index === 8)
+        )
+      )
+      .toBe(true);
+
+    await dialog.locator('[data-key-row="b"]').click();
+    await page.keyboard.press('KeyV');
+    await expect(dialog.getByRole('status')).toHaveText('V was on A; swapped.');
+
+    await dialog.locator('[data-key-row="a"]').click();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeVisible();
+
+    await dialog.getByRole('button', { name: 'Reset to default' }).click();
+    await expect(dialog.getByRole('status')).toHaveText('Default keys restored.');
+    expect(await page.evaluate(() => window.localStorage.getItem('retrokey:controls:v1:nes'))).toBeNull();
+    await dialog.getByRole('button', { name: 'Done' }).click();
+    await expect(dialog).toBeHidden();
+    await expect(page.locator('[data-slot="legend"]').getByRole('listitem').nth(2)).toHaveText('AX');
+  });
+
+  test('SF02-T45 full screen button toggles aria-pressed', async ({ page }) => {
+    state('fullscreen off -> on -> off');
+    await openSf02(page, 'NES');
+    const toggle = page.locator('[data-slot="fullscreen"] button');
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('SF02-T46 axe: legend running and Keys panel open have no violations', async ({ page }) => {
+    state('running (wide) + keys panel idle');
+    await openSf02(page, 'NES');
+    const legendScan = await new AxeBuilder({ page }).include('[data-slot="legend"]').analyze();
+    expect(legendScan.violations).toEqual([]);
+    await page.getByRole('button', { name: 'Edit keys' }).click();
+    await expect(page.getByRole('dialog', { name: 'Keys' })).toBeVisible();
+    const panelScan = await new AxeBuilder({ page }).include('dialog').analyze();
+    expect(panelScan.violations).toEqual([]);
+  });
+});

@@ -204,7 +204,7 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
             <label className="mb-2 block text-sm text-zinc-400">ROM file</label>
             <input
               type="file"
-              accept=".bin,.gen,.nes,.smc,.sfc,.gba,.gb,.md,.iso"
+              accept=".nes,.smc,.sfc,.n64,.z64,.v64,.gb,.gbc,.gba,.sms,.gg,.md,.gen,.smd,.32x,.bin,.iso,.chd,.pbp,.zip,.7z"
               onChange={(e) => setRomFile(e.target.files?.[0] || null)}
               className="block w-full text-sm text-zinc-400 file:mr-4 file:rounded file:border-0 file:bg-cyan-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-zinc-950 hover:file:bg-cyan-400"
             />

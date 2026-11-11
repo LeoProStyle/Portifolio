@@ -2,7 +2,7 @@
 id: 0002F-SF02
 type: feature-design
 created: 2026-11-09
-updated: 2026-11-09
+updated: 2026-11-11
 related: [0002F]
 provenance: sha256:2d0614aab22b7f1529687911a3873ac9c966f9a35ae9f188a9dbb223e9d3dda8
 ---
@@ -10,10 +10,11 @@ provenance: sha256:2d0614aab22b7f1529687911a3873ac9c966f9a35ae9f188a9dbb223e9d3d
 # Design: SF02 Emulator Controls
 
 ## TL;DR
-Design contract da SF02 do {{doc:0002F}}. Ela encaixa os controles nos espaços que a SF04 ({{doc:0002F-SF04}}, `subfeatures/SF04-console-bezels/design.md`) deixou, sem mudar o tamanho nem a proporção da janela do jogo.
+Design contract da SF02 do {{doc:0002F}}. Ela encaixa os controles nos espaços que a SF04 ({{doc:0002F-SF04}}, `subfeatures/SF04-console-bezels/design.md`) deixou. Em `Wide` e em paisagem, o tamanho e a proporção da janela do jogo não mudam.
 - **Wide:** a linha da legenda mostra a tecla de cada botão do console e o botão "Edit keys". Ele abre o painel "Keys", onde o jogador remapeia e volta ao padrão. O mapa fica salvo no `localStorage` do aparelho.
-- **Celular (toque):** um controle virtual próprio do RetroKey aparece no slot `touch-overlay`, com layout por console. Fica nas faixas em volta da janela.
-- **Retrato:** uma sugestão de girar o aparelho aparece acima da janela.
+- **Celular em pé (toque + retrato): modo portátil.** O palco vira o corpo de um console portátil, no estilo do Game Boy, na cor do console em uso: tela em cima, dentro de uma moldura com LED, e controles embaixo (D-pad, botões de ação, Select/Start, gatilhos). Vale para os 12 consoles; cada um tem os próprios botões e cores (decisão do dono, 2026-11-11).
+- **Celular deitado (toque + paisagem):** o controle virtual fica nas faixas dos lados da janela, como no plano original.
+- **Sugestão de girar:** removida. O modo portátil é o layout principal em pé (decisão do dono, 2026-11-11).
 - **Tela cheia:** o botão ocupa o slot 44×44 da barra de topo em todo viewport que suporta a API.
 
 O controle embutido do EmulatorJS fica desligado (decisão do dono, epic.md Notes 2026-11-09).
@@ -36,8 +37,8 @@ A SF02 não cria rota nem região nova no fluxo. Ela preenche três slots de `/p
 |---|---|---|---|
 | Linha da legenda (`data-slot="legend"`, Wide) | Mostrar a tecla de cada botão do console em uso | nenhuma (Edit keys é secundário) | `/play/[slug]` em Wide |
 | Painel Keys (`<dialog>` modal, Wide) | Remapear teclas do console e voltar ao padrão | Done | botão Edit keys da legenda |
+| Modo portátil (toque, retrato) | Palco como console portátil: tela em cima, controle embaixo | nenhuma (controle de jogo) | aparece sozinho com `(pointer: coarse) and (orientation: portrait)` |
 | Controle virtual (`data-slot="touch-overlay"`, toque) | Botões do console por toque, com multitoque | nenhuma (controle de jogo) | aparece sozinho com toque, em booting e running |
-| Sugestão de girar (toque, retrato) | Sugerir paisagem; não bloqueia | nenhuma (Dismiss é secundário) | aparece sozinha em retrato |
 | Tela cheia (`data-slot="fullscreen"`) | Entrar e sair da tela cheia do palco | nenhuma (botão de utilidade) | barra de topo, todo viewport com `document.fullscreenEnabled` |
 
 Layout trees (base mobile 320px; ordem das regiões = ordem no DOM):
@@ -45,7 +46,7 @@ Layout trees (base mobile 320px; ordem das regiões = ordem no DOM):
 ```json
 {"screen":"play-wide-legend","regions":[{"role":"legend","order":1,"span":{"mobile":"hidden","desktop":"full"},"component":"ControlsLegend","contains":["KeyChip per button or directional set"]},{"role":"action","order":2,"span":{"mobile":"hidden","desktop":"auto"},"component":"ControlsLegend","contains":["edit-keys button"]}]}
 {"screen":"keys-panel","regions":[{"role":"header","order":1,"span":{"mobile":"n/a","desktop":"full"},"component":"KeysPanel","contains":["title Keys","console name"]},{"role":"list","order":2,"span":{"mobile":"n/a","desktop":"full"},"component":"KeysPanel","contains":["KeyRow per console button"]},{"role":"status","order":3,"span":{"mobile":"n/a","desktop":"full"},"component":"KeysPanel","contains":["status line"]},{"role":"footer","order":4,"span":{"mobile":"n/a","desktop":"full"},"component":"KeysPanel","contains":["reset-to-default","done"],"primaryCta":"done"}]}
-{"screen":"play-phone-portrait","regions":[{"role":"hint","order":1,"span":{"mobile":"full","desktop":"n/a"},"component":"RotateHint","contains":["message","dismiss"]},{"role":"controller","order":2,"span":{"mobile":"full","desktop":"n/a"},"component":"VirtualController","contains":["shoulder row","left cluster","center column","right cluster"]}]}
+{"screen":"play-phone-portrait (modo portátil)","regions":[{"role":"topbar","order":1,"span":{"mobile":"full","desktop":"n/a"},"component":"PlayTopBar","contains":["back home","title","fullscreen"]},{"role":"shell","order":2,"span":{"mobile":"full","desktop":"n/a"},"component":"PlayStage (.play-shell)","contains":["screen panel (LED, window, status strip)","brand line","controller deck"]},{"role":"controller","order":3,"span":{"mobile":"full","desktop":"n/a"},"component":"VirtualController","contains":["shoulder row","left cluster","right cluster","center row (Select, Start, N64 toggle)","speaker grille (decorativa)"]}]}
 {"screen":"play-phone-landscape","regions":[{"role":"left","order":1,"span":{"mobile":"side band","desktop":"n/a"},"component":"VirtualController","contains":["left shoulders","left cluster","left center buttons"]},{"role":"right","order":2,"span":{"mobile":"side band","desktop":"n/a"},"component":"VirtualController","contains":["right shoulders","right cluster","right center buttons"]}]}
 ```
 
@@ -87,17 +88,46 @@ Layout trees (base mobile 320px; ordem das regiões = ordem no DOM):
 - **Coluna do meio:** entre os clusters, com Select/Start/Pause/Coin empilhados, 44px cada e 8px de folga.
 - **N64:** o cluster esquerdo alterna entre Stick e D-pad por um botão "D-pad"/"Stick" de 44px na coluna do meio, acima de Start. O cluster direito usa uma grade 3×3 de 44px: C em losango, A e B nos cantos de baixo. Z fica na linha de gatilhos, no centro.
 
-**Geometria, retrato 390×844:**
-- **Posição da janela:** centrada, como na SF04.
-- **Onde fica cada peça:** a sugestão de girar vai na faixa de cima; o controle vai na faixa de baixo, alinhado à base.
-- **Orçamento de altura:** com gatilhos, 44 + 8 + 132 = 184px; sem gatilhos, 132px.
-- **Faixa livre:** (altura do palco − altura da janela) / 2 − 32 − inset de baixo.
+**Modo portátil (toque + retrato), substitui a geometria de retrato anterior (decisão do dono, 2026-11-11):**
+- **Quando:** `(pointer: coarse) and (orientation: portrait)`. É regra de CSS sobre a mesma árvore DOM, então girar o aparelho nunca remonta o iframe nem reinicia o jogo.
+- **Corpo (`.play-shell`):**
+  - Ocupa o palco abaixo da barra de topo, com margem de 8px e largura máxima de 480px, centrado.
+  - Fundo `--t-frame` com gradiente suave: mais claro em cima, mais escuro embaixo, misturado por `color-mix`.
+  - Cantos de 28px, com o canto de baixo à direita de 72px, como no Game Boy.
+  - Sombra externa e um brilho de 1px no topo dão o volume de plástico.
+- **Painel da tela (`.play-screen`):**
+  - Vidro escuro: `color-mix(--t-frame 18%, #111114)`, cantos de 14px e canto de baixo à direita de 40px.
+  - Em cima, a linha do LED: ponto de 8px que acende em `--t-accent` com brilho em running e fica cinza nos outros estados, mais o texto "POWER" em `text-xs`.
+  - A janela do jogo fica centrada e ocupa a largura do vidro. A altura sai da proporção do console e é limitada para o controle sempre caber.
+  - O `StatusStrip` fica sobre a base do vidro, numa faixa de 32px reservada abaixo da janela, então não cobre o jogo.
+- **Linha da marca:** "RetroKey" em itálico semibold mais o nome do console em `text-sm`, na cor `--t-on-frame` sobre o corpo.
+- **Deck de controle:** ocupa o resto da altura, com os grupos centrados na vertical.
+  - **Gatilhos:** linha de cima, com pills de 64×44 encostadas nas bordas. No PlayStation, L1/L2 e R1/R2 ficam lado a lado. O Z do N64 fica no centro.
+  - **Cluster esquerdo:** D-pad em cruz de 3×48px (144px), afundado num poço circular. Arcade e Neo Geo usam um joystick de bola, e o N64 usa analógico ou D-pad pelo botão de troca.
+  - **Cluster direito (156px):** os botões de ação no arranjo do console original, descritos em "Botões de ação por console".
+  - **Linha do meio:** Select/Start (ou Coin/Start, ou Pause), pills inclinadas a −20° com o rótulo embaixo; cada alvo tem 44×44.
+  - **Grade do alto-falante:** 6 fendas diagonais no canto de baixo à direita, decorativa (`aria-hidden`).
+- **Orçamento de altura (390×844):** barra de topo 52px; corpo com margem 8px; vidro: 4/3 → janela 334×250 + LED 24 + strip 32 + padding 28 = 334px; marca 28px; o deck fica com cerca de 380px, para 300px necessários com gatilhos. Em 360×640, a janela encolhe até o deck ter 300px.
+- **Tablets em pé:** a mesma regra, com o corpo limitado a 480px de largura e centrado.
 
-| proporção | consoles | gatilhos? | faixa livre sem inset | com inset 34px | cabe |
-|---|---|---|---|---|---|
-| 4/3 | NES, SNES, N64, SMS, MD, PS, Arcade, Neo Geo | SNES, N64, PS | 222px | 188px | sim (184) |
-| 10/9 | GB, GBC, Game Gear | nenhum | 192px | 158px | sim (132) |
-| 3/2 | GBA | sim | 238px | 204px | sim (184) |
+**Botões de ação por console (modo portátil e paisagem):**
+
+| console | arranjo | cores (preenchimento / rótulo) |
+|---|---|---|
+| NES | B e A lado a lado, A mais alto | vermelho `#C8102E` / branco |
+| Game Boy | B e A na diagonal, A acima à direita | magenta `#9A2257` / branco |
+| Game Boy Color | B e A na diagonal | cinza claro `#E4E4EA` / `#18181B` |
+| Game Boy Advance | B e A na diagonal; L e R nos gatilhos | lilás claro `#D9D9E3` / `#18181B` |
+| SNES | losango X (cima), Y (esquerda), A (direita), B (baixo) | X `#3B5BA9`, Y `#1E8F4E`, A `#C8102E` / branco; B `#E0B020` / `#18181B` |
+| Nintendo 64 | C amarelos em losango; A e B nos cantos de baixo; Z e L/R nos gatilhos | A `#2456C8`, B `#1E8F4E` / branco; C `#E8B000` / `#18181B`; Start `#C8102E` |
+| Master System, Game Gear | 1 e 2 na diagonal | `--t-accent` / `#18181B` |
+| Mega Drive | A, B, C em arco | `--t-accent` / `#18181B` |
+| PlayStation | losango △ (cima), □ (esquerda), ○ (direita), ✕ (baixo) | fundo `#2B2B30` com símbolo △ `#3DDC97`, ○ `#FF6B6B`, ✕ `#7FB2FF`, □ `#F49AC2` |
+| Arcade | A, B, C, D em grade 2×2 | A `#FF3EA5`, B `#22D3EE`, C `#FFD23F`, D `#7CFC00` / `#18181B` |
+| Neo Geo | A, B, C, D em arco | A `#E5322D`, B `#F2C14E`, C `#2FA84F`, D `#2D6CDF` / A, C, D branco; B `#18181B` |
+
+- Todo botão de ação tem um anel de 2px `rgb(0 0 0 / .45)` e fica num poço mais escuro do corpo. O contraste de UI (≥3:1) é medido contra o poço.
+- **Tom do corpo:** `data-shell="light|dark"` sai de `pickTextColor(--t-frame)`. Num corpo claro, o D-pad e os gatilhos são `#26262B`; num corpo escuro, `#5A5A64`.
 
 **Geometria, paisagem 844×390:**
 - **Faixas laterais:** a janela ocupa a altura do palco, e os clusters ficam nas faixas dos lados. Em 4/3, cada faixa tem 191px (147px com inset de 44px no lado do notch); 10/9 tem 230px; 3/2 tem 162px.
@@ -106,18 +136,13 @@ Layout trees (base mobile 320px; ordem das regiões = ordem no DOM):
   - Ele nunca entra além de 24px.
 - **Gatilhos e meio:** os gatilhos ficam no topo de cada faixa. Os botões da coluna do meio se dividem: Select (ou Coin) embaixo do cluster esquerdo, Start embaixo do direito. No N64, o botão D-pad/Stick fica embaixo do cluster esquerdo.
 
-**Sugestão de girar:**
-- **Forma:** pill com `min-h-11`, `text-sm` em `--t-text` sobre `--t-bg`, borda 1px `--t-accent`.
-- **Texto e ação:** "Turn your phone sideways for a bigger game." e botão "Dismiss" (44×44).
-- **Posição:** centrada na faixa de cima, em retrato. Some em paisagem. O dismiss vale para a sessão.
-
 **Estados:**
 
-| play state | legenda (Wide) | controle virtual (toque) | sugestão de girar (retrato) | tela cheia |
+| play state | legenda (Wide) | controle virtual (toque) | modo portátil: LED | tela cheia |
 |---|---|---|---|---|
-| loading-metadata, not-found, metadata-error, failed | linha reservada, vazia | oculto | oculta | visível |
-| booting | chips visíveis, Edit keys `aria-disabled` | visível, inerte (`aria-disabled`) | visível | visível |
-| running | chips e Edit keys ativos | ativo | visível até dispensar ou girar | visível |
+| loading-metadata, not-found, metadata-error, failed | linha reservada, vazia | deck desenhado, botões ocultos (paisagem: oculto) | cinza | visível |
+| booting | chips visíveis, Edit keys `aria-disabled` | visível, inerte (`aria-disabled`, opacidade 0.6) | acende sem brilho | visível |
+| running | chips e Edit keys ativos | ativo | `--t-accent` com brilho | visível |
 
 **Estados do painel Keys:**
 
@@ -132,20 +157,22 @@ Layout trees (base mobile 320px; ordem das regiões = ordem no DOM):
 | no-storage | `localStorage` lança | status "Keys can't be saved in this browser."; o mapa vale na sessão |
 
 ## Components
-Cinco componentes novos; três existentes mudam só para montar os novos nos slots.
+Quatro componentes novos; os existentes mudam só para montar os novos nos slots e para o modo portátil.
 
 - `ControlsLegend` — new, `components/ControlsLegend.tsx` — props: `consoleId`, `map` (mapa resolvido), `status: PlayScreenState`, `onEdit(): void` — estados: vazio, booting, running — composed-of: [KeyChip, edit-keys button]
 - `KeysPanel` — new, `components/KeysPanel.tsx` — props: `consoleId`, `map`, `hasSaved: boolean`, `storageOk: boolean`, `open: boolean`, `onRemap(button, code)`, `onReset()`, `onClose()` — estados: idle, capture, rejected, swapped, saved, reset, no-storage — composed-of: [dialog, KeyRow, status line, reset button, done button]
-- `VirtualController` — new, `components/VirtualController.tsx` — props: `consoleId`, `status: PlayScreenState`, `onInput(button, pressed: boolean)` — estados: oculto, inerte, ativo, pressionado por botão; N64: stick ou d-pad — composed-of: [DPad, Stick, TouchButton, RotateHint]
-- `RotateHint` — new, `components/RotateHint.tsx` — props: `onDismiss()` — estados: visível, dispensada — composed-of: [message, dismiss button]
+- `VirtualController` — new, `components/VirtualController.tsx` — props: `consoleId`, `status: PlayScreenState`, `onInput(button, pressed: boolean)` — estados: oculto, inerte, ativo, pressionado por botão; N64: stick ou d-pad — composed-of: [DPad, Stick, FaceButton, ShoulderButton, MenuButton, speaker grille]. Um único conjunto de botões; o CSS posiciona o deck no modo portátil e as faixas laterais na paisagem.
 - `FullscreenToggle` — new, `components/FullscreenToggle.tsx` — props: `targetRef` (elemento `play-stage`) — estados: off, on, sem suporte (oculto) — composed-of: [icon button]
-- `PlayStage` — existing — monta `ControlsLegend` no slot `legend`, `VirtualController` no slot `touch-overlay`, `KeysPanel` e `FullscreenToggle`; tamanho do palco e da janela sem mudança — composed-of: [PlayTopBar, ThemedFrame, StatusStrip, ControlsLegend, VirtualController, KeysPanel]
+- `PlayStage` — existing — monta `ControlsLegend` no slot `legend`, `VirtualController` no slot `touch-overlay`, `KeysPanel` e `FullscreenToggle`; envolve frame, strip e controle em `.play-shell` / `.play-screen` (`display: contents` fora do modo portátil) — composed-of: [PlayTopBar, ThemedFrame, StatusStrip, ControlsLegend, VirtualController, KeysPanel]
 - `PlayTopBar` — existing — recebe `FullscreenToggle` como `children` do slot `fullscreen`; sem outra mudança — composed-of: [next/link, h1, system label, FullscreenToggle]
+- `StatusStrip` — existing — no modo portátil, fica sobre a base do vidro (32px reservados), não sobre o deck
 - `Emulator` — existing — envia o mapa e o input ao iframe; nenhuma mudança visual — composed-of: [iframe]
 
-Pressed e rest dos botões de toque:
-- **Rest:** fundo `--t-bg` com opacidade 0.6 e contorno de 2px em `--t-accent`, com rótulo `text-sm` semibold em `--t-text`.
-- **Pressed:** fundo `--t-accent` com rótulo `#18181B`, sem transição.
+Rest, pressed e inerte dos botões de toque:
+- **Rest:** cada botão tem relevo próprio: um gradiente radial do preenchimento do console, a sombra de baixo `0 3px 0` mais escura e o anel de 2px. O rótulo é `text-sm` semibold.
+- **Pressed:** o botão desce 2px (`translateY(2px)`), a sombra de baixo some e aparece uma sombra interna. A transição de `transform` é de 60ms, desligada com `prefers-reduced-motion`. No Android, `navigator.vibrate(8)` dá um toque curto quando existe.
+- **Paisagem:** os mesmos botões, com fundo do deck `--t-bg` a 0.6 de opacidade e contorno de 2px em `--t-accent` em volta de cada cluster.
+- **Inerte (booting):** opacidade 0.6 e `aria-disabled`.
 
 ## Flows
 Cinco fluxos: remapear, voltar ao padrão, jogar por toque, tela cheia e mapa na carga.
@@ -178,16 +205,16 @@ flowchart LR
   - Em `pointercancel`, `blur`, `visibilitychange` e `orientationchange`, todos os botões são soltos.
   - Um clique sintético (leitor de tela) pressiona e solta em 100 ms.
 - **Tela cheia:**
-  - Toque → `requestFullscreen()` no `play-stage` → tenta `screen.orientation.lock('landscape')` em `try/catch`.
+  - Toque → `requestFullscreen()` no `play-stage`. Não trava a orientação, porque o modo portátil em pé é o layout principal (dono, 2026-11-11).
   - `fullscreenchange` sincroniza `aria-pressed` e o rótulo "Full screen"/"Exit full screen".
   - Se o pedido é recusado, o botão fica desligado, sem mensagem.
 - **Desktop estreito (< 1024px, mouse):** sem legenda, sem painel e sem controle virtual. O teclado funciona com o mapa resolvido, e a tela cheia funciona. É a regra D10 da SF04, mantida.
 
 ## Tokens
-A SF02 não cria custom property nova. Usa os 7 tokens do palco e `#18181B` sobre `--t-accent`.
+A SF02 cria uma custom property: `--t-on-frame`, a cor de texto sobre `--t-frame`, calculada por `pickTextColor(frameColor)` no `PlayStage` (o `playThemeCssVars` da SF01 continua com 7 propriedades). Ela é usada só na linha da marca do modo portátil. O resto usa os 7 tokens do palco, `#18181B` sobre `--t-accent` e as cores fixas da tabela "Botões de ação por console".
 
 ```json
-{"cluster":{"size":"132px","cell":"44px","dpadGap":"0","buttonGap":"8px"},"shoulderRow":"44px","centerColumn":{"button":"44px","gap":"8px"},"portraitBudget":{"withShoulders":"184px","withoutShoulders":"132px"},"landscapeOverlapMax":"24px","touchRest":{"bg":"--t-bg","opacity":0.6,"outline":"2px --t-accent","label":"--t-text text-sm semibold"},"touchOverlap":{"bg":"--t-bg","opacity":0.8,"outline":"2px --t-accent"},"touchPressed":{"bg":"--t-accent","label":"#18181B","transition":"none"},"legend":{"row":"h-10","chip":"text-xs --t-text","keycap":"1px --t-muted border, --t-text","editKeys":"h-10 min-w-11, secondary"},"keysPanel":{"bg":"--t-bg","border":"1px --t-frame","radius":"--t-radius","padding":"p-6","maxW":"max-w-md","maxH":"80vh","backdrop":"bg-black/60","row":"min-h-11 text-sm","title":"text-lg semibold"},"rotateHint":{"minH":"min-h-11","text":"text-sm --t-text","bg":"--t-bg","border":"1px --t-accent"},"bottomReserve":"h-8 + env(safe-area-inset-bottom)"}
+{"handheld":{"media":"(pointer: coarse) and (orientation: portrait)","shell":{"maxW":"480px","margin":"8px","radius":"28px 28px 72px 28px","bg":"--t-frame + color-mix gradient"},"screen":{"bg":"color-mix(--t-frame 18%, #111114)","radius":"14px 14px 40px 14px","padding":"14px","led":"8px --t-accent","stripReserve":"32px"},"brand":"text-sm --t-on-frame","deckMin":"300px","dpad":"3x48px","face":{"two":"60px","four":"52px","n64C":"44px"},"shoulder":"64x44px","menu":"pill 48x14 visual, 44x44 target, rotate -20deg","pressed":{"translateY":"2px","transition":"transform 60ms","reducedMotion":"none"}},"cluster":{"size":"132px","cell":"44px","dpadGap":"0","buttonGap":"8px"},"shoulderRow":"44px","centerColumn":{"button":"44px","gap":"8px"},"landscapeOverlapMax":"24px","touchRest":{"bg":"--t-bg","opacity":0.6,"outline":"2px --t-accent","label":"--t-text text-sm semibold"},"touchOverlap":{"bg":"--t-bg","opacity":0.8,"outline":"2px --t-accent"},"legend":{"row":"h-10","chip":"text-xs --t-text","keycap":"1px --t-muted border, --t-text","editKeys":"h-10 min-w-11, secondary"},"keysPanel":{"bg":"--t-bg","border":"1px --t-frame","radius":"--t-radius","padding":"p-6","maxW":"max-w-md","maxH":"80vh","backdrop":"bg-black/60","row":"min-h-11 text-sm","title":"text-lg semibold"},"bottomReserve":"h-8 + env(safe-area-inset-bottom)"}
 ```
 
 ## Design Contract
@@ -195,18 +222,19 @@ O QA verifica os compromissos abaixo. Os valores vêm do `design-context` (token
 
 | Dimension | Declares | Verified by | Method |
 |---|---|---|---|
-| Layout stability | A caixa da janela do jogo é igual (0px) com e sem a SF02 montada, em 390×844, 844×390 e 1366×768; o painel Keys, a legenda, o controle e a sugestão não mudam a caixa | Computed style | `getBoundingClientRect` de `[data-window]` antes e depois de abrir painel, girar e dispensar a sugestão |
+| Layout stability | Em 844×390 e 1366×768, a caixa da janela do jogo é igual (0px) com e sem a SF02 montada. Em 390×844 (modo portátil), a caixa é igual em booting e running. O painel Keys, a legenda e o controle não mudam a caixa. Girar o aparelho não remonta o iframe | Computed style | `getBoundingClientRect` de `[data-window]` antes e depois de abrir o painel e entre estados; a mesma instância do iframe antes e depois de girar |
+| Handheld | Em 390×844 com toque: `.play-shell` visível, com o vidro acima do deck; nenhum botão sobre o vidro; corpo em `--t-frame`; `data-shell` coerente com `pickTextColor`; 12 consoles com as cores da tabela | Computed style + screenshot | retângulos do vidro e dos botões; cor de fundo computada |
 | Spacing scale | Passos 1, 2, 3, 4, 6, 8; 8px entre alvos de toque; desvio: 0px entre as 4 zonas do D-pad (um controle só) | Computed style | gap/padding vs conjunto de passos |
 | Token allowlist | `--t-bg`, `--t-accent`, `--t-frame`, `--t-text`, `--t-muted`, `--t-ar`, `--t-radius`, `#18181B` sobre accent, `bg-black/60` no fundo do diálogo; nenhuma custom property nova | Computed style | custom properties resolvidas e cores computadas |
 | Typographic scale | Chips `text-xs`; título do painel `text-lg` semibold; linhas, botões, sugestão e rótulos de toque `text-sm`; família `unknown` — o projeto não define fonte | Computed style | font-size e weight |
 | Minimum tap target | 44×44px em todo alvo de toque (botões do controle, D-pad por zona, Dismiss, tela cheia, linhas e botões do painel); desvio: Edit keys 40px de altura × ≥44px, só em Wide (mouse) | axe-core (`target-size`) + computed style | axe + bounding box ≥44px em E2E |
 | Contrast target | Texto ≥ 4,5:1 (chips, painel, sugestão, rótulos de toque sobre `--t-bg`); UI ≥ 3:1 (contorno `--t-accent` sobre `--t-bg`) nos 12 temas | axe-core (`color-contrast`) | Regra determinística |
-| Controller fit | Em 390×844, o controle cabe na faixa de baixo nos 12 consoles: nenhum botão sobre a janela, nenhum sobre o `StatusStrip`; em 844×390, nenhum botão avança mais de 24px sobre a janela | Computed style | Interseção dos retângulos de cada botão com `[data-window]` e com o strip |
+| Controller fit | Em 390×844 (modo portátil), o controle cabe no deck nos 12 consoles: nenhum botão sobre a janela, o strip ou o vidro, e nenhum fora da tela; em 844×390, nenhum botão avança mais de 24px sobre a janela | Computed style | Interseção dos retângulos de cada botão com `[data-window]`, com o vidro e com o viewport |
 | Legend fit | Em 1024×768 e 1366×768, nenhum chip cortado nos 12 consoles; Edit keys visível | Computed style | `scrollWidth ≤ clientWidth` da linha; retângulo de cada chip dentro da linha |
-| Breakpoint behaviour | Wide: legenda + painel; toque: controle; retrato com toque: sugestão; paisagem 844×390: sem sugestão; abaixo de Wide com mouse: sem legenda e sem controle (aceito); tela cheia em todo viewport com suporte | Screenshot + computed style | presença e visibilidade por viewport |
-| Required states | Legenda: vazio, booting, running; painel: idle, capture, rejected, swapped, saved, reset, no-storage; controle: oculto, inerte, ativo, pressed; N64 stick/d-pad; sugestão: visível, dispensada; tela cheia: off, on | Evidence set | Comparação dos arquivos de estado capturados |
-| Primary CTA count | Painel Keys: 1 (Done); legenda: 0 (Edit keys secundário); celular: 0 (controle e Dismiss não são CTA); estados da SF04 sem mudança | Screenshot | Juízo do agente |
-| Motion | Pressed sem transição; nenhuma animação nova; `prefers-reduced-motion` sem efeito a desligar | Computed style | `transition-duration` 0s nos botões de toque |
+| Breakpoint behaviour | Wide: legenda + painel; retrato com toque: modo portátil; paisagem com toque: faixas laterais; abaixo de Wide com mouse: sem legenda e sem controle (aceito); tela cheia em todo viewport com suporte | Screenshot + computed style | presença e visibilidade por viewport |
+| Required states | Legenda: vazio, booting, running; painel: idle, capture, rejected, swapped, saved, reset, no-storage; controle: oculto, inerte, ativo, pressed; N64 stick/d-pad; LED: cinza, aceso, com brilho; tela cheia: off, on | Evidence set | Comparação dos arquivos de estado capturados |
+| Primary CTA count | Painel Keys: 1 (Done); legenda: 0 (Edit keys secundário); celular: 0 (o controle não é CTA); estados da SF04 sem mudança | Screenshot | Juízo do agente |
+| Motion | Pressed com `transform` de 60ms; LED com transição de cor de 200ms; com `prefers-reduced-motion`, as duas são `none` | Computed style | `transition-duration` dos botões com e sem reduced motion |
 | Accessibility | axe sem violações com o painel aberto (idle e capture), com a legenda em running e com o controle em running; `<dialog>` com `aria-labelledby`; status do painel `role="status"`; botões de toque com nome acessível do botão do console; tela cheia com `aria-pressed`; foco visível em `--t-accent` | axe-core | Regras determinísticas |
 | Focus return | Depois de Done ou Esc, `document.activeElement` é o iframe e o Enter do Done não chega ao jogo | E2E | stub do `/emulator.html` registra mensagens de input recebidas |
 
@@ -236,3 +264,4 @@ Os 10 itens da crítica do @ux-agent (modo crítica) e os pontos abertos do @ux-
 | Fluxo — mapa reenviado a cada `EMULATOR_CANVAS_READY` | — | accepted | Cobre nova tentativa de core e Reload sem estado extra |
 | Layout — legenda de 40px vs alvo de 44px | — | changed | Resolvido por C8 |
 | Layout — N64 abaixo de 370px como `unknown` | — | changed | Substituído pela alternância Stick/D-pad e pelo orçamento de C1 |
+| Dono, 2026-11-11 — modo portátil em pé para os 12 consoles, nas cores de cada um | — | accepted | Substitui a faixa de baixo de C1 e a sugestão de girar; muda a caixa da janela em retrato com toque (antes a maior caixa do palco, regra da SF04); paisagem e Wide sem mudança |

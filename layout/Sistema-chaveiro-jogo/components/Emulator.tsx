@@ -1,15 +1,38 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import type { BezelConsoleId } from '@/lib/bezel-console';
+import {
+  isTrustedMessage,
+  parseEmulatorMessage,
+  type EjsIndex,
+  type PageToEmulatorMessage,
+  type RkControlsMessage
+} from '@/lib/emulator-controls';
 
 export type EmulatorStatus = 'booting' | 'running' | 'failed';
+
+// Imperative input path of the play page into the iframe (0002F SF02, plan.md EmulatorHandle).
+export type EmulatorHandle = {
+  sendInput: (index: EjsIndex, pressed: boolean) => void;
+  releaseAll: () => void;
+  focusGame: () => boolean;
+};
 
 interface EmulatorProps {
   gameSlug: string;
   gameTitle: string;
   core: string;
+  // ROM URL with its signed ticket, from /api/play/[slug]/session.
+  romUrl: string;
+  // While true the iframe is asked to pause the game (RETROKEY_PAUSE / RETROKEY_RESUME messages).
+  paused?: boolean;
   // Reports the boot state to the page. `failed` is sent only once every core candidate failed.
   onStatusChange?: (state: EmulatorStatus, attempt: number, total: number, core: string) => void;
+  // Console id for the iframe `console` param (control scheme, RN01); null leaves EmulatorJS defaults.
+  consoleId?: BezelConsoleId | null;
+  // Resolved key map, posted on every EMULATOR_CANVAS_READY and again whenever it changes.
+  controls?: RkControlsMessage | null;
 }
 
 const FALLBACK_TIMEOUT_MS = 10000;
@@ -47,9 +70,13 @@ function getCoreCandidates(primaryCore?: string): string[] {
   return Array.from(new Set(candidates));
 }
 
-export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: EmulatorProps) {
+export default forwardRef<EmulatorHandle, EmulatorProps>(function Emulator(
+  { gameSlug, gameTitle, core, romUrl, paused = false, onStatusChange, consoleId = null, controls = null },
+  ref
+) {
   const [iframeUrl, setIframeUrl] = useState<string>('');
-  const romUrl = `/api/rom/${encodeURIComponent(gameSlug)}`;
+  const controlsRef = useRef<RkControlsMessage | null>(controls);
+  controlsRef.current = controls;
   const coreCandidates = getCoreCandidates(core);
 
   // Held in a ref so a new callback identity never restarts the boot effect below.
@@ -61,6 +88,28 @@ export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: 
 
   // Ref for iframe to manage focus
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // RN03: messages go only to this iframe, with the app origin as target.
+  const post = (message: PageToEmulatorMessage) => {
+    const target = iframeRef.current?.contentWindow;
+    if (!target) return;
+    target.postMessage(message, window.location.origin);
+  };
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      sendInput: (index, pressed) => post({ type: 'RK_INPUT', index, pressed }),
+      releaseAll: () => post({ type: 'RK_RELEASE_ALL' }),
+      focusGame: () => {
+        const target = iframeRef.current?.contentWindow;
+        if (!target) return false;
+        target.focus();
+        return true;
+      }
+    }),
+    []
+  );
 
   // State management for emulator lifecycle
   const stateRef = useRef<EmulatorState>('loading');
@@ -140,6 +189,7 @@ export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: 
         core: currentCore,
         rom: romUrl
       });
+      if (consoleId) params.set('console', consoleId);
 
       const url = `/emulator.html?${params.toString()}`;
       attemptRef.current.iframeUrl = url;
@@ -176,9 +226,13 @@ export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: 
 
     // Listen for canvas ready signal from iframe (generic for any core/console)
     const handleMessage = (event: MessageEvent) => {
-      if (event.data?.type === 'EMULATOR_CANVAS_READY') {
-        // Ignore if not in loading state or component is cancelled
-        if (cancelledRef.current || stateRef.current !== 'loading') return;
+      if (!isTrustedMessage(event, window.location.origin, iframeRef.current?.contentWindow)) return;
+      if (parseEmulatorMessage(event.data)) {
+        if (cancelledRef.current) return;
+        // Every ready (each core attempt, each Reload) gets the current key map.
+        if (controlsRef.current) post(controlsRef.current);
+        // Ignore if not in loading state
+        if (stateRef.current !== 'loading') return;
 
         // Mark as running and prevent any further fallback attempts
         stateRef.current = 'running';
@@ -198,7 +252,19 @@ export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: 
       window.removeEventListener('message', handleMessage);
       cleanupCurrentAttempt();
     };
-  }, [gameSlug, gameTitle, core]);
+  }, [gameSlug, gameTitle, core, romUrl, consoleId]);
+
+  // A remap or reset while running is applied live in the iframe (plan.md FD2).
+  useEffect(() => {
+    if (controls && stateRef.current === 'running') post(controls);
+  }, [controls]);
+
+  // Pause or resume the game inside the same-origin iframe (public/emulator.html listens).
+  useEffect(() => {
+    const target = iframeRef.current?.contentWindow;
+    if (!target) return;
+    target.postMessage({ type: paused ? 'RETROKEY_PAUSE' : 'RETROKEY_RESUME' }, window.location.origin);
+  }, [paused, iframeUrl]);
 
   return (
     <div className="h-full w-full overflow-hidden bg-black">
@@ -246,4 +312,4 @@ export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: 
       )}
     </div>
   );
-}
+});

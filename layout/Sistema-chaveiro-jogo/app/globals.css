@@ -155,8 +155,579 @@ body {
   }
 }
 
+/*
+ * 0002F SF02 controls (design.md "Modo portátil", "Botões de ação por console", Tokens).
+ * Outside the handheld media, .play-shell and .play-screen are display: contents, so the SF04
+ * layout stays as it was. The same DOM serves portrait and landscape: turning the phone never
+ * remounts the iframe.
+ */
+@layer components {
+  .play-shell,
+  .play-screen {
+    display: contents;
+  }
+
+  .play-screen-top,
+  .play-brand {
+    display: none;
+  }
+
+  .play-touch {
+    position: absolute;
+    inset: 0;
+    display: none;
+    pointer-events: none;
+    container-type: size;
+  }
+
+  @media (pointer: coarse) {
+    .play-touch {
+      display: block;
+    }
+  }
+
+  /* --- Buttons (shared by portrait and landscape) ------------------------------------------- */
+  .vc {
+    --cell: 48px;
+    --face: 156px;
+    --vc-tone: #26262b;
+    --vc-tone-fg: #f4f4f5;
+    --vc-well: rgb(0 0 0 / 0.16);
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'sl sr'
+      'left right'
+      'ml mr';
+    column-gap: 16px;
+    row-gap: 8px;
+    height: 100%;
+    padding: 4px 6px 6px;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .play-shell[data-shell='dark'] .vc {
+    --vc-tone: #5a5a64;
+    --vc-well: rgb(0 0 0 / 0.28);
+  }
+
+  .vc[data-state='hidden'] {
+    visibility: hidden;
+  }
+
+  .vc[data-state='inert'] button {
+    opacity: 0.6;
+  }
+
+  .vc-sl,
+  .vc-sc,
+  .vc-sr,
+  .vc-ml,
+  .vc-mr {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .vc-sl {
+    grid-area: sl;
+    justify-self: start;
+  }
+
+  /* N64 Z sits centered above the two columns, so it never widens them. */
+  .vc-sc {
+    position: absolute;
+    top: 4px;
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  .vc-sr {
+    grid-area: sr;
+    justify-self: end;
+  }
+
+  .vc-left {
+    grid-area: left;
+    align-self: center;
+    justify-self: center;
+  }
+
+  .vc-right {
+    grid-area: right;
+    align-self: center;
+    justify-self: center;
+  }
+
+  .vc-ml {
+    grid-area: ml;
+    justify-self: end;
+  }
+
+  .vc-mr {
+    grid-area: mr;
+    justify-self: start;
+  }
+
+  .vc button {
+    touch-action: none;
+    pointer-events: auto;
+    transition: transform 60ms ease-out, box-shadow 60ms ease-out;
+  }
+
+  .vc button:focus-visible {
+    outline: 2px solid var(--t-accent);
+    outline-offset: 2px;
+  }
+
+  /* D-pad and stick: one control of 3 x --cell, sitting in a round well. */
+  .vc-pad {
+    position: relative;
+    width: calc(var(--cell) * 3);
+    height: calc(var(--cell) * 3);
+    border-radius: 50%;
+    background: var(--vc-well);
+    box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.25);
+    touch-action: none;
+    pointer-events: auto;
+  }
+
+  .vc-dir {
+    position: absolute;
+    width: var(--cell);
+    height: var(--cell);
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .vc-dir-up {
+    left: var(--cell);
+    top: 0;
+  }
+
+  .vc-dir-down {
+    left: var(--cell);
+    top: calc(var(--cell) * 2);
+  }
+
+  .vc-dir-left {
+    left: 0;
+    top: var(--cell);
+  }
+
+  .vc-dir-right {
+    left: calc(var(--cell) * 2);
+    top: var(--cell);
+  }
+
+  .vc-pad-dpad .vc-dir {
+    background: var(--vc-tone);
+    box-shadow: 0 3px 0 rgb(0 0 0 / 0.45);
+  }
+
+  .vc-pad-dpad .vc-dir-up {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .vc-pad-dpad .vc-dir-down {
+    border-radius: 0 0 8px 8px;
+  }
+
+  .vc-pad-dpad .vc-dir-left {
+    border-radius: 8px 0 0 8px;
+  }
+
+  .vc-pad-dpad .vc-dir-right {
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* Small arrow marks on each arm. */
+  .vc-pad-dpad .vc-dir::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    translate: -50% -50%;
+  }
+
+  .vc-pad-dpad .vc-dir-up::after {
+    border-bottom-color: rgb(255 255 255 / 0.4);
+    margin-top: -3px;
+  }
+
+  .vc-pad-dpad .vc-dir-down::after {
+    border-top-color: rgb(255 255 255 / 0.4);
+    margin-top: 3px;
+  }
+
+  .vc-pad-dpad .vc-dir-left::after {
+    border-right-color: rgb(255 255 255 / 0.4);
+    margin-left: -3px;
+  }
+
+  .vc-pad-dpad .vc-dir-right::after {
+    border-left-color: rgb(255 255 255 / 0.4);
+    margin-left: 3px;
+  }
+
+  .vc-pad-dpad .vc-dir[data-pressed] {
+    background: color-mix(in srgb, var(--vc-tone) 70%, var(--t-accent));
+    box-shadow: inset 0 3px 6px rgb(0 0 0 / 0.5);
+    transform: translateY(2px);
+  }
+
+  .vc-hub {
+    position: absolute;
+    left: var(--cell);
+    top: var(--cell);
+    width: var(--cell);
+    height: var(--cell);
+    background: var(--vc-tone);
+    box-shadow: 0 3px 0 rgb(0 0 0 / 0.45);
+    pointer-events: none;
+  }
+
+  .vc-hub::after {
+    content: '';
+    position: absolute;
+    inset: 30%;
+    border-radius: 50%;
+    background: rgb(0 0 0 / 0.25);
+  }
+
+  /* Ball-top stick (arcade, Neo Geo, N64 analog): the knob leans toward the pressed direction. */
+  .vc-knob {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(var(--cell) * 1.35);
+    height: calc(var(--cell) * 1.35);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--t-accent) 55%, white), var(--t-accent) 55%, color-mix(in srgb, var(--t-accent) 60%, black));
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.45), 0 6px 10px rgb(0 0 0 / 0.4);
+    translate: calc(-50% + var(--kx) * var(--cell) * 0.4) calc(-50% + var(--ky) * var(--cell) * 0.4);
+    transition: translate 60ms ease-out;
+    pointer-events: none;
+  }
+
+  .vc[data-console='n64'] .vc-knob {
+    background: radial-gradient(circle at 35% 30%, #d4d4d8, #8e8e96 60%, #5a5a64);
+  }
+
+  .vc-pad-stick .vc-dir[data-pressed] {
+    background: color-mix(in srgb, var(--t-accent) 22%, transparent);
+    border-radius: 12px;
+  }
+
+  /* Action buttons: placed by percent centers inside a square box (VirtualController LAYOUTS). */
+  .vc-faces {
+    position: relative;
+    width: var(--face);
+    height: var(--face);
+  }
+
+  .vc-faces[data-box='wide'] {
+    width: 172px;
+    height: 172px;
+  }
+
+  .vc-face {
+    position: absolute;
+    aspect-ratio: 1;
+    min-width: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    translate: -50% -50%;
+    background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--fill) 70%, white), var(--fill) 62%);
+    color: var(--fg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.45), 0 3px 0 color-mix(in srgb, var(--fill) 55%, black), 0 6px 10px rgb(0 0 0 / 0.3);
+  }
+
+  .vc[data-console='ps'] .vc-face {
+    font-size: 1.125rem;
+  }
+
+  .vc-face[data-pressed] {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.45), inset 0 3px 6px rgb(0 0 0 / 0.45);
+  }
+
+  /* Shoulders (L, R, L1/L2, R1/R2, Z). */
+  .vc-shoulder {
+    min-width: 64px;
+    height: 44px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 22px 22px 12px 12px;
+    background: var(--vc-tone);
+    color: var(--vc-tone-fg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.35), 0 3px 0 rgb(0 0 0 / 0.45);
+  }
+
+  .vc-shoulder[data-pressed] {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.35), inset 0 3px 6px rgb(0 0 0 / 0.5);
+    background: color-mix(in srgb, var(--vc-tone) 70%, var(--t-accent));
+  }
+
+  /* Select / Start / Coin / Pause and the N64 pad switch: slanted pill, label below, 44px target. */
+  .vc-menu {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 56px;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .vc-menu-pill {
+    width: 48px;
+    height: 14px;
+    border-radius: 7px;
+    background: var(--vc-tone);
+    rotate: -20deg;
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.3), 0 2px 0 rgb(0 0 0 / 0.45);
+  }
+
+  .vc[data-console='n64'] [data-button='start'] .vc-menu-pill {
+    background: #c8102e;
+  }
+
+  .vc-menu[data-pressed] .vc-menu-pill {
+    translate: 0 2px;
+    box-shadow: 0 0 0 2px rgb(0 0 0 / 0.3), inset 0 2px 4px rgb(0 0 0 / 0.5);
+  }
+
+  .vc-menu-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--t-on-frame);
+  }
+
+  .vc-grille {
+    display: none;
+  }
+
+  /* --- Handheld body: phone held upright with touch ------------------------------------------ */
+  @media (pointer: coarse) and (orientation: portrait) {
+    .play-shell {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      width: calc(100% - 16px);
+      max-width: 480px;
+      margin: 0 auto 8px;
+      padding: 14px 14px 10px;
+      border-radius: 28px 28px 72px 28px;
+      background: linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--t-frame) 82%, white) 0%,
+        var(--t-frame) 38%,
+        color-mix(in srgb, var(--t-frame) 82%, black) 100%
+      );
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), inset 0 -3px 0 rgb(0 0 0 / 0.25), 0 18px 40px rgb(0 0 0 / 0.45);
+    }
+
+    .play-screen {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex: none;
+      padding: 0 14px 34px;
+      border-radius: 14px 14px 40px 14px;
+      background: color-mix(in srgb, var(--t-frame) 18%, #111114);
+      box-shadow: inset 0 2px 10px rgb(0 0 0 / 0.65), 0 1px 0 rgb(255 255 255 / 0.18);
+    }
+
+    .play-screen-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 24px;
+    }
+
+    .play-led {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #52525b;
+      transition: background-color 200ms ease, box-shadow 200ms ease;
+    }
+
+    .play-led[data-led='boot'] {
+      background: var(--t-accent);
+    }
+
+    .play-led[data-led='on'] {
+      background: var(--t-accent);
+      box-shadow: 0 0 8px 2px color-mix(in srgb, var(--t-accent) 70%, transparent);
+    }
+
+    .play-led-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #a1a1aa;
+    }
+
+    /* The window fills the glass width; its height is capped so the deck always keeps ~300px. */
+    .play-screen .play-frame-area {
+      flex: none;
+      container-type: inline-size;
+    }
+
+    .play-screen .play-window {
+      width: min(100cqw, calc((100dvh - 470px) * var(--t-ar)));
+      max-height: none;
+      box-shadow: 0 0 0 2px rgb(0 0 0 / 0.5);
+    }
+
+    .play-screen .play-skeleton {
+      width: min(100cqw, calc((100dvh - 470px) * 4 / 3));
+      max-height: none;
+    }
+
+    .play-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      height: 28px;
+      padding: 6px 6px 0;
+      font-size: 0.875rem;
+      color: var(--t-on-frame);
+    }
+
+    .play-brand-name {
+      font-style: italic;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .play-touch {
+      position: relative;
+      inset: auto;
+      display: block;
+      flex: 1;
+      min-height: 300px;
+      container-type: normal;
+      pointer-events: auto;
+    }
+
+    .vc-grille {
+      position: absolute;
+      right: 22px;
+      bottom: 18px;
+      display: flex;
+      gap: 7px;
+      rotate: -28deg;
+      pointer-events: none;
+    }
+
+    .vc-grille span {
+      width: 6px;
+      height: 40px;
+      border-radius: 3px;
+      background: color-mix(in srgb, var(--t-frame) 65%, black);
+      box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.5);
+    }
+
+    .vc-ml,
+    .vc-mr {
+      align-self: end;
+      margin-bottom: 18px;
+    }
+
+    /* The demo countdown sits in the LED row of the glass. */
+    div[data-testid='demo-badge'] {
+      top: 15px;
+      right: max(36px, calc((100% - 480px) / 2 + 28px));
+    }
+  }
+
+  /* --- Landscape with touch: clusters in the bands beside the window --------------------------- */
+  @media (pointer: coarse) and (orientation: landscape) {
+    .vc {
+      --cell: 44px;
+      --face: 140px;
+      grid-template-columns: 1fr min(calc(100cqw - 296px), calc(100cqh * var(--t-ar))) 1fr;
+      grid-template-areas:
+        'sl . sr'
+        'left . right'
+        'ml . mr';
+      column-gap: 0;
+      padding: 6px max(6px, env(safe-area-inset-right)) calc(36px + env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left));
+    }
+
+    .vc-sc {
+      position: static;
+      translate: none;
+      grid-area: sl;
+      justify-self: end;
+    }
+
+    .vc-ml,
+    .vc-mr {
+      justify-self: center;
+    }
+
+    .vc-pad,
+    .vc-faces {
+      border-radius: 24px;
+      background-color: color-mix(in srgb, var(--t-bg) 60%, transparent);
+      outline: 2px solid var(--t-accent);
+    }
+
+    .vc-pad {
+      border-radius: 50%;
+    }
+
+    .vc-menu-label {
+      color: var(--t-text);
+    }
+
+    .vc {
+      --vc-tone: #3f3f46;
+    }
+
+    /* The demo countdown moves over the window top, clear of the shoulder buttons. */
+    div[data-testid='demo-badge'] {
+      top: 8px;
+      right: auto;
+      left: 50%;
+      translate: -50% 0;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  [data-frame] {
+  [data-frame],
+  .vc button,
+  .vc-knob,
+  .play-led {
     transition: none;
   }
 }

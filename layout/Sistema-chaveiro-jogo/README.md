@@ -31,8 +31,10 @@ Recent changes (2026-07-06):
 
 ## Getting Started
 
+> Setting up a new machine (Node, Python, Playwright, Claude Code plugins, skills and MCP servers)? See [docs/setup-ambiente.md](docs/setup-ambiente.md).
+
 ### 1. Prerequisites
-- Node.js 18+
+- Node.js 24.x
 - npm
 - Optional: MongoDB Atlas account for persistent data
 
@@ -95,14 +97,25 @@ Open http://localhost:3001 in your browser.
 ## Emulator Integration
 
 - The play page embeds an emulator shell through `components/Emulator.tsx`
-- The emulator loads the ROM through `/api/rom/{slug}`
+- The emulator loads the ROM through `/api/rom/{slug}?t=<ticket>`; the signed ticket comes from the play session
 - The page is designed to be compatible with browser-based emulation workflows
+
+## Demo vs. NFC access
+
+Rules in `lib/play-access.ts`; tokens are signed with a key derived from `AUTH_SECRET`.
+
+- **NFC (full play):** `/nfc/[id]` validates the cartridge and sets a pass cookie for that game, valid for 6 hours.
+- **Demo:** opening `/play/[slug]` without a pass gives a 3-minute demo. When it ends the emulator is removed and the screen asks for the NFC cartridge.
+- **Cooldown:** one demo per game every 30 minutes, counted by a signed cookie and by client IP (Mongo collection `demo_starts`, TTL index). Without Mongo only the cookie counts.
+- **ROM:** `/api/rom/[slug]` answers 401 without a valid ticket. Demo tickets expire with the demo.
+- **DevTools deterrent (production only):** F12, Ctrl/Cmd+Shift+I/J/C, Ctrl/Cmd+U and the context menu are blocked, and the game pauses while a docked DevTools panel is detected. This is not access control: the ROM ticket is.
 
 ## API Endpoints
 
-- `POST /api/nfc/validate` - validate a cartridge and prepare a launch flow
+- `POST /api/nfc/validate` - validate a cartridge and set the play pass cookie
+- `POST /api/play/[slug]/session` - decide full / demo / locked and return the signed ROM URL
 - `GET /api/game/[id]` - get game metadata
-- `GET /api/rom/[slug]` - serve ROM content through the app layer
+- `GET /api/rom/[slug]?t=<ticket>` - serve ROM content; needs a ticket from the play session
 - `GET /api/rooms` - list rooms
 - `GET /api/rooms/[slug]` - get a room by slug
 - `GET /api/admin/games` - list games
