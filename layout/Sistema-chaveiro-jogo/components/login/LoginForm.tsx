@@ -2,7 +2,7 @@
 
 import { signIn } from 'next-auth/react';
 import { FormEvent, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { safeCallbackUrl } from '@/lib/safe-callback-url';
 
 type LoginFormProps = {
@@ -14,7 +14,6 @@ type LoginFormProps = {
 const GENERIC_ERROR = 'Credenciais inválidas.';
 
 export default function LoginForm({ hint }: LoginFormProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,7 +51,10 @@ export default function LoginForm({ hint }: LoginFormProps) {
         return;
       }
 
-      router.push(callbackUrl);
+      // Full page load, not router.push: the client router may hold an earlier /admin response
+      // (prefetch or visit while logged out) that the middleware redirected to /login. A new
+      // document request sends the new session cookie and drops that cached response.
+      window.location.assign(callbackUrl);
     } catch (unexpectedError) {
       console.error('[login] unexpected error', unexpectedError);
       setError('Erro inesperado. Tente novamente.');
