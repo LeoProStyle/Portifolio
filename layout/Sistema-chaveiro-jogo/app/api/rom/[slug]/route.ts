@@ -1,6 +1,7 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { NextResponse } from 'next/server';
 import { getGameBySlug } from '@/lib/data';
+import { getPlayAccessKey, nowInSeconds, verifyToken } from '@/lib/play-access';
 import { getR2BucketName, getR2Endpoint } from '@/lib/r2';
 import { classifyRomPath } from '@/lib/rom-path';
 import fs from 'fs';
@@ -90,13 +91,14 @@ function serveRom(fileBuffer: Buffer, source: string, slug: string, origin: 'R2'
     'Content-Type': getContentTypeFromFilename(filename),
     'Content-Disposition': `attachment; filename="${filename}"`,
     'Content-Length': String(contentLength),
-    'Cache-Control': 'public, max-age=86400'
+    // The ROM is served per signed ticket; no shared cache may keep or reuse it.
+    'Cache-Control': 'private, no-store'
   };
   console.info(`[rom] Served ROM from ${origin} for`, slug, { status: 200, contentLength, filename });
   return new NextResponse(fileBuffer, { headers });
 }
 
-export async function GET(_request: Request, { params }: { params: { slug: string } }) {
+export async function GET(request: Request, { params }: { params: { slug: string } }) {
   try {
     const game = await getGameBySlug(params.slug);
 
@@ -104,6 +106,14 @@ export async function GET(_request: Request, { params }: { params: { slug: strin
       console.warn('[rom] Game not found or inactive for slug', params.slug);
       console.info('[rom] Returning JSON error response', { status: 404, contentType: 'application/json' });
       return NextResponse.json({ error: 'Game not found' }, { status: 404 });
+    }
+
+    // Only a ROM ticket from /api/play/[slug]/session opens the ROM (lib/play-access.ts).
+    const key = getPlayAccessKey();
+    const ticket = new URL(request.url).searchParams.get('t');
+    if (!key || !verifyToken(ticket, 'rom', game.slug, key, nowInSeconds())) {
+      console.warn('[rom] missing or invalid ROM ticket', { slug: game.slug });
+      return NextResponse.json({ error: 'Play session required' }, { status: 401, headers: { 'Cache-Control': 'no-store' } });
     }
 
     const location = classifyRomPath(game.romPath);

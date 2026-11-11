@@ -163,6 +163,47 @@
             }
         };
 
+        // Pause / resume requested by the play page (components/Emulator.tsx), same origin only.
+        window.addEventListener('message', (event) => {
+            if (event.origin !== window.location.origin) return;
+            const type = event.data && event.data.type;
+            if (type !== 'RETROKEY_PAUSE' && type !== 'RETROKEY_RESUME') return;
+            const emulator = window.EJS_emulator;
+            if (!emulator) return;
+            const pause = type === 'RETROKEY_PAUSE';
+            try {
+                if (pause && typeof emulator.pause === 'function') {
+                    emulator.pause();
+                } else if (!pause && typeof emulator.play === 'function') {
+                    emulator.play();
+                } else if (emulator.gameManager && typeof emulator.gameManager.toggleMainLoop === 'function') {
+                    emulator.gameManager.toggleMainLoop(pause ? 0 : 1);
+                }
+            } catch (e) {
+                console.warn('[RetroKey] pause/resume failed', e);
+            }
+        });
+
+        // Light deterrent, same keys as components/useDevToolsGuard.ts: key presses inside this iframe
+        // never reach the parent page. Off on localhost so development keeps the developer tools.
+        const isLocalHost = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+        if (!isLocalHost) {
+            window.addEventListener('keydown', (event) => {
+                const key = (event.key || '').toLowerCase();
+                const mod = event.ctrlKey || event.metaKey;
+                const devKey = key === 'i' || key === 'j' || key === 'c';
+                const blocked = key === 'f12'
+                    || (mod && event.shiftKey && devKey)
+                    || (event.metaKey && event.altKey && devKey)
+                    || (mod && !event.shiftKey && key === 'u');
+                if (blocked) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }, true);
+            window.addEventListener('contextmenu', (event) => event.preventDefault(), true);
+        }
+
         let canvasSignalSent = false;
         let canvasWatchTimer = null;
         let canvasObserver = null;
@@ -258,6 +299,14 @@
             const contentDisposition = response.headers.get('content-disposition');
             const ext = getExtensionFromContentDisposition(contentDisposition) || 'zip';
             window.EJS_gameName = `${gameTitle}.${ext}`;
+
+            // Sega 32X is a Mega Drive add-on that genesis_plus_gx does not emulate.
+            // A .32x ROM registered as Mega Drive runs on picodrive instead; the Mega Drive
+            // theme and controls stay the same.
+            if (String(ext).toLowerCase() === '32x' && genesisCores.includes(core)) {
+                window.EJS_core = 'picodrive';
+                console.log('[RetroKey] 32X ROM detected, using picodrive core');
+            }
 
             const script = document.createElement('script');
             script.src = EMULATORJS_CDN + 'loader.js';

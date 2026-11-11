@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import Emulator, { type EmulatorStatus } from '@/components/Emulator';
+import PlayAccessOverlay, { DemoBadge } from '@/components/PlayAccessOverlay';
 import PlayBezel from '@/components/PlayBezel';
 import PlayTopBar from '@/components/PlayTopBar';
 import StatusStrip, { type PlayScreenState } from '@/components/StatusStrip';
 import ThemedFrame, { type PlayFrameMode } from '@/components/ThemedFrame';
+import useDevToolsGuard from '@/components/useDevToolsGuard';
 import useWideScreen from '@/components/useWideScreen';
 import type { BezelConsoleId } from '@/lib/bezel-console';
 import { getCoreForSystem } from '@/lib/emulator-cores';
@@ -13,12 +15,35 @@ import { playThemeCssVars, resolvePlayTheme } from '@/lib/play-theme';
 
 export type PlayGameMeta = { title: string; system?: string; console?: string };
 export type MetaState = 'loading' | 'not-found' | 'metadata-error' | 'ok';
+// Response of POST /api/play/[slug]/session.
+export type PlayAccess =
+  | { mode: 'full'; romUrl: string; remainingSeconds: number }
+  | { mode: 'demo'; romUrl: string; remainingSeconds: number }
+  | { mode: 'locked'; retryInSeconds: number };
 
 interface PlayStageProps {
   slug: string;
   game: PlayGameMeta | null;
   metaState: MetaState;
+  // Set together with metaState 'ok'.
+  access: PlayAccess | null;
   onRetry: () => void;
+}
+
+/** Seconds left until `deadline` (ms), updated every second; null when there is no deadline. */
+function useSecondsLeft(deadline: number | null): number | null {
+  const [left, setLeft] = useState<number | null>(null);
+  useEffect(() => {
+    if (deadline === null) {
+      setLeft(null);
+      return;
+    }
+    const tick = () => setLeft(Math.max(0, Math.ceil((deadline - Date.now()) / 1000)));
+    tick();
+    const timer = window.setInterval(tick, 1000);
+    return () => window.clearInterval(timer);
+  }, [deadline]);
+  return left;
 }
 
 type EmulatorReport = { state: EmulatorStatus; attempt?: number; total?: number; core?: string };
@@ -35,7 +60,7 @@ const META_TO_SCREEN: Record<Exclude<MetaState, 'ok'>, PlayScreenState> = {
 
 // Full-viewport play stage (design.md 0002F SF01 Screens, SF04 modes). The theme is applied only as
 // inline custom properties on this element; nothing from the theme reaches the iframe.
-export default function PlayStage({ slug, game, metaState, onRetry }: PlayStageProps) {
+export default function PlayStage({ slug, game, metaState, access, onRetry }: PlayStageProps) {
   const [bootKey, setBootKey] = useState(0);
   const [emulator, setEmulator] = useState<EmulatorReport>({ state: 'booting' });
   const [bezel, setBezel] = useState<BezelState>('none');
@@ -44,7 +69,23 @@ export default function PlayStage({ slug, game, metaState, onRetry }: PlayStageP
   const wide = useWideScreen();
 
   const system = game?.system ?? game?.console ?? '';
-  const ready = metaState === 'ok' && game !== null;
+  const ready = metaState === 'ok' && game !== null && access !== null;
+
+  // Demo end and cooldown are counted from the server's remaining seconds, not the client clock.
+  const demoDeadline = useMemo(
+    () => (access?.mode === 'demo' ? Date.now() + access.remainingSeconds * 1000 : null),
+    [access]
+  );
+  const lockDeadline = useMemo(
+    () => (access?.mode === 'locked' ? Date.now() + access.retryInSeconds * 1000 : null),
+    [access]
+  );
+  const demoLeft = useSecondsLeft(demoDeadline);
+  const lockLeft = useSecondsLeft(lockDeadline);
+  const demoOver = access?.mode === 'demo' && demoLeft === 0;
+  const devToolsOpen = useDevToolsGuard();
+  const canPlay = ready && access?.mode !== 'locked' && !demoOver;
+  const romUrl = access && access.mode !== 'locked' ? access.romUrl : '';
   const core = useMemo(() => (ready ? getCoreForSystem(system) : ''), [ready, system]);
   const theme = resolvePlayTheme(ready ? system : null);
   const screenState: PlayScreenState = metaState === 'ok' ? emulator.state : META_TO_SCREEN[metaState];
@@ -106,16 +147,23 @@ export default function PlayStage({ slug, game, metaState, onRetry }: PlayStageP
             ) : null
           }
         >
-          {ready ? (
+          {canPlay ? (
             <Emulator
               key={bootKey}
               gameSlug={slug}
               gameTitle={title}
               core={core}
+              romUrl={romUrl}
+              paused={devToolsOpen}
               onStatusChange={handleStatusChange}
             />
           ) : null}
         </ThemedFrame>
+
+        {access?.mode === 'demo' && !demoOver && demoLeft !== null ? <DemoBadge secondsLeft={demoLeft} /> : null}
+        {ready && access?.mode === 'locked' ? <PlayAccessOverlay kind="locked" retryInSeconds={lockLeft ?? access.retryInSeconds} /> : null}
+        {demoOver ? <PlayAccessOverlay kind="demo-over" /> : null}
+        {canPlay && devToolsOpen ? <PlayAccessOverlay kind="devtools" /> : null}
 
         {/* Phone: absolute strip over the stage bottom (this parent is relative). Wide: a row in the flow. */}
         <StatusStrip

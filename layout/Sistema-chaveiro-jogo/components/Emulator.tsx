@@ -8,6 +8,10 @@ interface EmulatorProps {
   gameSlug: string;
   gameTitle: string;
   core: string;
+  // ROM URL with its signed ticket, from /api/play/[slug]/session.
+  romUrl: string;
+  // While true the iframe is asked to pause the game (RETROKEY_PAUSE / RETROKEY_RESUME messages).
+  paused?: boolean;
   // Reports the boot state to the page. `failed` is sent only once every core candidate failed.
   onStatusChange?: (state: EmulatorStatus, attempt: number, total: number, core: string) => void;
 }
@@ -47,9 +51,8 @@ function getCoreCandidates(primaryCore?: string): string[] {
   return Array.from(new Set(candidates));
 }
 
-export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: EmulatorProps) {
+export default function Emulator({ gameSlug, gameTitle, core, romUrl, paused = false, onStatusChange }: EmulatorProps) {
   const [iframeUrl, setIframeUrl] = useState<string>('');
-  const romUrl = `/api/rom/${encodeURIComponent(gameSlug)}`;
   const coreCandidates = getCoreCandidates(core);
 
   // Held in a ref so a new callback identity never restarts the boot effect below.
@@ -198,7 +201,14 @@ export default function Emulator({ gameSlug, gameTitle, core, onStatusChange }: 
       window.removeEventListener('message', handleMessage);
       cleanupCurrentAttempt();
     };
-  }, [gameSlug, gameTitle, core]);
+  }, [gameSlug, gameTitle, core, romUrl]);
+
+  // Pause or resume the game inside the same-origin iframe (public/emulator.html listens).
+  useEffect(() => {
+    const target = iframeRef.current?.contentWindow;
+    if (!target) return;
+    target.postMessage({ type: paused ? 'RETROKEY_PAUSE' : 'RETROKEY_RESUME' }, window.location.origin);
+  }, [paused, iframeUrl]);
 
   return (
     <div className="h-full w-full overflow-hidden bg-black">

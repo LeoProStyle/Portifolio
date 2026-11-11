@@ -65,8 +65,18 @@ test.beforeEach(async ({}, testInfo) => {
   test.skip(isNoMongo !== isT09, isT09 ? 'T09 runs only in the no-mongo project' : 'runs only in the main project');
 });
 
-test('T07 ROM route stays public and never echoes a path', async ({ request }) => {
-  const missingFile = await request.get('/api/rom/super-retro', { maxRedirects: 0 });
+test('T07 ROM route needs a play-session ticket and never echoes a path', async ({ request }) => {
+  const noTicket = await request.get('/api/rom/super-retro', { maxRedirects: 0 });
+  expect(noTicket.status()).toBe(401);
+  expect(await noTicket.json()).toEqual({ error: 'Play session required' });
+
+  // A demo session issues the signed ROM URL (lib/play-access.ts).
+  const session = await request.post('/api/play/super-retro/session');
+  expect(session.status()).toBe(200);
+  const { romUrl } = await session.json();
+  expect(romUrl).toMatch(/^\/api\/rom\/super-retro\?t=/);
+
+  const missingFile = await request.get(romUrl, { maxRedirects: 0 });
   expect(missingFile.status()).toBe(404);
   const missingFileBody = await missingFile.text();
   expect(JSON.parse(missingFileBody)).toEqual({ error: 'ROM not found' });
