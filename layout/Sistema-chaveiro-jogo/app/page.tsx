@@ -96,7 +96,7 @@ export default async function HomePage() {
       <main>
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:pt-16">
           <div>
-            <p className="text-sm uppercase tracking-[0.3em] text-cyan-400">Projeto de portfólio</p>
+            <p className="text-sm uppercase tracking-[0.3em] text-cyan-400">Projeto de LeoProStyle</p>
             <h1 className="mt-4 text-4xl font-semibold leading-tight sm:text-6xl">
               Encoste a tag. O jogo abre no navegador.
             </h1>
@@ -183,8 +183,8 @@ export default async function HomePage() {
           <p className="text-sm uppercase tracking-[0.3em] text-cyan-400">Tecnologia</p>
           <h2 className="mt-3 text-3xl font-semibold">Como foi construído</h2>
           <p className="mt-4 max-w-2xl text-zinc-400">
-            Uma aplicação Next.js com rotas de API próprias. Os dados ficam no MongoDB, os arquivos no Cloudflare R2 e
-            a área administrativa usa login com NextAuth. Testes de ponta a ponta com Playwright.
+           Uma aplicação com rotas próprias, armazenamento de dados e arquivos, área administrativa
+            com acesso seguro por login e testes automatizados para garantir o funcionamento de todas as funcionalidades.
           </p>
           <ul className="mt-8 flex flex-wrap gap-2">
             {STACK.map((item) => (
@@ -216,7 +216,7 @@ export default async function HomePage() {
 
       <footer className="border-t border-zinc-900">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-zinc-500">
-          <p>RetroKey · projeto de portfólio</p>
+          <p>RetroKey · projeto de LeoProStyle</p>
           <Link href="/admin" className="inline-flex min-h-11 items-center px-2 text-zinc-500 hover:text-zinc-300">
             Admin
           </Link>
