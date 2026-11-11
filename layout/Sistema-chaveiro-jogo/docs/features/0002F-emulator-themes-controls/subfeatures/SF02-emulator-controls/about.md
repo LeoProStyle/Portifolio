@@ -50,7 +50,7 @@ Jogar no RetroKey é agradável no PC e no celular: cada um dos 12 consoles abre
 - **RF02:** Em ponteiro fino (PC), a tela mostra uma legenda com a tecla de cada botão do console em uso; no celular (ponteiro por toque) a legenda não é exibida.
 - **RF03:** Um gamepad USB/Bluetooth conectado funciona com o mapa padrão do console, sem configuração.
 - **RF04:** O jogador remapeia as teclas pelo navegador; o mapa dele fica salvo só naquele aparelho e tem botão para voltar ao padrão.
-- **RF05:** No celular, aparece um controle virtual com os botões do console em uso, visível em cada um dos 12 sistemas, um botão de tela cheia e uma sugestão de virar o aparelho na horizontal quando estiver na vertical.
+- **RF05:** No celular, aparece um controle virtual com os botões do console em uso, visível em cada um dos 12 sistemas, e um botão de tela cheia. Em pé, o palco vira um console portátil (tela em cima, controle embaixo) nas cores do console; deitado, o controle fica nas laterais (dono, 2026-11-11, substitui a sugestão de girar).
 - **RF06:** O módulo de controles exporta os mapas padrão e a validação do formato do mapa; o SF03 reutiliza essa validação.
 - **RN01:** Master System e Game Gear usam esquema de 2 botões próprio, não o do Mega Drive.
 - **RN02:** Cada mapa é um objeto `{botão do console: código de tecla}`. Os botões vêm da lista fechada daquele console e os códigos de tecla de uma lista fechada de `KeyboardEvent.code`. O emulador recebe o objeto já validado por `postMessage`, nunca texto livre. O id do console só escolhe o padrão quando não há mapa resolvido.

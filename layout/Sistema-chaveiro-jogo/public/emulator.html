@@ -21,6 +21,7 @@
 </head>
 <body>
     <div id="game"></div>
+    <script type="application/json" id="rk-controls-contract">{"consoles":["nes","snes","n64","dmg","gbc","gba","sms","megadrive","gamegear","ps","arcade","neogeo"],"schemes":{"nes":"nes","snes":"snes","n64":"n64","dmg":"gb","gbc":"gb","gba":"gba","sms":"segaMS","megadrive":"segaMD","gamegear":"segaGG","ps":"psx","arcade":"arcade","neogeo":"arcade"},"keyCodes":["KeyA","KeyB","KeyC","KeyD","KeyE","KeyF","KeyG","KeyH","KeyI","KeyJ","KeyK","KeyL","KeyM","KeyN","KeyO","KeyP","KeyQ","KeyR","KeyS","KeyT","KeyU","KeyV","KeyW","KeyX","KeyY","KeyZ","Digit0","Digit1","Digit2","Digit3","Digit4","Digit5","Digit6","Digit7","Digit8","Digit9","Numpad0","Numpad1","Numpad2","Numpad3","Numpad4","Numpad5","Numpad6","Numpad7","Numpad8","Numpad9","NumpadEnter","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Enter","Space","Backspace","Comma","Period","Slash","Semicolon","Quote","BracketLeft","BracketRight","Minus","Equal","Backslash","Backquote","Insert","Delete","Home","End","PageUp","PageDown"],"gamepad":{"0":"BUTTON_2","1":"BUTTON_4","2":"SELECT","3":"START","4":"DPAD_UP","5":"DPAD_DOWN","6":"DPAD_LEFT","7":"DPAD_RIGHT","8":"BUTTON_1","9":"BUTTON_3","10":"LEFT_TOP_SHOULDER","11":"RIGHT_TOP_SHOULDER","12":"LEFT_BOTTOM_SHOULDER","13":"RIGHT_BOTTOM_SHOULDER","14":"LEFT_STICK","15":"RIGHT_STICK","16":"LEFT_STICK_X:+1","17":"LEFT_STICK_X:-1","18":"LEFT_STICK_Y:+1","19":"LEFT_STICK_Y:-1","20":"RIGHT_STICK_X:+1","21":"RIGHT_STICK_X:-1","22":"RIGHT_STICK_Y:+1","23":"RIGHT_STICK_Y:-1"},"analog":[16,17,18,19,20,21,22,23]}</script>
     <script>
         if (typeof window === 'undefined' || typeof document === 'undefined') {
             throw new Error('Emulator page must run in a browser environment.');
@@ -44,110 +45,119 @@
         window.EJS_DEBUG_XX = false;
         window.EJS_defaultControls = true;
 
-        const arcadeCores = ['fbneo', 'mame2003_plus', 'mame2003', 'arcade', 'mame'];
+        // Controls contract mirrored from lib/emulator-controls.ts (0002F SF02, plan.md FD6).
+        // tests/emulator-controls.test.ts compares this block with the module.
+        const RK_CONTRACT = JSON.parse(document.getElementById('rk-controls-contract').textContent);
+        const consoleParam = params.get('console');
+        const consoleId = RK_CONTRACT.consoles.includes(consoleParam) ? consoleParam : null;
         const genesisCores = ['genesis_plus_gx', 'picodrive', 'smsplus'];
-        const nesCores = ['fceumm', 'nestopia', 'nes'];
 
-        const isArcadeCore = arcadeCores.includes(core);
-        const isGenesisCore = genesisCores.includes(core);
-        const isNesCore = nesCores.includes(core);
-
-        if (isGenesisCore) {
-            console.log('[RetroKey] Loading Genesis controls');
-
-            window.EJS_defaultControls = {
-                0: {
-                    0: { value: 'z', value2: 'A' },
-                    1: { value: 'x', value2: 'Y' },
-                    2: { value: 'c', value2: 'X' },
-                    3: { value: 'enter', value2: 'START' },
-                    4: { value: 'up arrow', value2: 'DPAD_UP' },
-                    5: { value: 'down arrow', value2: 'DPAD_DOWN' },
-                    6: { value: 'left arrow', value2: 'DPAD_LEFT' },
-                    7: { value: 'right arrow', value2: 'DPAD_RIGHT' }
-                }
-            };
-
-            if (core === 'smsplus') {
-                window.EJS_controlScheme = 'segaMS';
-            } else {
-                window.EJS_controlScheme = 'segaMD';
-            }
-        } else if (isArcadeCore) {
-            console.log('[RetroKey] Loading Arcade/MAME controls');
-
-            // EmulatorJS key names are lowercase words ('up arrow', 'enter'); browser names such as
-            // 'ArrowUp' are not recognised and show as undefined in the controls menu.
-            // Index: 0 B, 1 Y, 2 Select, 3 Start, 4-7 D-pad, 8 A, 9 X, 10 L, 11 R, 12 L2, 13 R2.
-            // Arcade: Z/X/A/S = buttons 1-4, 5 = coin, Enter = start.
-            window.EJS_defaultControls = {
-                0: {
-                    0: { value: 'z', value2: 'BUTTON_2' },
-                    1: { value: 'a', value2: 'BUTTON_4' },
-                    2: { value: '5', value2: 'SELECT' },
-                    3: { value: 'enter', value2: 'START' },
-                    4: { value: 'up arrow', value2: 'DPAD_UP' },
-                    5: { value: 'down arrow', value2: 'DPAD_DOWN' },
-                    6: { value: 'left arrow', value2: 'DPAD_LEFT' },
-                    7: { value: 'right arrow', value2: 'DPAD_RIGHT' },
-                    8: { value: 'x', value2: 'BUTTON_1' },
-                    9: { value: 's', value2: 'BUTTON_3' }
-                }
-            };
-            window.EJS_controlScheme = 'arcade';
-        } else if (isNesCore) {
-            console.log('[RetroKey] Loading NES controls');
-
-            // NES: arrows, Z = B, X = A, Space = Select, Enter = Start.
-            window.EJS_defaultControls = {
-                0: {
-                    0: { value: 'z', value2: 'BUTTON_2' },
-                    2: { value: 'space', value2: 'SELECT' },
-                    3: { value: 'enter', value2: 'START' },
-                    4: { value: 'up arrow', value2: 'DPAD_UP' },
-                    5: { value: 'down arrow', value2: 'DPAD_DOWN' },
-                    6: { value: 'left arrow', value2: 'DPAD_LEFT' },
-                    7: { value: 'right arrow', value2: 'DPAD_RIGHT' },
-                    8: { value: 'x', value2: 'BUTTON_1' }
-                }
-            };
-            window.EJS_controlScheme = 'nes';
-        } else {
-            console.log('[RetroKey] Loading default controls for', core);
-
-            // SNES, N64, Game Boy, GBC, GBA and PlayStation: arrows, Z = B, X = A, A = Y, S = X,
-            // Q/W = L/R, E/R = L2/R2, Space = Select, Enter = Start. Consoles without a button ignore it.
-            window.EJS_defaultControls = {
-                0: {
-                    0: { value: 'z', value2: 'BUTTON_2' },
-                    1: { value: 'a', value2: 'BUTTON_4' },
-                    2: { value: 'space', value2: 'SELECT' },
-                    3: { value: 'enter', value2: 'START' },
-                    4: { value: 'up arrow', value2: 'DPAD_UP' },
-                    5: { value: 'down arrow', value2: 'DPAD_DOWN' },
-                    6: { value: 'left arrow', value2: 'DPAD_LEFT' },
-                    7: { value: 'right arrow', value2: 'DPAD_RIGHT' },
-                    8: { value: 'x', value2: 'BUTTON_1' },
-                    9: { value: 's', value2: 'BUTTON_3' },
-                    10: { value: 'q', value2: 'LEFT_TOP_SHOULDER' },
-                    11: { value: 'w', value2: 'RIGHT_TOP_SHOULDER' },
-                    12: { value: 'e', value2: 'LEFT_BOTTOM_SHOULDER' },
-                    13: { value: 'r', value2: 'RIGHT_BOTTOM_SHOULDER' }
-                }
-            };
-        }
-
-        // Ensure objects exist for players 1-3 to match EmulatorJS expectations
-        window.EJS_defaultControls[1] = window.EJS_defaultControls[1] || {};
-        window.EJS_defaultControls[2] = window.EJS_defaultControls[2] || {};
-        window.EJS_defaultControls[3] = window.EJS_defaultControls[3] || {};
-
-        // Ensure keyboard mapping uses EmulatorJS control mapping (disable direct passthrough)
         window.EJS_defaultOptions = window.EJS_defaultOptions || {};
+        // Keys reach the game only through the RetroKey listener below (FD2).
         window.EJS_defaultOptions.keyboardInput = 'disabled';
         window.EJS_defaultOptions.altKeyboardInput = 'disabled';
 
-        console.log('[RetroKey] EJS_defaultControls registered', window.EJS_defaultControls);
+        if (consoleId) {
+            // RN01: the scheme comes from the console id, never from the core (MS/GG share the Mega Drive core).
+            window.EJS_controlScheme = RK_CONTRACT.schemes[consoleId];
+            // FD2/FD4: no EmulatorJS keyboard key; the gamepad keeps the native EmulatorJS names.
+            const player0 = {};
+            for (let index = 0; index < 24; index++) {
+                player0[index] = { value: '', value2: RK_CONTRACT.gamepad[String(index)] };
+            }
+            window.EJS_defaultControls = { 0: player0, 1: {}, 2: {}, 3: {} };
+            // FD8: the RetroKey page draws the touch controller; the built-in one stays off.
+            window.EJS_defaultOptions['virtual-gamepad'] = 'disabled';
+            const hideBuiltInPad = document.createElement('style');
+            hideBuiltInPad.textContent = '.ejs_virtualGamepad_parent{display:none!important}';
+            document.head.appendChild(hideBuiltInPad);
+            console.log('[RetroKey] Controls scheme', window.EJS_controlScheme, 'for', consoleId);
+        } else {
+            // Unknown console: EmulatorJS defaults, including its own touch gamepad (plan.md protocol).
+            console.log('[RetroKey] No console id; EmulatorJS default controls for', core);
+        }
+
+        // Keyboard and touch input (0002F SF02, plan.md emulator.html protocol).
+        const ANALOG = new Set(RK_CONTRACT.analog);
+        const KEY_CODES = new Set(RK_CONTRACT.keyCodes);
+        let bindings = new Map();
+        const pressed = new Set();
+        let warnedMissingApi = false;
+
+        const inputApi = () => {
+            const manager = window.EJS_emulator && window.EJS_emulator.gameManager;
+            if (manager && typeof manager.simulateInput === 'function') return manager;
+            if (!warnedMissingApi) {
+                warnedMissingApi = true;
+                console.warn('[rk] input API missing');
+            }
+            return null;
+        };
+
+        const setInput = (index, down) => {
+            const manager = inputApi();
+            if (!manager) return false;
+            manager.simulateInput(0, index, down ? (ANALOG.has(index) ? 0x7fff : 1) : 0);
+            if (down) pressed.add(index);
+            else pressed.delete(index);
+            return true;
+        };
+
+        const releaseAll = () => {
+            for (const index of Array.from(pressed)) setInput(index, false);
+            pressed.clear();
+        };
+
+        const handleKey = (event) => {
+            if (!consoleId) return;
+            const index = bindings.get(event.code);
+            if (index === undefined) return;
+            const down = event.type === 'keydown';
+            if (down && event.repeat) {
+                event.preventDefault();
+                return;
+            }
+            if (setInput(index, down)) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        };
+        window.addEventListener('keydown', handleKey, true);
+        window.addEventListener('keyup', handleKey, true);
+        window.addEventListener('blur', releaseAll);
+
+        const isIndex = (value) => Number.isInteger(value) && value >= 0 && value <= 23;
+        const hasKeys = (data, keys) => {
+            const own = Object.keys(data);
+            return own.length === keys.length && keys.every((key) => Object.prototype.hasOwnProperty.call(data, key));
+        };
+
+        // Same check as parsePageMessage in lib/emulator-controls.ts. Returns null when invalid.
+        const parsePageMessage = (data) => {
+            if (!data || typeof data !== 'object' || Array.isArray(data)) return null;
+            const proto = Object.getPrototypeOf(data);
+            if (proto !== Object.prototype && proto !== null) return null;
+            if (data.type === 'RK_RELEASE_ALL') return hasKeys(data, ['type']) ? data : null;
+            if (data.type === 'RK_INPUT') {
+                if (!hasKeys(data, ['type', 'index', 'pressed'])) return null;
+                return isIndex(data.index) && typeof data.pressed === 'boolean' ? data : null;
+            }
+            if (data.type === 'RK_CONTROLS') {
+                if (!hasKeys(data, ['type', 'console', 'bindings'])) return null;
+                if (!consoleId || data.console !== consoleId) return null;
+                if (!Array.isArray(data.bindings) || data.bindings.length > 24) return null;
+                const next = new Map();
+                for (const binding of data.bindings) {
+                    if (!Array.isArray(binding) || binding.length !== 2) return null;
+                    const code = binding[0];
+                    const index = binding[1];
+                    if (typeof code !== 'string' || !KEY_CODES.has(code) || !isIndex(index) || next.has(code)) return null;
+                    next.set(code, index);
+                }
+                return { type: 'RK_CONTROLS', map: next };
+            }
+            return null;
+        };
 
         // Callback executed when EmulatorJS emits ready
         window.EJS_ready = function() {
@@ -163,10 +173,26 @@
             }
         };
 
-        // Pause / resume requested by the play page (components/Emulator.tsx), same origin only.
+        // Messages from the play page (components/Emulator.tsx): RN03 checks origin and window.
         window.addEventListener('message', (event) => {
-            if (event.origin !== window.location.origin) return;
+            if (event.origin !== window.location.origin || event.source !== window.parent) return;
             const type = event.data && event.data.type;
+            if (type === 'RK_CONTROLS' || type === 'RK_INPUT' || type === 'RK_RELEASE_ALL') {
+                const message = parsePageMessage(event.data);
+                if (!message) {
+                    console.warn('[rk] ignored message', String(type));
+                    return;
+                }
+                if (message.type === 'RK_CONTROLS') {
+                    releaseAll();
+                    bindings = message.map;
+                } else if (message.type === 'RK_INPUT') {
+                    setInput(message.index, message.pressed);
+                } else {
+                    releaseAll();
+                }
+                return;
+            }
             if (type !== 'RETROKEY_PAUSE' && type !== 'RETROKEY_RESUME') return;
             const emulator = window.EJS_emulator;
             if (!emulator) return;
@@ -237,7 +263,7 @@
             console.log('[RetroKey] Canvas detected');
             console.log('[RetroKey] Sending EMULATOR_CANVAS_READY');
             if (window.parent && window.parent !== window) {
-                window.parent.postMessage({ type: 'EMULATOR_CANVAS_READY' }, '*');
+                window.parent.postMessage({ type: 'EMULATOR_CANVAS_READY' }, window.location.origin);
             }
         };
 
