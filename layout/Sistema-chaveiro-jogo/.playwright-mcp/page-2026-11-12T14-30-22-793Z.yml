@@ -1,0 +1,338 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Retro Key" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - text: Retro
+        - generic [ref=e10]: Key
+      - navigation "Seções da página" [ref=e11]:
+        - link "Destaques" [ref=e12] [cursor=pointer]:
+          - /url: "#destaques"
+        - link "Biblioteca" [ref=e13] [cursor=pointer]:
+          - /url: "#biblioteca"
+        - link "Como funciona" [ref=e14] [cursor=pointer]:
+          - /url: "#como-funciona"
+        - link "Consoles" [ref=e15] [cursor=pointer]:
+          - /url: "#consoles"
+      - link "Jogar no PC" [ref=e16] [cursor=pointer]:
+        - /url: /connect
+  - main [ref=e21]:
+    - generic [ref=e28]:
+      - generic [ref=e29]:
+        - paragraph [ref=e30]: NFC · Navegador · 12 consoles
+        - heading "Seu jogo retrô cabe num chaveiro." [level=1] [ref=e34]
+        - paragraph [ref=e35]: Encoste o celular no chaveiro RetroKey e o jogo abre na hora, no navegador. Sem app, sem cadastro, com o visual do console original. Quer a tela grande? Pareie com o computador em 6 dígitos.
+        - generic [ref=e36]:
+          - link "Explorar jogos" [ref=e37] [cursor=pointer]:
+            - /url: "#biblioteca"
+          - link "Jogar no PC" [ref=e38] [cursor=pointer]:
+            - /url: /connect
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - term [ref=e44]: jogos no catálogo
+            - definition [ref=e45]: "8"
+            - definition [aria-hidden] [ref=e46]: jogos no catálogo
+          - generic [ref=e47]:
+            - term [ref=e48]: consoles com jogos
+            - definition [ref=e49]: "4"
+            - definition [aria-hidden] [ref=e50]: consoles com jogos
+          - generic [ref=e51]:
+            - term [ref=e52]: consoles suportados
+            - definition [ref=e53]: "12"
+            - definition [aria-hidden] [ref=e54]: consoles suportados
+          - generic [ref=e55]:
+            - term [ref=e56]: apps para instalar
+            - definition [ref=e57]: "0"
+            - definition [aria-hidden] [ref=e58]: apps para instalar
+      - generic [aria-hidden] [ref=e59]:
+        - generic [ref=e61]: Arcade (FBNeo)
+        - generic [ref=e80]: SNES
+        - generic [ref=e99]: SNES
+    - generic [ref=e119]:
+      - generic [ref=e120]: NES
+      - generic [ref=e125]: SNES
+      - generic [ref=e130]: Nintendo 64
+      - generic [ref=e135]: Game Boy
+      - generic [ref=e140]: Game Boy Color
+      - generic [ref=e145]: Game Boy Advance
+      - generic [ref=e150]: Master System
+      - generic [ref=e155]: Mega Drive / Genesis
+      - generic [ref=e160]: Game Gear
+      - generic [ref=e165]: PlayStation
+      - generic [ref=e170]: Arcade (FBNeo)
+      - generic [ref=e175]: Neo Geo
+      - generic [ref=e180]: NES
+      - generic [ref=e185]: SNES
+      - generic [ref=e190]: Nintendo 64
+      - generic [ref=e195]: Game Boy
+      - generic [ref=e200]: Game Boy Color
+      - generic [ref=e205]: Game Boy Advance
+      - generic [ref=e210]: Master System
+      - generic [ref=e215]: Mega Drive / Genesis
+      - generic [ref=e220]: Game Gear
+      - generic [ref=e225]: PlayStation
+      - generic [ref=e230]: Arcade (FBNeo)
+      - generic [ref=e235]: Neo Geo
+    - generic [ref=e241]:
+      - generic [ref=e242]:
+        - paragraph [ref=e243]: Em destaque
+        - heading "Escolha e aperte start" [level=2] [ref=e244]
+      - region "Jogos em destaque" [ref=e246]:
+        - generic [ref=e261]:
+          - generic [ref=e262]:
+            - generic [ref=e263]:
+              - generic [ref=e264]: Em destaque
+              - generic [ref=e265]: Arcade (FBNeo)
+            - heading "Cadillacs and Dinosaurs" [level=3] [ref=e266]
+            - paragraph [ref=e267]: 1993 · Plataforma · Beat ’em up
+            - paragraph [ref=e268]: Cadillacs and Dinosaurs é um jogo de arcade de luta com rolagem lateral baseado na série de quadrinhos Xenozoic Tales. No jogo, o jogador tem acesso a diversos ataques. Cada personagem possui dois golpes especiais, incluindo um que reduz a vida do personagem ao contato com um inimigo, e quando dois ou mais jogadores jogam juntos, podem realizar um ataque em equipe. Os jogadores também podem encontrar e usar diversas armas de fogo, armas de arremesso como pedras e explosivos, e armas brancas como porretes.
+            - generic [ref=e269]:
+              - link "Jogar agora" [ref=e270] [cursor=pointer]:
+                - /url: /play/dino
+              - link "Tenho o chaveiro · jogar no PC" [ref=e273] [cursor=pointer]:
+                - /url: /connect
+          - img "Capa de Cadillacs and Dinosaurs" [ref=e278]
+        - generic [ref=e279]:
+          - list [ref=e280]:
+            - listitem [ref=e281]:
+              - button "Mostrar Cadillacs and Dinosaurs" [ref=e282] [cursor=pointer]:
+                - img "Capa de Cadillacs and Dinosaurs" [ref=e285]
+            - listitem [ref=e288]:
+              - button "Mostrar Donkey Kong Country" [ref=e289] [cursor=pointer]:
+                - img "Capa de Donkey Kong Country" [ref=e292]
+            - listitem [ref=e293]:
+              - button "Mostrar Final Fight 3" [ref=e294] [cursor=pointer]:
+                - img "Capa de Final Fight 3" [ref=e297]
+            - listitem [ref=e298]:
+              - button "Mostrar mario" [ref=e299] [cursor=pointer]:
+                - img "Capa de mario" [ref=e302]
+            - listitem [ref=e303]:
+              - button "Mostrar MK3" [ref=e304] [cursor=pointer]:
+                - img "Capa de MK3" [ref=e307]
+          - generic [ref=e308]:
+            - button "Jogo anterior" [ref=e309] [cursor=pointer]
+            - button "Próximo jogo" [ref=e312] [cursor=pointer]
+    - generic [ref=e316]:
+      - generic [ref=e317]:
+        - paragraph [ref=e318]: Biblioteca
+        - heading "Todos os cartuchos" [level=2] [ref=e319]
+        - paragraph [ref=e320]: Capas, ano e gênero vêm do IGDB quando o catálogo não traz. Clique em um jogo para abrir direto no navegador.
+      - generic [ref=e322]:
+        - generic [ref=e323]:
+          - group "Filtrar por console" [ref=e324]:
+            - button "Todos 8" [pressed] [ref=e325] [cursor=pointer]:
+              - text: Todos
+              - generic [ref=e327]: "8"
+            - button "Mega Drive / Genesis 3" [ref=e328] [cursor=pointer]:
+              - text: Mega Drive / Genesis
+              - generic [ref=e330]: "3"
+            - button "SNES 2" [ref=e331] [cursor=pointer]:
+              - text: SNES
+              - generic [ref=e333]: "2"
+            - button "NES 2" [ref=e334] [cursor=pointer]:
+              - text: NES
+              - generic [ref=e336]: "2"
+            - button "Arcade (FBNeo) 1" [ref=e337] [cursor=pointer]:
+              - text: Arcade (FBNeo)
+              - generic [ref=e339]: "1"
+          - generic [ref=e340]:
+            - generic [ref=e341]: Buscar jogo
+            - searchbox "Buscar jogo" [ref=e342]
+        - list [ref=e343]:
+          - listitem [ref=e344]:
+            - link "Capa de Cadillacs and Dinosaurs Jogar Arcade (FBNeo) Cadillacs and Dinosaurs 1993 · Plataforma" [ref=e345] [cursor=pointer]:
+              - /url: /play/dino
+              - generic [ref=e346]:
+                - img "Capa de Cadillacs and Dinosaurs" [ref=e349]
+                - generic [ref=e350]: Jogar
+                - generic [ref=e353]: Arcade (FBNeo)
+              - paragraph [ref=e354]: Cadillacs and Dinosaurs
+              - paragraph [ref=e355]: 1993 · Plataforma
+          - listitem [ref=e356]:
+            - link "Capa de castelvania Jogar Mega Drive / Genesis castelvania" [ref=e357] [cursor=pointer]:
+              - /url: /play/castelvania
+              - generic [ref=e358]:
+                - img "Capa de castelvania" [ref=e361]:
+                  - generic [ref=e375]:
+                    - paragraph [ref=e376]: castelvania
+                    - paragraph [ref=e377]: Mega Drive / Genesis
+                - generic [ref=e378]: Jogar
+                - generic [ref=e381]: Mega Drive / Genesis
+              - paragraph [ref=e382]: castelvania
+              - paragraph [ref=e383]
+          - listitem [ref=e384]:
+            - link "Capa de Donkey Kong Country Jogar SNES Donkey Kong Country 1994 · Plataforma" [ref=e385] [cursor=pointer]:
+              - /url: /play/donk-kong
+              - generic [ref=e386]:
+                - img "Capa de Donkey Kong Country" [ref=e389]
+                - generic [ref=e390]: Jogar
+                - generic [ref=e393]: SNES
+              - paragraph [ref=e394]: Donkey Kong Country
+              - paragraph [ref=e395]: 1994 · Plataforma
+          - listitem [ref=e396]:
+            - link "Capa de Final Fight 3 Jogar SNES Final Fight 3 1995 · Beat ’em up" [ref=e397] [cursor=pointer]:
+              - /url: /play/Final-Fight-3
+              - generic [ref=e398]:
+                - img "Capa de Final Fight 3" [ref=e401]
+                - generic [ref=e402]: Jogar
+                - generic [ref=e405]: SNES
+              - paragraph [ref=e406]: Final Fight 3
+              - paragraph [ref=e407]: 1995 · Beat ’em up
+          - listitem [ref=e408]:
+            - link "Capa de mario Jogar NES mario 1983 · Plataforma" [ref=e409] [cursor=pointer]:
+              - /url: /play/mario-world
+              - generic [ref=e410]:
+                - img "Capa de mario" [ref=e413]
+                - generic [ref=e414]: Jogar
+                - generic [ref=e417]: NES
+              - paragraph [ref=e418]: mario
+              - paragraph [ref=e419]: 1983 · Plataforma
+          - listitem [ref=e420]:
+            - link "Capa de MK3 Jogar Mega Drive / Genesis MK3 1995 · Luta" [ref=e421] [cursor=pointer]:
+              - /url: /play/mortal-kombat
+              - generic [ref=e422]:
+                - img "Capa de MK3" [ref=e425]
+                - generic [ref=e426]: Jogar
+                - generic [ref=e429]: Mega Drive / Genesis
+              - paragraph [ref=e430]: MK3
+              - paragraph [ref=e431]: 1995 · Luta
+          - listitem [ref=e432]:
+            - link "Capa de Sonic Jogar Mega Drive / Genesis Sonic 2014 · Plataforma" [ref=e433] [cursor=pointer]:
+              - /url: /play/Sonic
+              - generic [ref=e434]:
+                - img "Capa de Sonic" [ref=e437]
+                - generic [ref=e438]: Jogar
+                - generic [ref=e441]: Mega Drive / Genesis
+              - paragraph [ref=e442]: Sonic
+              - paragraph [ref=e443]: 2014 · Plataforma
+          - listitem [ref=e444]:
+            - link "Capa de toons Jogar NES toons 1992 · Plataforma" [ref=e445] [cursor=pointer]:
+              - /url: /play/toons
+              - generic [ref=e446]:
+                - img "Capa de toons" [ref=e449]
+                - generic [ref=e450]: Jogar
+                - generic [ref=e453]: NES
+              - paragraph [ref=e454]: toons
+              - paragraph [ref=e455]: 1992 · Plataforma
+    - generic [ref=e458]:
+      - generic [ref=e459]:
+        - paragraph [ref=e460]: Como funciona
+        - heading "Do chaveiro ao jogo, em segundos" [level=2] [ref=e461]
+      - generic [ref=e462]:
+        - article [ref=e463]:
+          - heading "No celular" [level=3] [ref=e468]
+          - list [ref=e469]:
+            - listitem [ref=e470]:
+              - generic [aria-hidden] [ref=e471]: "01"
+              - generic [ref=e472]:
+                - paragraph [ref=e473]: Encoste
+                - paragraph [ref=e474]: Aproxime o celular do chaveiro. A tag NFC abre o jogo no navegador.
+            - listitem [ref=e475]:
+              - generic [aria-hidden] [ref=e476]: "02"
+              - generic [ref=e477]:
+                - paragraph [ref=e478]: Carregue
+                - paragraph [ref=e479]: O emulador baixa a ROM e veste o tema do console original.
+            - listitem [ref=e480]:
+              - generic [aria-hidden] [ref=e481]: "03"
+              - generic [ref=e482]:
+                - paragraph [ref=e483]: Jogue
+                - paragraph [ref=e484]: Controle na tela, em tela cheia, sem instalar nada.
+        - article [ref=e485]:
+          - heading "No computador" [level=3] [ref=e491]
+          - paragraph [ref=e492]:
+            - text: Encoste o chaveiro no celular e toque em
+            - strong [ref=e493]: Jogar no PC
+            - text: . O celular mostra um código de 6 dígitos. Digite o código no computador e o jogo abre na tela grande.
+          - generic [aria-hidden] [ref=e494]:
+            - generic [ref=e495]: "4"
+            - generic [ref=e496]: "8"
+            - generic [ref=e497]: "2"
+            - generic [ref=e498]: "9"
+            - generic [ref=e499]: "1"
+            - generic [ref=e500]: "6"
+          - link "Digitar código" [ref=e501] [cursor=pointer]:
+            - /url: /connect
+            - text: Digitar código
+            - generic [aria-hidden] [ref=e502]: →
+    - generic [ref=e504]:
+      - generic [ref=e505]:
+        - paragraph [ref=e506]: Consoles
+        - heading "12 consoles, cada um com a sua cara" [level=2] [ref=e507]
+        - paragraph [ref=e508]: Cada console tem cores, moldura e proporção de tela próprias na hora de jogar.
+      - list [ref=e509]:
+        - listitem [ref=e510]:
+          - link "NES 2 jogos" [ref=e511] [cursor=pointer]:
+            - /url: /?console=NES#biblioteca
+            - generic [ref=e514]: NES
+            - generic [ref=e515]: 2 jogos
+        - listitem [ref=e516]:
+          - link "SNES 2 jogos" [ref=e517] [cursor=pointer]:
+            - /url: /?console=SNES#biblioteca
+            - generic [ref=e520]: SNES
+            - generic [ref=e521]: 2 jogos
+        - listitem [ref=e522]:
+          - generic [ref=e523]:
+            - generic [ref=e526]: Nintendo 64
+            - generic [ref=e527]: Em breve
+        - listitem [ref=e528]:
+          - generic [ref=e529]:
+            - generic [ref=e532]: Game Boy
+            - generic [ref=e533]: Em breve
+        - listitem [ref=e534]:
+          - generic [ref=e535]:
+            - generic [ref=e538]: Game Boy Color
+            - generic [ref=e539]: Em breve
+        - listitem [ref=e540]:
+          - generic [ref=e541]:
+            - generic [ref=e544]: Game Boy Advance
+            - generic [ref=e545]: Em breve
+        - listitem [ref=e546]:
+          - generic [ref=e547]:
+            - generic [ref=e550]: Master System
+            - generic [ref=e551]: Em breve
+        - listitem [ref=e552]:
+          - link "Mega Drive / Genesis 3 jogos" [ref=e553] [cursor=pointer]:
+            - /url: /?console=Mega%20Drive%20%2F%20Genesis#biblioteca
+            - generic [ref=e556]: Mega Drive / Genesis
+            - generic [ref=e557]: 3 jogos
+        - listitem [ref=e558]:
+          - generic [ref=e559]:
+            - generic [ref=e562]: Game Gear
+            - generic [ref=e563]: Em breve
+        - listitem [ref=e564]:
+          - generic [ref=e565]:
+            - generic [ref=e568]: PlayStation
+            - generic [ref=e569]: Em breve
+        - listitem [ref=e570]:
+          - link "Arcade (FBNeo) 1 jogo" [ref=e571] [cursor=pointer]:
+            - /url: /?console=Arcade%20(FBNeo)#biblioteca
+            - generic [ref=e574]: Arcade (FBNeo)
+            - generic [ref=e575]: 1 jogo
+        - listitem [ref=e576]:
+          - generic [ref=e577]:
+            - generic [ref=e580]: Neo Geo
+            - generic [ref=e581]: Em breve
+    - generic [ref=e583]:
+      - generic [ref=e584]:
+        - paragraph [ref=e585]: Por dentro
+        - heading "Como foi construído" [level=2] [ref=e586]
+        - paragraph [ref=e587]: Aplicação com rotas próprias, banco de dados, armazenamento de arquivos, área administrativa protegida por login, capas do IGDB e testes automatizados.
+      - list [ref=e588]:
+        - listitem [ref=e589]: Next.js 14
+        - listitem [ref=e590]: React 18
+        - listitem [ref=e591]: TypeScript
+        - listitem [ref=e592]: Tailwind CSS
+        - listitem [ref=e593]: MongoDB
+        - listitem [ref=e594]: Cloudflare R2
+        - listitem [ref=e595]: NextAuth
+        - listitem [ref=e596]: EmulatorJS
+        - listitem [ref=e597]: IGDB API
+        - listitem [ref=e598]: Playwright
+  - contentinfo [ref=e599]:
+    - generic [ref=e600]:
+      - paragraph [ref=e601]: RetroKey · projeto de LeoProStyle
+      - generic [ref=e605]:
+        - link "Jogar no PC" [ref=e606] [cursor=pointer]:
+          - /url: /connect
+        - link "Admin" [ref=e607] [cursor=pointer]:
+          - /url: /admin
