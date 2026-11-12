@@ -53,12 +53,21 @@ export default function PlayAccessOverlay({ kind, retryInSeconds }: PlayAccessOv
           </p>
         ) : null}
         {kind !== 'devtools' ? (
-          <Link
-            href="/"
-            className="mt-6 inline-flex min-h-11 items-center rounded-full bg-[color:var(--t-accent)] px-5 font-medium text-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--t-text)]"
-          >
-            Back home
-          </Link>
+          <div className="mt-6 flex flex-col items-center gap-2">
+            <Link
+              href="/"
+              className="inline-flex min-h-11 items-center rounded-full bg-[color:var(--t-accent)] px-5 font-medium text-zinc-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--t-text)]"
+            >
+              Back home
+            </Link>
+            <Link
+              href="/connect"
+              data-testid="play-access-connect"
+              className="inline-flex min-h-11 items-center px-2 text-sm text-[color:var(--t-muted)] underline underline-offset-4 hover:text-[color:var(--t-text)]"
+            >
+              Have the cartridge? Connect this computer
+            </Link>
+          </div>
         ) : null}
       </div>
     </div>
