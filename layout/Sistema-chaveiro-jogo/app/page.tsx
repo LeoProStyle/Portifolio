@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import GameCover from '@/components/GameCover';
 import { getGames } from '@/lib/data';
 import { systemOptions } from '@/lib/emulator-cores';
 import { mockGames } from '@/lib/mock-data';
@@ -231,12 +232,21 @@ function GameCard({ game }: { game: Game }) {
   const theme = resolvePlayTheme(system || null);
   return (
     <li className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
-      <div className="flex items-center gap-2">
-        <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: theme.accent }} />
-        <span className="text-xs uppercase tracking-[0.2em] text-zinc-400">{system || 'Console'}</span>
+      <div className="flex flex-1 items-start gap-4">
+        <GameCover src={game.image} title={game.title} accent={theme.accent} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: theme.accent }} />
+            <span className="text-xs uppercase tracking-[0.2em] text-zinc-400">{system || 'Console'}</span>
+          </div>
+          <h3 className="mt-2 text-xl font-semibold">{game.title}</h3>
+          {game.description ? (
+            <p className="mt-2 line-clamp-3 text-sm text-zinc-400" title={game.description}>
+              {game.description}
+            </p>
+          ) : null}
+        </div>
       </div>
-      <h3 className="mt-3 text-xl font-semibold">{game.title}</h3>
-      {game.description ? <p className="mt-2 flex-1 text-zinc-400">{game.description}</p> : <div className="flex-1" />}
       <Link
         href={`/play/${encodeURIComponent(game.slug)}`}
         className="mt-6 inline-flex min-h-11 items-center self-start rounded-full bg-cyan-500 px-6 font-medium text-zinc-950 transition hover:bg-cyan-400"
