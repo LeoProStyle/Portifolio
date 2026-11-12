@@ -4,6 +4,19 @@ import { useEffect, useState } from 'react';
 import type { Game } from '@/models/game';
 import { systemOptions } from '@/lib/emulator-cores';
 import { getAdminAuthStatus, type AdminApiErrorBody, type AdminAuthStatus } from '@/lib/admin-api';
+import type { IgdbGame } from '@/lib/igdb';
+
+const IGDB_MIN_TERM_LENGTH = 2;
+const IGDB_SEARCH_DELAY_MS = 300;
+
+// Same rule as normalizeSlug in lib/data.ts (that module is server-only).
+function slugFromTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
 
 interface GameFormState {
   title: string;
@@ -35,9 +48,85 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
     active: true
   });
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<IgdbGame[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searchMessage, setSearchMessage] = useState<string | null>(null);
+  const [selectedIgdbGame, setSelectedIgdbGame] = useState<IgdbGame | null>(null);
+
   useEffect(() => {
     loadGames();
   }, []);
+
+  useEffect(() => {
+    const term = searchTerm.trim();
+    if (!form.system || term.length < IGDB_MIN_TERM_LENGTH || term === selectedIgdbGame?.name) {
+      setSearchResults([]);
+      setSearching(false);
+      setSearchMessage(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setSearching(true);
+      setSearchMessage(null);
+      try {
+        const params = new URLSearchParams({ system: form.system, q: term });
+        const response = await fetch(`/api/admin/igdb/search?${params.toString()}`, { signal: controller.signal });
+        const authStatus = getAdminAuthStatus(response);
+        if (authStatus) {
+          onAuthError(authStatus);
+          return;
+        }
+        if (!response.ok) {
+          setSearchResults([]);
+          setSearchMessage(
+            response.status === 503
+              ? 'IGDB não configurado no servidor. Preencha os campos manualmente.'
+              : 'Não foi possível buscar no IGDB. Preencha os campos manualmente.'
+          );
+          return;
+        }
+        const data: IgdbGame[] = await response.json();
+        setSearchResults(data);
+        if (data.length === 0) setSearchMessage('Nenhum jogo encontrado para este console.');
+      } catch (error) {
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Failed to search IGDB:', error);
+          setSearchMessage('Não foi possível buscar no IGDB. Preencha os campos manualmente.');
+        }
+      } finally {
+        if (!controller.signal.aborted) setSearching(false);
+      }
+    }, IGDB_SEARCH_DELAY_MS);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [form.system, searchTerm, selectedIgdbGame, onAuthError]);
+
+  const resetSearch = () => {
+    setSearchTerm('');
+    setSearchResults([]);
+    setSearchMessage(null);
+    setSelectedIgdbGame(null);
+  };
+
+  const selectIgdbGame = (game: IgdbGame) => {
+    setSelectedIgdbGame(game);
+    setSearchTerm(game.name);
+    setSearchResults([]);
+    setSearchMessage(null);
+    setForm((current) => ({
+      ...current,
+      title: game.name,
+      slug: editingId ? current.slug : slugFromTitle(game.name),
+      description: game.summary,
+      image: game.coverUrl || ''
+    }));
+  };
 
   const loadGames = async () => {
     try {
@@ -70,6 +159,7 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
     });
     setEditingId(null);
     setRomFile(null);
+    resetSearch();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -160,19 +250,14 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
         </div>
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <input
-              type="text"
-              placeholder="Title"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder-zinc-500"
-              required
-            />
             <label className="flex flex-col gap-2">
-              <span className="text-sm text-zinc-400">Console / Sistema</span>
+              <span className="text-sm text-zinc-400">1. Console / Sistema</span>
               <select
                 value={form.system}
-                onChange={(e) => setForm({ ...form, system: e.target.value })}
+                onChange={(e) => {
+                  setForm({ ...form, system: e.target.value });
+                  resetSearch();
+                }}
                 className="rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
                 required
               >
@@ -184,6 +269,89 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
                 ))}
               </select>
             </label>
+            <div className="relative flex flex-col gap-2">
+              <label htmlFor="igdb-search" className="text-sm text-zinc-400">
+                2. Buscar jogo no IGDB
+              </label>
+              <input
+                id="igdb-search"
+                type="search"
+                autoComplete="off"
+                placeholder={form.system ? 'Digite o nome do jogo' : 'Selecione um sistema primeiro'}
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setSelectedIgdbGame(null);
+                }}
+                disabled={!form.system}
+                className="rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder-zinc-500 disabled:opacity-50"
+              />
+              {searching ? <p className="text-xs text-zinc-500">Buscando...</p> : null}
+              {searchMessage ? <p className="text-xs text-amber-400">{searchMessage}</p> : null}
+              {searchResults.length > 0 ? (
+                <ul className="absolute left-0 right-0 top-full z-10 mt-1 max-h-80 overflow-y-auto rounded border border-zinc-700 bg-zinc-900 shadow-lg">
+                  {searchResults.map((game) => (
+                    <li key={game.id}>
+                      <button
+                        type="button"
+                        onClick={() => selectIgdbGame(game)}
+                        className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-zinc-800"
+                      >
+                        {game.thumbUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={game.thumbUrl} alt="" className="h-12 w-9 flex-none rounded object-cover" />
+                        ) : (
+                          <span className="h-12 w-9 flex-none rounded bg-zinc-800" />
+                        )}
+                        <span className="text-sm text-zinc-100">
+                          {game.name}
+                          {game.year ? <span className="ml-2 text-zinc-500">({game.year})</span> : null}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          </div>
+
+          {selectedIgdbGame || form.image ? (
+            <div className="flex flex-col gap-4 rounded border border-zinc-800 bg-zinc-900 p-4 sm:flex-row">
+              {form.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={form.image}
+                  alt={`Capa de ${form.title || 'jogo'}`}
+                  className="h-48 w-36 flex-none rounded object-cover"
+                />
+              ) : (
+                <div className="flex h-48 w-36 flex-none items-center justify-center rounded bg-zinc-800 text-xs text-zinc-500">
+                  Sem capa
+                </div>
+              )}
+              <div className="min-w-0 space-y-1">
+                <p className="text-lg font-semibold text-zinc-100">{form.title || 'Sem título'}</p>
+                {selectedIgdbGame ? (
+                  <p className="text-sm text-zinc-400">
+                    {[selectedIgdbGame.year, selectedIgdbGame.genres.join(', ')].filter(Boolean).join(' · ')}
+                  </p>
+                ) : null}
+                {form.description ? (
+                  <p className="line-clamp-6 text-sm text-zinc-300">{form.description}</p>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <input
+              type="text"
+              placeholder="Title"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              className="rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder-zinc-500"
+              required
+            />
             <input
               type="text"
               placeholder="Slug"
@@ -193,12 +361,19 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
               required
             />
           </div>
+          <input
+            type="url"
+            placeholder="URL da capa"
+            value={form.image}
+            onChange={(e) => setForm({ ...form, image: e.target.value })}
+            className="w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder-zinc-500"
+          />
           <textarea
             placeholder="Description"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             className="w-full rounded border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder-zinc-500"
-            rows={3}
+            rows={5}
           />
           <div className="rounded border border-dashed border-zinc-700 p-3">
             <label className="mb-2 block text-sm text-zinc-400">ROM file</label>
@@ -253,6 +428,7 @@ export default function GamesTab({ onAuthError }: GamesTabProps) {
                         active: game.active
                       });
                       setRomFile(null);
+                      resetSearch();
                     }}
                     className="text-cyan-400 hover:text-cyan-300"
                   >
