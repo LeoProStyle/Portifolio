@@ -133,7 +133,6 @@ export const InvoiceInput = z
     }
     if (inv.kind === "fiscal") {
       if (!inv.emitter.doc) ctx.addIssue({ code: "custom", path: ["emitter", "doc"], message: "Cupom fiscal: informe o CNPJ/CPF do emitente" });
-      if (!inv.emitter.cityCode) ctx.addIssue({ code: "custom", path: ["emitter", "cityCode"], message: "Cupom fiscal: informe o código IBGE do município do emitente" });
       if (!inv.recipient.doc) ctx.addIssue({ code: "custom", path: ["recipient", "doc"], message: "Cupom fiscal: informe o CNPJ/CPF do destinatário" });
     }
     if (inv.accessKey) {

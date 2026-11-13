@@ -205,12 +205,15 @@ function docTag(doc: string) {
   return v.length === 11 ? t("CPF", v) : t("CNPJ", v);
 }
 
-function address(p: PartyDTO) {
+/** Município padrão quando o código IBGE não foi preenchido (São Paulo, como no XML de referência). */
+export const DEFAULT_CITY_CODE = "3550308";
+
+function address(p: PartyDTO, fallbackCityCode: string) {
   return (
     t("xLgr", p.street) +
     t("nro", p.number) +
     t("xBairro", p.district) +
-    t("cMun", p.cityCode) +
+    t("cMun", p.cityCode || fallbackCityCode) +
     t("xMun", p.city.toUpperCase()) +
     t("UF", p.uf) +
     t("CEP", onlyDigits(p.cep)) +
@@ -234,6 +237,8 @@ export function buildInvoiceXml(inv: InvoiceDTO): string {
   const d = inv.recipient;
   const total = decimal2(inv.totalCents);
   const zero = "0.00";
+  // endereço é opcional: sem código IBGE, usa o do outro lado da nota ou o padrão
+  const city = e.cityCode || d.cityCode || DEFAULT_CITY_CODE;
 
   const ide =
     "<ide>" +
@@ -246,7 +251,7 @@ export function buildInvoiceXml(inv: InvoiceDTO): string {
     t("dhEmi", `${inv.issueDate}T${inv.issueTime}:00-03:00`) +
     t("tpNF", XML_FIXED.tpNF) +
     t("idDest", XML_FIXED.idDest) +
-    t("cMunFG", e.cityCode) +
+    t("cMunFG", e.cityCode || city) +
     t("tpImp", XML_FIXED.tpImp) +
     t("tpEmis", XML_FIXED.tpEmis) +
     t("cDV", cDV) +
@@ -263,7 +268,7 @@ export function buildInvoiceXml(inv: InvoiceDTO): string {
     docTag(e.doc) +
     t("xNome", e.name) +
     "<enderEmit>" +
-    address(e) +
+    address(e, city) +
     "</enderEmit>" +
     t("IE", e.ie) +
     t("CRT", e.crt) +
@@ -274,7 +279,7 @@ export function buildInvoiceXml(inv: InvoiceDTO): string {
     docTag(d.doc) +
     t("xNome", d.name) +
     "<enderDest>" +
-    address(d) +
+    address(d, d.cityCode || city) +
     "</enderDest>" +
     t("indIEDest", d.ieIndicator) +
     (d.ieIndicator === "1" && d.ie ? t("IE", d.ie) : "") +

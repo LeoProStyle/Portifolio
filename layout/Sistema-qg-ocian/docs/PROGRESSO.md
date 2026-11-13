@@ -167,6 +167,7 @@ tests/core.test.ts   # vitest
 | 2026-11-13 | `CLAUDE.md` criado na raiz: comandos, padrão das rotas de API (`handler`/`requireAdmin`/Zod), papéis de login e `ADMIN_PREFIXES`, regras de domínio (centavos, fuso SP, snapshot, `$inc` atômico, trava otimista no fechamento) | só documentação |
 
 | 2026-11-13 | **Financeiro no Admin**: Fechamentos diários (maquininha, Excel com TOTAL), Despesas/cartão/suprimentos (Excel com TOTAL e resumo), Cupons fiscais e não fiscais com XML no layout do `docs/ref` (por cupom ou .zip do mês). Libs novas: `exceljs`, `jszip` | 41 testes ✅ (21 novos, incluindo sequência de tags idêntica ao XML de referência) · e2e 35 checagens num banco temporário (apagado depois) ✅ · lint/tsc/build ✅ · telas 1280px e 390px ✅ (ajustados: abas do Admin e descrição de despesas no celular) |
+| 2026-11-13 | Cupom: endereço do emitente/destinatário (CEP, logradouro, número, bairro, município, cód. IBGE) 100% opcional, inclusive no fiscal. Sem cód. IBGE o XML usa o do destinatário ou 3550308; tags continuam todas presentes. Placeholders viraram "Opcional" | 43 testes ✅ (2 novos) · tsc/lint ✅ |
 
 ## 7. Pendências / dúvidas em aberto
 - Financeiro: rodar `npm run db:init` uma vez no banco da loja para criar as coleções `cardclosings`, `expenses` e `invoices` com os índices (o índice único de cupom fiscal depende disso).

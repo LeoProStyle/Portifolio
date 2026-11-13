@@ -103,6 +103,31 @@ describe("XML do cupom (layout NF-e do docs/ref)", () => {
     expect(tagValue(out, "infCpl")).toBe("DOCUMENTO NAO FISCAL - Pão &amp; café &lt;promo&gt;");
   });
 
+  it("endereço em branco: XML mantém as tags e usa o município do destinatário", () => {
+    const blank = { street: "", number: "", district: "", city: "", cep: "", cityCode: "" };
+    const out = buildInvoiceXml({ ...refInvoice, emitter: { ...refInvoice.emitter, ...blank } });
+    expect(tagSequence(out)).toEqual(tagSequence(refXml));
+    expect(tagValue(out, "cMunFG")).toBe("3550308");
+    expect(out).toContain("<enderEmit><xLgr></xLgr><nro></nro><xBairro></xBairro><cMun>3550308</cMun>");
+  });
+
+  it("cupom fiscal aceita emitente sem endereço", () => {
+    const blank = { street: "", number: "", district: "", city: "", cep: "", cityCode: "" };
+    expect(() =>
+      InvoiceInput.parse({
+        kind: "fiscal",
+        model: "55",
+        series: 1,
+        number: 5,
+        issueDate: "2026-11-10",
+        emitter: { ...refInvoice.emitter, ...blank },
+        recipient: refInvoice.recipient,
+        items: [{ description: "x", qty: 1, unitCents: 100 }],
+        payments: [{ method: "01", amountCents: 100 }],
+      }),
+    ).not.toThrow();
+  });
+
   it("emitente com CPF usa a tag <CPF>", () => {
     const out = buildInvoiceXml({ ...refInvoice, emitter: { ...refInvoice.emitter, doc: "52998224725" } });
     expect(out).toContain("<emit><CPF>52998224725</CPF>");

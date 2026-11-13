@@ -180,7 +180,7 @@ function PartyFields({
             inputMode="numeric"
             value={value.cep}
             onChange={(e) => set({ cep: onlyDigits(e.target.value).slice(0, 8) })}
-            placeholder="00000000"
+            placeholder="Opcional"
           />
           <button
             type="button"
@@ -212,7 +212,7 @@ function PartyFields({
           inputMode="numeric"
           value={value.cityCode}
           onChange={(e) => set({ cityCode: onlyDigits(e.target.value).slice(0, 7) })}
-          placeholder="3550308"
+          placeholder="Opcional"
         />
       </Field>
       <Field label="UF" className="col-span-2 sm:col-span-1">
