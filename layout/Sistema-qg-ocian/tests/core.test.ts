@@ -3,7 +3,7 @@ import { addDays, dateRange, isDateKey, todayKey } from "@/lib/date";
 import { centsToInput, formatBRL, parseBRL } from "@/lib/money";
 import { computeTotals } from "@/lib/serializers";
 import { buildStats } from "@/lib/stats";
-import { safeNextPath } from "@/lib/auth";
+import { isAdminPath, safeNextPath } from "@/lib/auth";
 import type { RegisterDTO } from "@/lib/types";
 
 describe("money", () => {
@@ -87,8 +87,20 @@ describe("buildStats", () => {
 
 describe("safeNextPath", () => {
   it("bloqueia redirecionamento externo", () => {
-    expect(safeNextPath("https://mal.com")).toBe("/admin");
-    expect(safeNextPath("//mal.com")).toBe("/admin");
+    expect(safeNextPath("https://mal.com")).toBe("/saida");
+    expect(safeNextPath("//mal.com")).toBe("/saida");
     expect(safeNextPath("/dashboard")).toBe("/dashboard");
+  });
+});
+
+describe("isAdminPath", () => {
+  it("separa rotas do dono das rotas do funcionário", () => {
+    expect(isAdminPath("/admin")).toBe(true);
+    expect(isAdminPath("/dashboard")).toBe(true);
+    expect(isAdminPath("/api/products/123")).toBe(true);
+    expect(isAdminPath("/api/saida/reopen")).toBe(true);
+    expect(isAdminPath("/saida")).toBe(false);
+    expect(isAdminPath("/api/saida/item")).toBe(false);
+    expect(isAdminPath("/administrativo")).toBe(false);
   });
 });

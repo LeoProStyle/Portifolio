@@ -1,19 +1,26 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { SESSION_COOKIE, verifySessionToken } from "@/lib/auth";
+import { SESSION_COOKIE, getSessionRole, isAdminPath } from "@/lib/auth";
 
-/** Protege Admin, Dashboard e as APIs administrativas. A aba Saída é livre. */
+/** Todo o sistema exige login. Admin, Dashboard e suas APIs exigem o login do dono. */
 export async function middleware(req: NextRequest) {
-  const ok = await verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value);
-  if (ok) return NextResponse.next();
+  const { pathname, search } = req.nextUrl;
+  const role = await getSessionRole(req.cookies.get(SESSION_COOKIE)?.value);
+  const needsAdmin = isAdminPath(pathname);
 
-  if (req.nextUrl.pathname.startsWith("/api/")) {
-    return NextResponse.json({ error: "Não autorizado. Faça login." }, { status: 401 });
+  if (role === "admin" || (role === "staff" && !needsAdmin)) return NextResponse.next();
+
+  if (pathname.startsWith("/api/")) {
+    return role
+      ? NextResponse.json({ error: "Acesso restrito ao dono." }, { status: 403 })
+      : NextResponse.json({ error: "Não autorizado. Faça login." }, { status: 401 });
   }
   const url = new URL("/login", req.url);
-  url.searchParams.set("next", req.nextUrl.pathname);
+  url.searchParams.set("next", pathname + search);
+  if (role) url.searchParams.set("admin", "1");
   return NextResponse.redirect(url);
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*", "/api/products/:path*", "/api/stats/:path*", "/api/saida/reopen"],
+  // tudo, menos: login, APIs de login/logout, health check e arquivos do Next/estáticos
+  matcher: ["/((?!login|api/auth|api/health|_next/static|_next/image|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|webmanifest)$).*)"],
 };

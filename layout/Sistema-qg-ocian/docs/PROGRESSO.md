@@ -29,7 +29,7 @@
 | Banco | **MongoDB Atlas** via **Mongoose 9** | Conexão em cache global para funções serverless (`lib/db.ts`) |
 | Validação | **Zod 4** (`lib/validation.ts`) | Mesmas regras em todas as rotas |
 | Gráficos | **Recharts 3** | Cor `--chart #ea580c` validada (dataviz) no claro e no escuro |
-| Login admin | Usuário+senha do env + JWT HS256 em cookie httpOnly (`jose`) | Simples para um único dono |
+| Login | Usuário+senha do env + JWT HS256 em cookie httpOnly (`jose`), com papel `staff` (SIST_*) ou `admin` (ADMIN_*) | Todo o sistema exige login; Admin/Dashboard só o dono |
 | Dinheiro | **Centavos (inteiro)** | Sem erro de arredondamento |
 | "Dia" | Fuso **America/Sao_Paulo**, chave `YYYY-MM-DD` | O dia não vira às 21h (meia-noite UTC) |
 | Preço no histórico | Cada item do dia guarda **cópia** de nome/categoria/emoji/preço | Mudar preço não altera dias passados (testado) |
@@ -42,6 +42,8 @@ MONGODB_URI=                    # já preenchida no .env.local
 MONGODB_DB=Lanchonete-QgOcian   # banco exclusivo da loja (criado em 2026-11-13)
 ADMIN_USERNAME=
 ADMIN_PASSWORD=
+SIST_USERNAME=                  # login do sistema (funcionário): Saída e Vendas
+SIST_PASSWORD=
 AUTH_SECRET=                    # ⚠️ hoje tem 8 caracteres — trocar por 32+ antes de publicar
 ```
 
@@ -62,7 +64,7 @@ app/
   api/health                                  # GET ping do banco
   api/auth/login|logout                       # sessão do admin
   api/products, api/products/[id]             # CRUD (admin)
-  api/saida (GET), saida/item, saida/close    # aba Saída (livre)
+  api/saida (GET), saida/item, saida/close    # aba Saída (login staff ou admin)
   api/saida/reopen                            # reabrir dia (admin)
   api/stats                                   # dashboard (admin)
 components/  AppHeader, Modal, Toaster, saida/*, admin/*, dashboard/*
@@ -139,6 +141,7 @@ tests/core.test.ts   # vitest
 | 2026-11-13 | Verificação visual (celular e desktop) | Corrigidos: data "13 De Novembro" → "13 de novembro"; abas cortadas no celular; filtros quebrando linha no Admin |
 | 2026-11-13 | Testes rodaram num banco temporário `QgOcian-teste-e2e`, apagado no fim | Banco da loja ficou vazio, pronto para os produtos reais |
 | 2026-11-13 | Saída: removidos painel "Relação do dia" e totais da barra; fica só o botão **Fechar dia**; somatórias só no modal | Pedido do usuário. Verificado em 390px e 1280px. Commits ficam por conta do usuário |
+| 2026-11-13 | **Bug na Vercel:** sistema abria sem login (Saída era livre por projeto; `SIST_*` nunca era usado). Agora o middleware protege tudo; login `SIST_*` = funcionário (Saída/Vendas), `ADMIN_*` = dono (tudo); botão Sair no cabeçalho | 20 testes ✅ · lint ✅ · build ✅ · curl ponta a ponta (sem login 307/401, funcionário 403 no Admin, dono 200) ✅. Precisa cadastrar `SIST_USERNAME`/`SIST_PASSWORD` na Vercel |
 
 ## 7. Pendências / dúvidas em aberto
 - ⚠️ `AUTH_SECRET` atual tem só 8 caracteres — gerar uma de 32+ antes de publicar (comando no `.env.example`).

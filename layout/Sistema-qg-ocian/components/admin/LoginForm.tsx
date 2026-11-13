@@ -9,6 +9,7 @@ import { safeNextPath } from "@/lib/auth";
 
 export function LoginForm() {
   const params = useSearchParams();
+  const ownerOnly = params.get("admin") === "1";
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -37,8 +38,10 @@ export function LoginForm() {
         <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-brand text-brand-ink">
           <LockKeyhole aria-hidden />
         </span>
-        <h1 className="mt-3 text-xl font-extrabold">Área do dono</h1>
-        <p className="text-sm text-muted">Admin e Dashboard do QG Ocian</p>
+        <h1 className="mt-3 text-xl font-extrabold">{ownerOnly ? "Área do dono" : "Entrar no QG Ocian"}</h1>
+        <p className="text-sm text-muted">
+          {ownerOnly ? "Admin e Dashboard exigem o login do dono" : "Faça login para acessar o sistema"}
+        </p>
       </div>
       <label className="block">
         <span className="mb-1 block text-sm font-semibold">Usuário</span>
@@ -73,9 +76,11 @@ export function LoginForm() {
       >
         {loading ? "Entrando…" : "Entrar"}
       </button>
-      <Link href="/saida" className="block text-center text-sm font-semibold text-muted hover:text-ink">
-        Voltar para Saída de produtos
-      </Link>
+      {ownerOnly && (
+        <Link href="/saida" className="block text-center text-sm font-semibold text-muted hover:text-ink">
+          Voltar para Saída de produtos
+        </Link>
+      )}
     </form>
   );
 }

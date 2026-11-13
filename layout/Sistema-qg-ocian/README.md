@@ -26,7 +26,7 @@ Outros comandos: `npm test` (testes), `npm run typecheck`, `npm run lint`, `npm 
 
 1. **MongoDB Atlas** → *Network Access* → libere `0.0.0.0/0` (a Vercel não tem IP fixo) ou use a integração Vercel ↔ Atlas.
 2. Suba o projeto para o GitHub e importe na Vercel (*Add New → Project*). Se o repositório tiver outras pastas, aponte o **Root Directory** para esta pasta.
-3. Em *Settings → Environment Variables*, cadastre `MONGODB_URI`, `MONGODB_DB`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` e `AUTH_SECRET`.
+3. Em *Settings → Environment Variables*, cadastre `MONGODB_URI`, `MONGODB_DB`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `SIST_USERNAME`, `SIST_PASSWORD` e `AUTH_SECRET`.
 4. Deploy. Confira em `https://SEU-SITE.vercel.app/api/health` → `{"ok":true}`.
 
 ## Como funciona

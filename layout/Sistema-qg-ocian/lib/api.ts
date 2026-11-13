@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { ZodError } from "zod";
-import { SESSION_COOKIE, verifySessionToken } from "./auth";
+import { SESSION_COOKIE, getSessionRole } from "./auth";
 
 export class ApiError extends Error {
   constructor(
@@ -16,12 +16,21 @@ export function json<T>(data: T, status = 200) {
   return NextResponse.json(data, { status, headers: { "Cache-Control": "no-store" } });
 }
 
-/** Garante que a requisição vem do admin logado (defesa além do middleware). */
-export async function requireAdmin(): Promise<void> {
+async function currentRole() {
   const store = await cookies();
-  if (!(await verifySessionToken(store.get(SESSION_COOKIE)?.value))) {
-    throw new ApiError(401, "Não autorizado. Faça login.");
-  }
+  return getSessionRole(store.get(SESSION_COOKIE)?.value);
+}
+
+/** Garante que há alguém logado (funcionário ou dono) — defesa além do middleware. */
+export async function requireSession(): Promise<void> {
+  if (!(await currentRole())) throw new ApiError(401, "Não autorizado. Faça login.");
+}
+
+/** Garante que a requisição vem do dono logado (defesa além do middleware). */
+export async function requireAdmin(): Promise<void> {
+  const role = await currentRole();
+  if (!role) throw new ApiError(401, "Não autorizado. Faça login.");
+  if (role !== "admin") throw new ApiError(403, "Acesso restrito ao dono.");
 }
 
 /** Envolve um handler e converte erros em respostas JSON padronizadas. */

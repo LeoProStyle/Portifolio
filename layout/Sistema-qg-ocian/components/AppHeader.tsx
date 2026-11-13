@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ClipboardList, LayoutDashboard, Receipt, Settings2 } from "lucide-react";
+import { ClipboardList, LayoutDashboard, LogOut, Receipt, Settings2 } from "lucide-react";
+
+async function logout() {
+  await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+  window.location.assign("/login");
+}
 
 const TABS = [
   { href: "/saida", label: "Saída", icon: ClipboardList },
@@ -53,6 +58,15 @@ export function AppHeader() {
             );
           })}
         </nav>
+        <button
+          type="button"
+          onClick={logout}
+          title="Sair"
+          aria-label="Sair"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-muted hover:bg-surface-2 hover:text-ink"
+        >
+          <LogOut size={18} aria-hidden />
+        </button>
       </div>
     </header>
   );

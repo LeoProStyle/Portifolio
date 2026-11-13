@@ -1,4 +1,4 @@
-import { ApiError, handler, json } from "@/lib/api";
+import { ApiError, handler, json, requireSession } from "@/lib/api";
 import { connectDB } from "@/lib/db";
 import { isDateKey, todayKey } from "@/lib/date";
 import { findRegister, pendingOpenDates } from "@/lib/register";
@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 
 /** Dados da aba Saída: dia (hoje por padrão), produtos ativos e dias pendentes de fechamento. */
 export const GET = handler(async (req: Request) => {
+  await requireSession();
   const today = todayKey();
   const param = new URL(req.url).searchParams.get("date");
   if (param && (!isDateKey(param) || param > today)) throw new ApiError(400, "Data inválida.");
