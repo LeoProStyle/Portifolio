@@ -8,6 +8,7 @@ import { formatLongDate, formatTime, formatWeekdayShort } from "@/lib/date";
 import { formatBRL } from "@/lib/money";
 import type { ProductDTO, RegisterDTO, RegisterItemDTO, SaidaResponse } from "@/lib/types";
 import { toast } from "@/components/Toaster";
+import { NameTooltip } from "@/components/NameTooltip";
 import { CloseDayDialog } from "./CloseDayDialog";
 import { DayReport } from "./DayReport";
 
@@ -47,6 +48,7 @@ export function SaidaBoard() {
   const [category, setCategory] = useState(ALL);
   const [closing, setClosing] = useState(false);
   const [bump, setBump] = useState<string | null>(null);
+  const [announce, setAnnounce] = useState(""); // aviso único para leitores de tela
   const pending = useRef(0);
 
   const load = useCallback(async (date: string | null) => {
@@ -96,6 +98,8 @@ export function SaidaBoard() {
       const next = applyDelta(data.register, product, delta);
       if (next === data.register) return;
       setData({ ...data, register: next });
+      const newQty = next.items.find((i) => i.productId === product.id)?.qty ?? 0;
+      setAnnounce(`${product.name}: ${newQty} ${newQty === 1 ? "unidade" : "unidades"}`);
       if (delta === 1) {
         setBump(product.id);
         navigator.vibrate?.(8);
@@ -125,8 +129,8 @@ export function SaidaBoard() {
       setData((d) => (d ? { ...d, register: res.register } : d));
       toast("Dia reaberto.");
     } catch (e) {
-      if (e instanceof HttpError && e.status === 401) {
-        toast("Só o admin pode reabrir. Faça login no Admin.", "error");
+      if (e instanceof HttpError && (e.status === 401 || e.status === 403)) {
+        toast("Só o dono pode reabrir o dia. Entre com o login do dono.", "error");
       } else toast(e instanceof Error ? e.message : "Erro ao reabrir.", "error");
     }
   };
@@ -151,6 +155,9 @@ export function SaidaBoard() {
 
   return (
     <div className="space-y-4">
+      <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {announce}
+      </p>
       {/* Cabeçalho do dia */}
       <section className="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -323,21 +330,30 @@ function ProductCard({
         active ? "border-brand shadow-[0_0_0_3px] shadow-brand/15" : "border-line"
       }`}
     >
-      <button
-        type="button"
-        onClick={() => onChange(product, 1)}
-        className="flex items-center gap-3 rounded-xl text-left outline-none focus-visible:ring-4 focus-visible:ring-brand/30"
-        aria-label={`Adicionar 1 ${product.name}`}
+      <NameTooltip text={product.name}>
+        <button
+          type="button"
+          onClick={() => onChange(product, 1)}
+          className="flex w-full items-center gap-3 rounded-xl text-left outline-none focus-visible:ring-4 focus-visible:ring-brand/30"
+          aria-label={`Adicionar 1 ${product.name}, ${formatBRL(product.priceCents)}`}
+        >
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-surface-2 text-2xl" aria-hidden>
+            {product.emoji || product.name.charAt(0).toUpperCase()}
+          </span>
+          <span className="min-w-0">
+            {/* até 2 linhas; se ainda cortar, o balão mostra o nome inteiro */}
+            <span data-clamp className="line-clamp-2 break-words font-semibold leading-tight">
+              {product.name}
+            </span>
+            <span className="text-sm text-muted tabular-nums">{formatBRL(product.priceCents)}</span>
+          </span>
+        </button>
+      </NameTooltip>
+      <div
+        role="group"
+        aria-label={`Quantidade de ${product.name}`}
+        className="mt-auto flex items-center justify-between gap-2 rounded-xl bg-surface-2 p-1"
       >
-        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-surface-2 text-2xl" aria-hidden>
-          {product.emoji || product.name.charAt(0).toUpperCase()}
-        </span>
-        <span className="min-w-0">
-          <span className="block truncate font-semibold leading-tight">{product.name}</span>
-          <span className="text-sm text-muted tabular-nums">{formatBRL(product.priceCents)}</span>
-        </span>
-      </button>
-      <div className="flex items-center justify-between gap-2 rounded-xl bg-surface-2 p-1">
         <button
           type="button"
           onClick={() => onChange(product, -1)}
@@ -350,8 +366,6 @@ function ProductCard({
         <span
           key={bump ? `b${qty}` : qty}
           onAnimationEnd={onBumpEnd}
-          aria-live="polite"
-          aria-label={`${qty} ${product.name}`}
           className={`min-w-10 text-center text-2xl font-extrabold tabular-nums ${active ? "text-ink" : "text-muted"} ${
             bump ? "animate-pop" : ""
           }`}
@@ -381,10 +395,12 @@ export function SummaryList({ items }: { items: RegisterItemDTO[] }) {
           <span className="w-8 shrink-0 rounded-md bg-brand-soft py-0.5 text-center font-bold text-brand tabular-nums">
             {i.qty}
           </span>
-          <span className="min-w-0 flex-1 truncate">
-            {i.emoji && <span aria-hidden>{i.emoji} </span>}
-            {i.name}
-          </span>
+          <NameTooltip text={i.name} className="min-w-0 flex-1">
+            <span data-clamp tabIndex={0} className="block truncate rounded outline-none focus-visible:ring-2 focus-visible:ring-brand/40">
+              {i.emoji && <span aria-hidden>{i.emoji} </span>}
+              {i.name}
+            </span>
+          </NameTooltip>
           <span className="font-semibold tabular-nums">{formatBRL(i.qty * i.priceCents)}</span>
         </li>
       ))}

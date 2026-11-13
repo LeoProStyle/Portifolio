@@ -142,6 +142,7 @@ tests/core.test.ts   # vitest
 | 2026-11-13 | Testes rodaram num banco temporário `QgOcian-teste-e2e`, apagado no fim | Banco da loja ficou vazio, pronto para os produtos reais |
 | 2026-11-13 | Saída: removidos painel "Relação do dia" e totais da barra; fica só o botão **Fechar dia**; somatórias só no modal | Pedido do usuário. Verificado em 390px e 1280px. Commits ficam por conta do usuário |
 | 2026-11-13 | **Bug na Vercel:** sistema abria sem login (Saída era livre por projeto; `SIST_*` nunca era usado). Agora o middleware protege tudo; login `SIST_*` = funcionário (Saída/Vendas), `ADMIN_*` = dono (tudo); botão Sair no cabeçalho | 20 testes ✅ · lint ✅ · build ✅ · curl ponta a ponta (sem login 307/401, funcionário 403 no Admin, dono 200) ✅. Precisa cadastrar `SIST_USERNAME`/`SIST_PASSWORD` na Vercel |
+| 2026-11-13 | Balão (tooltip) com o nome inteiro nos cards da Saída, no fechamento do dia, no ranking do Dashboard e na lista do Admin (`components/NameTooltip.tsx`). Nome do card agora usa até 2 linhas. A11y: balão abre com mouse e com Tab, fecha com Esc, dá para passar o mouse sobre ele (WCAG 1.4.13); um único aviso `role=status` ("Café: 3 unidades") no lugar de `aria-live` em cada card; stepper com `role=group`; preço no rótulo do botão. "Reabrir dia" trata 403 (funcionário) | lint ✅ · tsc ✅ · 20 testes ✅ · verificado no navegador em 1280px e 390px (mouse, Tab, Esc) |
 
 ## 7. Pendências / dúvidas em aberto
 - ⚠️ `AUTH_SECRET` atual tem só 8 caracteres — gerar uma de 32+ antes de publicar (comando no `.env.example`).

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LogOut, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { NameTooltip } from "@/components/NameTooltip";
 import { api, post } from "@/lib/client";
 import { formatBRL } from "@/lib/money";
 import type { ProductDTO } from "@/lib/types";
@@ -180,7 +181,15 @@ export function ProductsAdmin() {
                   {p.emoji || p.name.charAt(0).toUpperCase()}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{p.name}</p>
+                  <NameTooltip text={p.name}>
+                    <p
+                      data-clamp
+                      tabIndex={0}
+                      className="truncate rounded font-semibold outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                    >
+                      {p.name}
+                    </p>
+                  </NameTooltip>
                   <p className="text-sm text-muted tabular-nums">{formatBRL(p.priceCents)}</p>
                 </div>
                 <label className="flex cursor-pointer items-center gap-2 text-sm text-muted">

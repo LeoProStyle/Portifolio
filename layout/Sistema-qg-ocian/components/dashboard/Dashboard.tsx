@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, Lock, MessageSquareText, TrendingDown, TrendingUp } from "lucide-react";
+import { NameTooltip } from "@/components/NameTooltip";
 import { api } from "@/lib/client";
 import { addDays, formatWeekdayShort, todayKey } from "@/lib/date";
 import { formatBRL } from "@/lib/money";
@@ -121,10 +122,16 @@ export function Dashboard() {
                     return (
                       <li key={p.productId} className="grid grid-cols-[1.5rem_1fr_auto] items-center gap-x-3 gap-y-1">
                         <span className="text-sm font-bold text-muted tabular-nums">{idx + 1}</span>
-                        <span className="truncate font-semibold">
-                          {p.emoji && <span aria-hidden>{p.emoji} </span>}
-                          {p.name}
-                        </span>
+                        <NameTooltip text={p.name} className="min-w-0">
+                          <span
+                            data-clamp
+                            tabIndex={0}
+                            className="block truncate rounded font-semibold outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+                          >
+                            {p.emoji && <span aria-hidden>{p.emoji} </span>}
+                            {p.name}
+                          </span>
+                        </NameTooltip>
                         <span className="text-right text-sm tabular-nums">
                           <strong>{p.qty}</strong> <span className="text-muted">· {formatBRL(p.totalCents)}</span>
                         </span>
