@@ -1,0 +1,3329 @@
+{
+  "version": 2,
+  "slots": [
+    {
+      "id": "gitnexus.graph",
+      "resource": {
+        "name": "architecture-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph"
+        }
+      ],
+      "anchor": {
+        "text": "2. Map layers, dependencies, and module boundaries",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Analyze against established architectural patterns"
+      }
+    },
+    {
+      "id": "gitnexus.graph",
+      "resource": {
+        "name": "backend-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph"
+        }
+      ],
+      "anchor": {
+        "text": "2. Analyze existing codebase patterns and the change surface — follow conventions, don't invent",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "id": "gitnexus.graph",
+      "resource": {
+        "name": "database-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph"
+        }
+      ],
+      "anchor": {
+        "text": "2. Analyze existing schema and migration patterns",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Design schema changes following the project's normalization level"
+      }
+    },
+    {
+      "id": "gitnexus.graph",
+      "resource": {
+        "name": "discovery-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph"
+        }
+      ],
+      "anchor": {
+        "text": "2. Map the relevant codebase areas — structure, key call paths, and existing patterns",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Read key files to understand conventions and constraints"
+      }
+    },
+    {
+      "id": "gitnexus.graph",
+      "resource": {
+        "name": "frontend-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph"
+        }
+      ],
+      "anchor": {
+        "text": "2. Analyze existing components and the change surface — match conventions exactly",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Implement following the project's component hierarchy and file structure"
+      }
+    },
+    {
+      "id": "playwright.drive",
+      "resource": {
+        "name": "qa-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "playwright",
+          "section": "drive"
+        }
+      ],
+      "anchor": {
+        "text": "By default you judge from the persisted evidence (read-PNG mode). If the Playwright plugin is enabled, the live-driving playbook below is injected and you may additionally drive the app.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### Axis 1 — Functional delivery (from assertion + diagnostic results)"
+      }
+    },
+    {
+      "id": "gitnexus.graph",
+      "resource": {
+        "name": "reviewer-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph"
+        }
+      ],
+      "anchor": {
+        "text": "3. Analyze each file against quality, security, and architecture criteria",
+        "ordinal": 1,
+        "position": "after",
+        "next": "4. Classify findings by severity: Critical, Important, Minor"
+      }
+    },
+    {
+      "id": "gitnexus.graph",
+      "resource": {
+        "name": "system-design-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph"
+        }
+      ],
+      "anchor": {
+        "text": "2. Analyze existing system architecture and infrastructure",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Propose 2-3 alternatives with explicit trade-offs"
+      }
+    },
+    {
+      "id": "design.critique",
+      "resource": {
+        "name": "ux-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "design",
+          "section": "critique"
+        }
+      ],
+      "anchor": {
+        "text": "2. Adversarially hunt defects, ONE bounded pass, against the canonical rubric: skill `add--ux-design` file `critique-rubric.md` — the 9 defect items, their severity scale, and the empty-critique rule live there, not here.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### Output"
+      }
+    },
+    {
+      "id": "gitnexus.graph",
+      "resource": {
+        "name": "ux-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph"
+        }
+      ],
+      "anchor": {
+        "text": "2. Analyze the request against UX best practices and project conventions",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Propose solutions with rationale — never just \"it looks better\""
+      }
+    },
+    {
+      "id": "gitnexus.graph",
+      "resource": {
+        "name": "ux-flow-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph"
+        }
+      ],
+      "anchor": {
+        "text": "3. **Component Library Audit.** Audit available UI components and check for a component index/exports. Extract: full list of existing UI components with paths, component library in use (name, which components are installed).",
+        "ordinal": 1,
+        "position": "after",
+        "next": "4. **Visual Patterns Reference.** Find and read 3-5 representative pages (dashboard, settings, list, detail, form). Extract: page headers, cards, lists, forms, buttons usage patterns."
+      }
+    },
+    {
+      "id": "design.direction",
+      "resource": {
+        "name": "ux-flow-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "design",
+          "section": "direction"
+        }
+      ],
+      "anchor": {
+        "text": "6. If `HAS_FOUNDATIONS=true`, read `.codeadd/docs/design-system.md` and use its tokens over ad-hoc inference.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "Write the inspection to temp `design-context.md` (extractive JSON, no prose):"
+      }
+    },
+    {
+      "id": "design.layout",
+      "resource": {
+        "name": "ux-layout-agent",
+        "kind": "agent"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "design",
+          "section": "layout"
+        }
+      ],
+      "anchor": {
+        "text": "6. Emit the `## Design Contract` block: the dimensions table rows this feature commits to, inherited from `design-context.md`'s constraints — restate only this feature's commitments and justified deviations; an undefined dimension is `unknown — <why>`, never invented.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Output"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-audit",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-audit",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-audit.offer.md",
+      "fallback": "\n**This command is advisory — it changes no code and fixes nothing.** So the next activity exists only\nwhen there is a finding to act on.\n\n| Audit result | Next activity |\n|---|---|\n| Critical findings | `/add-new` per critical issue — each becomes a feature |\n| Findings below critical | none — the report is the deliverable |\n| Healthy project | none — there is nothing to continue into |\n\nFinish the report and its metadata, then ask ONCE for instructions only on the first row. A healthy\naudit ends normally with no offer; do not invent a feature to have somewhere to point.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here. This step supplies only the next\nactivity and its documents.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-audit.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "id": "agent-mode.output-cap",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-brainstorm.output-cap.md",
+      "fallback": "\n> **OUTPUT RULE:** Responses max 20 words. Tables and lists are exceptions. Be direct, no fluff.\n> **The closing report at STEP add-brainstorm.handoff is exempt** — it reports in the shape `add--final-report` owns, and a\n> 20-word stub is not that shape.\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "output-cap"
+        }
+      ],
+      "anchor": {
+        "text": "# Brainstorm - Project Conversation Partner",
+        "ordinal": 1,
+        "position": "after",
+        "next": "> **LANG:** Respond in user's native language (detect from input). Tech terms always in English. Short sentences, one idea each; the common word over the rare one; a technical term explained in one line the first time it appears."
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 2,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "id": "agent-mode.cap-scope",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-brainstorm.cap-scope.md",
+      "fallback": "\nThe cadence, the challenge techniques and the 20-word `OUTPUT RULE` apply on all three paths. If the\nconversation reveals hidden complexity, apply STEP add-brainstorm.classify's one-way ratchet before continuing.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "cap-scope"
+        }
+      ],
+      "anchor": {
+        "text": "| **architectural** | Everything written below. | STEPS 3 → 4 → 5. |",
+        "ordinal": 1,
+        "position": "after",
+        "next": "For investigations, search the codebase before answering."
+      }
+    },
+    {
+      "id": "agent-mode.objective-draft",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-brainstorm.objective-draft.md",
+      "fallback": "\n**Draft the objective from what the user has already said, and ask them to correct it.** One or two\nsentences, in their words, answering one question: **what will be true when this is done that is not\ntrue today?**\n\n```\nIF STARTING STEP add-brainstorm.explore ON bounded OR architectural:\n  ⛔ DO NOT: Ask \"what is your objective?\" and wait — someone who could state it cold would have\n  ⛔ DO NOT: Hand back the request as the objective — \"you want X\" names the thing, not what it achieves\n  ⛔ DO NOT: Ask any other question while the objective is still unstated\n  ✅ DO: Propose the draft, then let them correct it\n```\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "objective-draft"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-brainstorm.draft-objective-first Draft the objective FIRST, and have the user correct it",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Drafting it is the work, not a courtesy.** A user brings a problem, a symptom or a half-formed idea;"
+      }
+    },
+    {
+      "id": "agent-mode.cadence",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-brainstorm.cadence.md",
+      "fallback": "\n**Cadence (MANDATORY):** Ask **ONE** clarifying or challenge question, WAIT for the answer, THEN ask the\nnext. DO NOT stack multiple questions in one turn. The 20-word output rule still applies.\n\n**Every question is drawn from the objective.** A question that sharpens no part of it is a question\nthis conversation does not need.\n\n**Active posture:** Go beyond the user's framing. Question premises, surface edge cases, force decisions until doubts resolve. The one-question cap limits questions, not unsolicited insight.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "cadence"
+        }
+      ],
+      "anchor": {
+        "text": "```",
+        "ordinal": 21,
+        "position": "after",
+        "next": "**Challenge techniques (apply one per turn):**"
+      }
+    },
+    {
+      "id": "agent-mode.structured-ask",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-brainstorm.structured-ask.md",
+      "fallback": "\n**Ask through the provider's structured-question tool** where the `structuredQuestions` capability\ndeclares one, marking the recommended option. Where it declares none, present the same content as an\noption table with the recommendation stated below it.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "structured-ask"
+        }
+      ],
+      "anchor": {
+        "text": "would do, has handed the work back. The user still chooses — they now choose against a position.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Close what you can close.** Do not carry a question to the approval that one more turn would have"
+      }
+    },
+    {
+      "id": "agent-mode.approval-ask",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-brainstorm.approval-ask.md",
+      "fallback": "\n**This is the only approval the pipeline asks for by default.** Ask it through the provider's\nstructured-question tool where the `structuredQuestions` capability declares one — otherwise as an\noption table — with these three options and nothing else:\n\n| Option | What happens |\n|---|---|\n| **Approve, I confirm each stage** | The intent file records `delivery: confirm`. Each stage stops and offers optional fresh-context instructions; this command stops |\n| **Approve, deliver automatically** | The intent file records `delivery: automatic`, and this command follows `/add-new`. Every stage then hands off without waiting until the build asks whether to open the PR |\n| **Keep discussing** | No intent file, no handoff. Return to STEP add-brainstorm.explore with what the user wants to reopen |\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "approval-ask"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-brainstorm.approval Ask for the one approval — `bounded` and `architectural`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Stop kind — deciding, in every state.** The delivery mode is what this question creates. What each"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-brainstorm.offer.md",
+      "fallback": "\nOn `delivery: confirm`, and on every route that is not `/add-new`, name the route in the report's\nmetadata and offer the continuation:\n\n| Route | Next activity | Documents the block points at |\n|---|---|---|\n| `/add-new` | Formalize the idea as a feature | The existing intent file written at STEP add-brainstorm.write-intent-file carries every settled decision; do not invent a feature id or cite its future files as existing references |\n| `/add-diagnose` | Triage a suspected bug | Actual existing project evidence for the symptom; `add--ecosystem` Main Flows carries the routing |\n| `/add-hotfix` | Fix a confirmed bug | Actual existing diagnosis or issue documents, when available; never fabricate a hotfix directory that the next command has not created |\n| Needs more exploration | none — stay in this conversation | Offer nothing |\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here. The last row above is the\nno-activity case: a brainstorm that still needs exploring has no next command, so it ends normally\nwith no offer.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "no such step, so naming the file to them would promise a handoff neither receives.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "On `delivery: automatic`, print the `/add-new` line with the last one reading `(delivering"
+      }
+    },
+    {
+      "id": "agent-mode.rules-cadence",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-brainstorm.rules-cadence.md",
+      "fallback": "- Draft the objective and have the user correct it before any other question\n- Ask exactly one question per turn; wait for the answer\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "rules-cadence"
+        }
+      ],
+      "anchor": {
+        "text": "- State the classified path in one line and continue in the same turn — never ask the user to confirm it",
+        "ordinal": 1,
+        "position": "after",
+        "next": "- Name the source of every recommendation; let this project win over outside practice"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "id": "tdd-pipeline.detect-framework",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "detect-framework"
+        }
+      ],
+      "anchor": {
+        "text": "**If ITERATIONS output exists from script:** Previous /add-build sessions context - avoid repeating fixes.",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "id": "gitnexus.graph-build",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-build"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-build.preflight Pre-Flight Scan and the Handoff Contract (BEFORE the first dispatch)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "The three blocks below run **once, before the first subagent of this run is dispatched**. None is optional,"
+      }
+    },
+    {
+      "id": "tdd-pipeline.tasks-flow+tdd-pipeline.gate+tdd-pipeline.verify-red",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "tasks-flow"
+        },
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "gate"
+        },
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "verify-red"
+        }
+      ],
+      "anchor": {
+        "text": "`T0N: complete (commits BASE..HEAD, …)` ledger line. A resume recomputes it from the ledger, never from memory.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Subagent prompt addition for TASKS MODE:**"
+      }
+    },
+    {
+      "id": "tdd-pipeline.awareness",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "awareness"
+        }
+      ],
+      "anchor": {
+        "text": "Execute this task only. Confirm its verify command passes.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "```"
+      }
+    },
+    {
+      "id": "tdd-pipeline.test-dispatch",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "test-dispatch"
+        }
+      ],
+      "anchor": {
+        "text": "- **Prompt:** [use Universal Subagent Prompt below]",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "id": "qa-pipeline.e2e-dispatch",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "e2e-dispatch"
+        }
+      ],
+      "anchor": {
+        "text": "**CRITICAL:** Pass FILES_CREATED and FILES_MODIFIED from each implementation subagent to its validator.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "id": "qa-pipeline.qa-fix",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "qa-fix"
+        }
+      ],
+      "anchor": {
+        "text": "afterward, not a gate before it.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### STEP add-build.re-review Scoped Re-Review (after every fix round with a reviewer-sourced row) [HARD GATE]"
+      }
+    },
+    {
+      "id": "tdd-pipeline.verification+tdd-pipeline.coverage",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "verification"
+        },
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "coverage"
+        }
+      ],
+      "anchor": {
+        "text": "2. **Build Verification:** Run project build command (see AGENTS.md)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**CRITICAL:** Code MUST compile 100%. Fix errors before proceeding."
+      }
+    },
+    {
+      "id": "agent-mode.checkpoint-route",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-build.checkpoint-route.md",
+      "fallback": "\n   | `EPIC_DELIVERY` | Do |\n   |---|---|\n   | `automatic` | Print what `SFxx` delivered, then follow {{cmd:add-plan}} for this feature — it plans the next pending subfeature — as `add--delivery-mode` describes |\n   | `semi-automatic` | **STOP — deciding.** Show what `SFxx` delivered and what the next subfeature will do, and WAIT. On the user's go, follow {{cmd:add-plan}}. This question IS the stop — do not also offer continuation instructions |\n   | absent (`confirm`) | Keep the full checkpoint report for `SFxx`, then offer the continuation under `chat-continuation-eligibility-v1` and STOP |\n\n**The `confirm` checkpoint keeps its whole report.** The offer is a question after that report, never a\nreplacement for it, and never a compression of it. The next activity is `/add-plan ${FEATURE_ID}` for\nthe next pending subfeature; on acceptance, `STEP add-build.handoff` answers it in one block.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "checkpoint-route"
+        }
+      ],
+      "anchor": {
+        "text": "5. **If the sequence landed and rows are still pending**, per `EPIC_DELIVERY`:",
+        "ordinal": 1,
+        "position": "after",
+        "next": "6. **If no row is pending any more** → go to STEP add-build.publish."
+      }
+    },
+    {
+      "id": "qa-pipeline.next-command",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "next-command"
+        }
+      ],
+      "anchor": {
+        "text": "- `Final review: blocked N` → each `Blocker suggestion:` command",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Stop kind — confirming.** The report describes work the approval already covered. On `automatic`,"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-build.offer.md",
+      "fallback": "\n**On `confirm`, finish the report, the rulings table and the metadata, and only then ask ONCE whether\nthe user wants instructions for continuing in a fresh context.** Then stop and wait.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here. This step supplies only the next\nactivity and its documents; `automatic` never reaches it.\n\n⛔ **The publish question is deciding in every state and outranks this step.** On a branch with no PR,\nthe build asks that question and waits; it does not offer continuation in its place, and the two are\nnever merged into one prompt.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-build.handoff Offer the continuation — `confirm`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-diagnose",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "id": "gitnexus.graph-trace",
+      "resource": {
+        "name": "add-diagnose",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-trace"
+        }
+      ],
+      "anchor": {
+        "text": "This STEP replaces the previous adaptive triage. All three sub-dispatches always run — Fase A directs Fase B; code-level tracing remains required to confirm the diagnosis.",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-diagnose",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-diagnose.offer.md",
+      "fallback": "\n**This command is READ-ONLY and advisory.** The next activity exists only when the accepted route is\none an agent can pick up. Print the hotfix invocation only for an accepted hotfix route, and never\ninvoke it.\n\n| Accepted route | Next activity |\n|---|---|\n| `hotfix` | `/add-hotfix @.codeadd/docs/diagnose/<file>.md` — it consumes the `## Hotfix Handoff` this report appended |\n| `feature` | `/add-new` — a functional gap becomes a feature |\n| `extend` | `/add-new` or `/add-plan`, per the route's own scope |\n| `no-action` | none — the diagnosis was the deliverable |\n\nFinish the report and its metadata, then ask ONCE for instructions only on the first three rows. A\n`no-action` diagnosis ends normally with no offer.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here. This step supplies only the next\nactivity and its documents.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-diagnose.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 2,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "id": "docs-pruning.prune",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "docs-pruning",
+          "section": "prune"
+        }
+      ],
+      "anchor": {
+        "text": "⛔ DO NOT USE: Bash for git add/commit/push in this substep. **`done.cjs` owns every LOCAL git write on both routes**, exactly as it does for the changelog and the wiki.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "id": "agent-mode.ci-watch",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-done.ci-watch.md",
+      "fallback": "\n```bash\ngh pr checks --watch --fail-fast\n```\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "ci-watch"
+        }
+      ],
+      "anchor": {
+        "text": "items exist.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "Then, **before reading the verdict**, compare the SHA:"
+      }
+    },
+    {
+      "id": "gitnexus.graph-reindex",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-reindex"
+        }
+      ],
+      "anchor": {
+        "text": "READ skill `add--ecosystem` Main Flows section. Resolve whether the user stated a next goal for this work FIRST — a merged branch carries none of its own, and branch type alone says only what shipped. Then use the branch type and epic status. ⛔ DO NOT print it at this step — the report comes first and STEP add-done.complete owns it.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-done.offer.md",
+      "fallback": "\n**Every stop in this command is deciding, and none of them is this one.** The merge already happened\nby the time this runs, so the offer is a question about what comes next — never a substitute for a\ngate, and never a merge consent.\n\n**The FIRST row is the test for whether there is a next activity at all, so it is evaluated first.**\nA merged branch carries no goal of its own; the branch type only says what the delivery *was*. Read\nthe rows top-to-bottom and stop at the first match, exactly as `add--ecosystem` Main Flows does.\n\n| State after the merge | Next activity |\n|---|---|\n| **No next goal was stated for this work** | none — the delivery is closed |\n| Feature branch, back on main, next feature stated | `/add-new` — start that feature |\n| Epic, subfeatures still pending, next one stated | `/add-build feature N` — the next subfeature |\n| Hotfix, and the user has said what comes next | `/add-new` — return to feature work |\n\nFinish the report and its metadata, then ask ONCE for instructions only on rows 2 to 4.\n\n⛔ **Never propose a new feature the user did not ask for.** \"Back on main\" and \"was an epic\" are\nfacts about what shipped, not intentions about what comes next. Reading either as a reason to start\nsomething is how a close-out launches an epic its user never requested, and it is why row 1 is\nevaluated before all three.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-done.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-hotfix",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "id": "tdd-pipeline.red-gate",
+      "resource": {
+        "name": "add-hotfix",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "red-gate"
+        }
+      ],
+      "anchor": {
+        "text": "**WAIT for explicit confirmation before proceeding, unless a valid diagnose report already confirmed the root cause.**",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "id": "gitnexus.graph-impact",
+      "resource": {
+        "name": "add-hotfix",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-impact"
+        }
+      ],
+      "anchor": {
+        "text": "- [ ] On branch `hotfix/*`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### STEP add-hotfix.knowledge-base Consult Knowledge Base"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-hotfix",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-hotfix.offer.md",
+      "fallback": "\n**This command stays advisory about what happens next.** It fixed a bug and stopped. It does not\nmerge, and it never routes to `/add-review` — the diagnose `@.codeadd/docs/diagnose/<file>.md` handoff and the\nroute to `/add-done` are untouched by this step.\n\n| State | Next activity |\n|---|---|\n| Fix built, branch ready | `/add-done` — finalize the branch |\n| Build red | none yet — a red build is a deciding stop of its own |\n\nFinish the report and its metadata, then ask ONCE for instructions on the first row only.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-hotfix.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "id": "agent-mode.output-cap",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-new.output-cap.md",
+      "fallback": "> **OUTPUT:** Max 20 words per response. Tables/lists are exceptions. Straight to the point.\n> **The closing report at `## Completion` is exempt** — it reports in the shape `add--final-report`\n> owns, and a 20-word stub is not that shape.\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "output-cap"
+        }
+      ],
+      "anchor": {
+        "text": "> **REF:** `AGENTS.md` for architecture patterns",
+        "ordinal": 1,
+        "position": "after",
+        "next": "> **LANG:** Respond in user's native language (detect from input). Tech terms always in English. Short sentences, one idea each; the common word over the rare one; a technical term explained in one line the first time it appears."
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## STEP add-new.load: Load Skills + Validate Context"
+      }
+    },
+    {
+      "id": "gitnexus.graph-map",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-map"
+        }
+      ],
+      "anchor": {
+        "text": "- Read past-features.md FIRST. Prioritize files touched by related features. Perform deep analysis: reusable functionality, existing patterns, integration points, prerequisites. Include \"Related Features\" section with table + refs. Write discovery.md using the section list above.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Coordinator: Deep Thinking (before STEP add-new.confirm)**"
+      }
+    },
+    {
+      "id": "agent-mode.confirm-wait",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-new.confirm-wait.md",
+      "fallback": "\n**What the user sees depends on what is left open:**\n\n| `## Open` in the intent file | This STEP |\n|---|---|\n| Reads `None` | The confirmation screen alone. One screen, no questions |\n| Lists items | Those questions, one per turn, then the confirmation screen |\n| Absent, empty, or no intent file at all | The skill’s full question set, then the confirmation screen |\n\n**STOP AND WAIT after the confirmation screen** — except where the table below says the stop passes.\nThe user corrects an extraction error or waves it through. **The approval never scales away — only the\ninterrogation does.**\n\n**Stop kind — decided by what is left open:**\n\n| State | Kind | On `delivery: automatic` |\n|---|---|---|\n| `## Open` reads `None` | **confirming** | Print the confirmation screen in full and continue to STEP add-new.decompose — the brainstorm's approval already covered it |\n| `## Open` lists items | **deciding** | Ask them and wait — no approval answered them |\n| Absent, empty, or no intent file | **deciding** | Wait — there is no approval to have covered anything |\n\nOn `delivery: confirm` every row waits.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "confirm-wait"
+        }
+      ],
+      "anchor": {
+        "text": "```",
+        "ordinal": 11,
+        "position": "after",
+        "next": "⛔ **A confirmation screen that asks questions is a questionnaire wearing a different name.** It"
+      }
+    },
+    {
+      "id": "agent-mode.closing-route",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-new.closing-route.md",
+      "fallback": "\n**Stop kind — confirming.** The report describes work the brainstorm's approval already covered.\n\n| `delivery:` | Do |\n|---|---|\n| `confirm`, or absent | Offer the continuation under `chat-continuation-eligibility-v1`, then STOP |\n| `automatic` | Print the report and the line `(delivering automatically — continuing to /add-plan.)`, then follow {{cmd:add-plan}} with this feature's id, from its first step, as `add--delivery-mode` describes |\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "closing-route"
+        }
+      ],
+      "anchor": {
+        "text": "Then, after the seven blocks, summarize the created artifacts. Name the next activity in ordinary prose based on discovery: `/add-plan` for technical planning (design is produced inside `/add-plan`'s own UX step when the feature touches UI), `/add-build` for implementation. ⛔ Do not print its full invocation here — `STEP add-new.handoff` puts that behind the offer.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "⛔ **On `automatic` the next command is always `/add-plan`, never `/add-build`.** The plan is where the"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-new.offer.md",
+      "fallback": "\n**On `confirm`, finish the report, then its metadata, and only then ask ONCE whether the user wants\ninstructions for continuing in a fresh context.** Then stop and wait.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here. This step supplies only the next\nactivity and its documents; `automatic` never reaches it.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-new.handoff Offer the continuation — `confirm`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "id": "agent-mode.stop-kinds",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-plan.stop-kinds.md",
+      "fallback": "\n**Stop kind** follows `{{skill:add--delivery-mode/SKILL.md}}`: a **deciding** stop waits on every\ndelivery mode; a **confirming** stop waits only on `confirm`, and on `automatic` prints what it would\nhave shown and continues. Every gate above that stops is deciding — each presents a failure or a choice\nno approval covered.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "stop-kinds"
+        }
+      ],
+      "anchor": {
+        "text": "| `plan_reviewed` | STEP add-plan.review | `@plan-reviewer-agent` verdict is `blocked`, blockers remain after the re-dispatch `add--review-discipline` allows, or `@consistency-agent` leaves a conflict standing | STOP, present the blockers to the user; NEVER proceed to STEP add-plan.complete Completion | deciding |",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "id": "plan-specs",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/plan-specs.md",
+      "fallback": "No optional test-spec or QA-spec step is available. Continue with STEP add-plan.consolidate.",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "step-list"
+        },
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "step-list"
+        }
+      ],
+      "anchor": {
+        "text": "- STEP add-plan.frontend: Frontend Specialist",
+        "ordinal": 1,
+        "position": "after",
+        "next": "STEP add-plan.consolidate:  Consolidate plan         -> preview (STEP add-plan.preview), then APPEND + VALIDATE + FILL GAPS + tasks.md + cross-SF review (EPIC ONLY)"
+      }
+    },
+    {
+      "id": "gitnexus.graph-plan",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-plan"
+        }
+      ],
+      "anchor": {
+        "text": "**Execution rule:** SEQUENTIAL only. Wait for each subagent to complete before dispatching next.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Output location:** Each subagent writes to: `.codeadd/docs/features/${FEATURE_ID}/plan-[area].md` (temporary; deleted after consolidation)."
+      }
+    },
+    {
+      "id": "design.plan",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "design",
+          "section": "plan"
+        }
+      ],
+      "anchor": {
+        "text": "⛔ A `design.md` with no `## Design Contract` is not a cosmetic gap — it silently disables `@qa-agent`'s deterministic conformance axis and leaves `/add-review`'s contract check with nothing to verify. Never let a provenance match preserve one.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "#### STEP add-plan.dispatch-ux-flow DISPATCH @ux-flow-agent (flow & interaction)"
+      }
+    },
+    {
+      "id": "tdd-pipeline.step9",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "step9"
+        }
+      ],
+      "anchor": {
+        "text": "**End of the area subagents.** STEP add-plan.database through STEP add-plan.frontend have run sequentially; every selected area now has its `plan-<area>.md` temp.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "id": "qa-pipeline.qa-spec",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "qa-spec"
+        }
+      ],
+      "anchor": {
+        "text": "## STEP add-plan.consolidate: Consolidate Plan (APPEND + VALIDATE + FILL GAPS)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**QA axis self-check:** IF no `STEP qa-pipeline.qa-spec` section is present above, do NOT infer that qa-pipeline is disabled. A missing section also means the manifest still requests it and the runtime warned. In that case say the QA section was unavailable and keep the request. The shared optional-step fallback remains in the installed prompt when neither QA nor TDD contributes; do not suppress it. Only when the manifest does not request qa-pipeline, add one line to the completion output: the QA axis is off and `codeadd features enable qa-pipeline` turns it on. Do NOT stop — the plan is valid without QA."
+      }
+    },
+    {
+      "id": "agent-mode.preview-wait",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-plan.preview-wait.md",
+      "fallback": "\n**Stop kind — confirming.** The preview reports a plan the brainstorm's approval already covered. On\n`DELIVERY=confirm`, wait for the user to correct it or wave it through; on `automatic`, print it and\ncontinue. **On an automatic delivery it is the one moment the user can see what is being decided\nwithout them** — which is why it prints in full.\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "preview-wait"
+        }
+      ],
+      "anchor": {
+        "text": "```",
+        "ordinal": 23,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "id": "agent-mode.closing-route",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-plan.closing-route.md",
+      "fallback": "\n**Stop kind — confirming.** The report describes a plan the brainstorm's approval already covered.\n\n| `DELIVERY` | Do |\n|---|---|\n| `confirm` | Offer the continuation under `chat-continuation-eligibility-v1`, then STOP |\n| `automatic` | Print the report and the line `(delivering automatically — continuing to /add-build.)`, then follow {{cmd:add-build}} with this feature's id, from its first step, as `add--delivery-mode` describes |\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "closing-route"
+        }
+      ],
+      "anchor": {
+        "text": "- Plan review verdict from STEP add-plan.review, and a one-line summary of any applied fixes",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### STEP add-plan.handoff Offer the continuation — `confirm`"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-plan.offer.md",
+      "fallback": "\n**On `confirm`, finish the report, then its metadata, and only then ask ONCE whether the user wants\ninstructions for continuing in a fresh context.** Then stop and wait.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here. This step supplies only the next\nactivity and its documents. A plan that was not written — the light path, a blocked review — offers\nnothing.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-plan.handoff Offer the continuation — `confirm`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-pull-request",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-pull-request",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-pull-request.offer.md",
+      "fallback": "\n**This command opens a PR and stops. It never merges, and the merge is always the user's.**\n\n| State | Next activity |\n|---|---|\n| PR open, awaiting review | none — a human reviews it; there is no agent activity to continue into |\n| PR merged on GitHub | `/add-done` — cleanup local branch and tags |\n| Scope grew, PR needs updating | `/add-pull-request` — idempotent, appends an update section |\n\nFinish the report and its metadata, then ask ONCE for instructions only on the second and third rows.\nA PR waiting on a human reviewer is the no-activity case and ends normally with no offer — offering\n\"/add-done\" before the merge would send the user into a command whose gates cannot pass yet.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-pull-request.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-qa-setup",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 3,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "id": "agent-mode.install-confirm",
+      "resource": {
+        "name": "add-qa-setup",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-qa-setup.install-confirm.md",
+      "fallback": "\nFor each missing or non-functional prerequisite, show the EXACT command, explain what it does, then **WAIT for explicit confirmation** before running it. Never batch-run without confirmation. After each install, **functionally verify** it (re-run the STEP add-qa-setup.diagnose trivial invocation) — a successful install is one whose invocation now works, not one that merely completed.\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "install-confirm"
+        }
+      ],
+      "anchor": {
+        "text": "## STEP add-qa-setup.install: Install Prerequisites (confirm-then-execute + functional verify)",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "id": "agent-mode.config-values",
+      "resource": {
+        "name": "add-qa-setup",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-qa-setup.config-values.md",
+      "fallback": "\nIf it exists → per-key merge: keep every existing key (including extras the user added). Fill missing declared keys with defaults. Never drop a user key. Confirm/refresh values with the user; do not silently overwrite a user-edited value with the default. If absent → create it. Every value comes from the project analysis; ask only what the analysis could not infer. Never ask for a secret value, only the env var name that holds it.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "config-values"
+        }
+      ],
+      "anchor": {
+        "text": "Target: the `qa` section of `.codeadd/settings.json` (git-tracked, project-wide). A file with no `qa` section counts as absent: read the file, merge the value fields into `qa`, and write it back without touching any other section. Keep the parsed file in memory as `BEFORE` (an absent file is `{ \"schema\": 1 }`); STEP add-qa-setup.validate compares against it.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "Write the shape declared in `## Materializes` → `.codeadd/settings.json#qa`. Values are free-text hints; viewports default to the declared set."
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-qa-setup",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-qa-setup.offer.md",
+      "fallback": "\n**Item 8 above is a real next activity whenever the audit can run.** Where it cannot — no feature\nyet, no `screens.json`, an unavailable MCP server — the remaining steps are the user's own manual\nwork and there is nothing to continue into.\n\n| State | Next activity |\n|---|---|\n| Feature exists and the audit can run | `/add-review` on the feature, scoped to the SFxx subfeature when one exists — its QA sections validate the rendered result (UX + functional) |\n| No feature or no `screens.json` yet | none — build the feature first |\n| Migration branch awaiting review | none — that is a human review of an open PR |\n\nFinish the ordered hand-off list, then its metadata, then ask ONCE for instructions only on the first\nrow.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-qa-setup.offer Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Yolo Mode"
+      }
+    },
+    {
+      "id": "tdd-pipeline.step-list",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "step-list"
+        }
+      ],
+      "anchor": {
+        "text": "STEP add-review.spec-audit: Spec Compliance Audit   → Deep plan.md vs code (BEFORE technical review); SKIPPED when BUILD_REVIEW_COVERS=yes",
+        "ordinal": 1,
+        "position": "after",
+        "next": "STEP add-review.dispatch: Dispatch Reviewers      → PARALLEL (Frontend + Backend), READ-ONLY"
+      }
+    },
+    {
+      "id": "qa-pipeline.step-list",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "step-list"
+        }
+      ],
+      "anchor": {
+        "text": "STEP add-review.gates: Validation Gates Re-Run → INDEPENDENTLY re-run every gate from AGENTS.md (do NOT trust ticks)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "STEP add-review.report: Quality Gate Report    → Create review-NNN.md (incl. ## Fix Routing) + console output"
+      }
+    },
+    {
+      "id": "agent-mode.staging-consent",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-review.staging-consent.md",
+      "fallback": "\n**Stop kind — confirming.** On `DELIVERY=automatic`, do not ask: print one line naming what is being\nstaged and stage it as \"If user agrees (Yes)\" below does — `/add-build` commits per task, so what is left\nunstaged on an automatic delivery is this delivery's own work. On `confirm`, ask.\n\n**If there are unstaged changes:**\n\nAsk the user through the provider's structured-question tool where the `structuredQuestions` capability\ndeclares one; where it declares none, present the same prompt as an option table:\n\n```\nDetected uncommitted changes in your working directory.\n\nTo include the changes in the next commit along with review corrections, I can stage them (git add).\n\nCan I stage your changes?\n- Yes: I stage and proceed with the review\n- No: I keep as-is and proceed (changes remain unstaged)\n```\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "staging-consent"
+        }
+      ],
+      "anchor": {
+        "text": "Check working directory for unstaged/untracked changes.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**If user agrees (Yes):**"
+      }
+    },
+    {
+      "id": "tdd-pipeline.spec-audit",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "tdd-pipeline",
+          "section": "spec-audit"
+        }
+      ],
+      "anchor": {
+        "text": "**IF SPEC_AUDIT_STATUS ≠ COMPLIANT:** Report findings to user. Do NOT proceed to STEP add-review.dispatch until resolved.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "id": "qa-pipeline.preflight+qa-pipeline.evidence+qa-pipeline.judge-head+qa-pipeline.judge-tail",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "preflight"
+        },
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "evidence"
+        },
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "judge-head"
+        },
+        {
+          "namespace": "feature",
+          "name": "qa-pipeline",
+          "section": "judge-tail"
+        }
+      ],
+      "anchor": {
+        "text": "contract.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Live driving is a `playwright` plugin enhancement of the QA judgement above, never a replacement for it.** With `qa-pipeline` disabled there is no judgement here for the plugin to enhance, and with the plugin absent the judges work from persisted evidence. Enabling one does not enable the other."
+      }
+    },
+    {
+      "id": "playwright.drive",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "playwright",
+          "section": "drive"
+        }
+      ],
+      "anchor": {
+        "text": "**Live driving is a `playwright` plugin enhancement of the QA judgement above, never a replacement for it.** With `qa-pipeline` disabled there is no judgement here for the plugin to enhance, and with the plugin absent the judges work from persisted evidence. Enabling one does not enable the other.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-review.offer.md",
+      "fallback": "\n**A review never inherits the automatic path — but a review can be run inside one.** Nothing hands a\ndelivery to `/add-review`, so the review itself never gains automatic execution: it always stops, and\nthe user always runs the next command. What the carrier changes is only whether a person is there to\nanswer.\n\n| How the review was invoked | Ending |\n|---|---|\n| By hand, no automatic carrier | `confirm` — finish the report, then ask ONCE for fresh-context instructions, then wait |\n| From inside an automatic delivery | Stop under the rule above. **No offer** — there is no one at the keyboard to answer it, and a question the delivery cannot answer is noise |\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here. The\n`BLOCKED`-with-only-manual-routes row is the no-activity case: it offers nothing, because the\nremaining work is the user's to do by hand.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-review.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**On a correction, the block carries the CURRENT review and never a superseded one.** Name this"
+      }
+    },
+    {
+      "id": "agent-mode.interaction",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.interaction.md",
+      "fallback": "\n**LOAD `{{skill:add--human-interaction/SKILL.md}}`.** It owns how this command asks a person, when a stop waits for one, and how the closing offers the next step.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "interaction"
+        }
+      ],
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "id": "gitnexus.graph-classify",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-classify"
+        }
+      ],
+      "anchor": {
+        "text": "No temp file — use findings inline for classification below.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### STEP add-wiki.detect-apps Detect Apps"
+      }
+    },
+    {
+      "id": "gitnexus.graph-dispatch-common",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-dispatch-common"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-wiki.common-dispatch-pattern Common Dispatch Pattern",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**For ALL analyzers** (app specialists + spine + database + code quality):"
+      }
+    },
+    {
+      "id": "gitnexus.graph-specialist",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-specialist"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-wiki.app-specialists-specialist App Specialists (with specialist: backend, frontend)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**DISPATCH FOR EACH APP WITH SPECIALIST:**"
+      }
+    },
+    {
+      "id": "gitnexus.graph-database",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-database"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-wiki.database-analyzer-detected Database Analyzer (if detected)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**DISPATCH IF DATABASE FOUND:**"
+      }
+    },
+    {
+      "id": "gitnexus.graph-quality",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-quality"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-wiki.code-quality-analyzer Code Quality Analyzer (always)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**DISPATCH ALWAYS:**"
+      }
+    },
+    {
+      "id": "gitnexus.graph-contract",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/empty.md",
+      "fallback": "",
+      "members": [
+        {
+          "namespace": "plugin",
+          "name": "gitnexus",
+          "section": "graph-contract"
+        }
+      ],
+      "anchor": {
+        "text": "## STEP add-wiki.agents-md: Update AGENTS.md",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**AGENTS.md is the only context file this command writes.** Claude Code, Codex, Cursor, OpenCode and"
+      }
+    },
+    {
+      "id": "agent-mode.offer",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "fallbackPath": "fallbacks/agent-mode.add-wiki.offer.md",
+      "fallback": "\n**A standalone wiki run is the no-activity case.** Nothing about generating a knowledge base creates\nwork for an agent, so it ends normally with no offer. The offer appears only when the run found\nsomething to act on.\n\n| Run | Next activity |\n|---|---|\n| Standalone generation, no issues found | none — the wiki is the deliverable |\n| Issues found in the tree | `/add-audit` — a deep health check on what the run surfaced |\n| Context mapped and the user asked to build | `/add-new` — start building with that context |\n\nFinish the report and its metadata, then ask ONCE for instructions only on the second and third rows.\n⛔ **Never propose a feature on a standalone run.** The user asked for a wiki, not for a backlog.\n\n**Eligibility is `chat-continuation-eligibility-v1` and the accepted answer's shape is\n`chat-continuation-output-v1`** — both owned by\n`{{skill:add--human-interaction/SKILL.md}}`. Do not restate them here.\n\n",
+      "members": [
+        {
+          "namespace": "feature",
+          "name": "agent-mode",
+          "section": "offer"
+        }
+      ],
+      "anchor": {
+        "text": "### STEP add-wiki.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    }
+  ],
+  "points": [
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph",
+      "resource": {
+        "name": "architecture-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "2. Map layers, dependencies, and module boundaries",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Analyze against established architectural patterns"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph",
+      "resource": {
+        "name": "backend-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "2. Analyze existing codebase patterns and the change surface — follow conventions, don't invent",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph",
+      "resource": {
+        "name": "database-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "2. Analyze existing schema and migration patterns",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Design schema changes following the project's normalization level"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph",
+      "resource": {
+        "name": "discovery-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "2. Map the relevant codebase areas — structure, key call paths, and existing patterns",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Read key files to understand conventions and constraints"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph",
+      "resource": {
+        "name": "frontend-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "2. Analyze existing components and the change surface — match conventions exactly",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Implement following the project's component hierarchy and file structure"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "playwright",
+      "section": "drive",
+      "resource": {
+        "name": "qa-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "By default you judge from the persisted evidence (read-PNG mode). If the Playwright plugin is enabled, the live-driving playbook below is injected and you may additionally drive the app.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### Axis 1 — Functional delivery (from assertion + diagnostic results)"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph",
+      "resource": {
+        "name": "reviewer-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "3. Analyze each file against quality, security, and architecture criteria",
+        "ordinal": 1,
+        "position": "after",
+        "next": "4. Classify findings by severity: Critical, Important, Minor"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph",
+      "resource": {
+        "name": "system-design-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "2. Analyze existing system architecture and infrastructure",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Propose 2-3 alternatives with explicit trade-offs"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "design",
+      "section": "critique",
+      "resource": {
+        "name": "ux-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "2. Adversarially hunt defects, ONE bounded pass, against the canonical rubric: skill `add--ux-design` file `critique-rubric.md` — the 9 defect items, their severity scale, and the empty-critique rule live there, not here.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### Output"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph",
+      "resource": {
+        "name": "ux-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "2. Analyze the request against UX best practices and project conventions",
+        "ordinal": 1,
+        "position": "after",
+        "next": "3. Propose solutions with rationale — never just \"it looks better\""
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph",
+      "resource": {
+        "name": "ux-flow-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "3. **Component Library Audit.** Audit available UI components and check for a component index/exports. Extract: full list of existing UI components with paths, component library in use (name, which components are installed).",
+        "ordinal": 1,
+        "position": "after",
+        "next": "4. **Visual Patterns Reference.** Find and read 3-5 representative pages (dashboard, settings, list, detail, form). Extract: page headers, cards, lists, forms, buttons usage patterns."
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "design",
+      "section": "direction",
+      "resource": {
+        "name": "ux-flow-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "6. If `HAS_FOUNDATIONS=true`, read `.codeadd/docs/design-system.md` and use its tokens over ad-hoc inference.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "Write the inspection to temp `design-context.md` (extractive JSON, no prose):"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "design",
+      "section": "layout",
+      "resource": {
+        "name": "ux-layout-agent",
+        "kind": "agent"
+      },
+      "anchor": {
+        "text": "6. Emit the `## Design Contract` block: the dimensions table rows this feature commits to, inherited from `design-context.md`'s constraints — restate only this feature's commitments and justified deviations; an undefined dimension is `unknown — <why>`, never invented.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Output"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-audit",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-audit",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-audit.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "output-cap",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "# Brainstorm - Project Conversation Partner",
+        "ordinal": 1,
+        "position": "after",
+        "next": "> **LANG:** Respond in user's native language (detect from input). Tech terms always in English. Short sentences, one idea each; the common word over the rare one; a technical term explained in one line the first time it appears."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 2,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "cap-scope",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "| **architectural** | Everything written below. | STEPS 3 → 4 → 5. |",
+        "ordinal": 1,
+        "position": "after",
+        "next": "For investigations, search the codebase before answering."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "objective-draft",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-brainstorm.draft-objective-first Draft the objective FIRST, and have the user correct it",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Drafting it is the work, not a courtesy.** A user brings a problem, a symptom or a half-formed idea;"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "cadence",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "```",
+        "ordinal": 21,
+        "position": "after",
+        "next": "**Challenge techniques (apply one per turn):**"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "structured-ask",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "would do, has handed the work back. The user still chooses — they now choose against a position.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Close what you can close.** Do not carry a question to the approval that one more turn would have"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "approval-ask",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-brainstorm.approval Ask for the one approval — `bounded` and `architectural`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Stop kind — deciding, in every state.** The delivery mode is what this question creates. What each"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "no such step, so naming the file to them would promise a handoff neither receives.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "On `delivery: automatic`, print the `/add-new` line with the last one reading `(delivering"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "rules-cadence",
+      "resource": {
+        "name": "add-brainstorm",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "- State the classified path in one line and continue in the same turn — never ask the user to confirm it",
+        "ordinal": 1,
+        "position": "after",
+        "next": "- Name the source of every recommendation; let this project win over outside practice"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "detect-framework",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "**If ITERATIONS output exists from script:** Previous /add-build sessions context - avoid repeating fixes.",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-build",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-build.preflight Pre-Flight Scan and the Handoff Contract (BEFORE the first dispatch)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "The three blocks below run **once, before the first subagent of this run is dispatched**. None is optional,"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "tasks-flow",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "`T0N: complete (commits BASE..HEAD, …)` ledger line. A resume recomputes it from the ledger, never from memory.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Subagent prompt addition for TASKS MODE:**"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "gate",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "`T0N: complete (commits BASE..HEAD, …)` ledger line. A resume recomputes it from the ledger, never from memory.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Subagent prompt addition for TASKS MODE:**"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "verify-red",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "`T0N: complete (commits BASE..HEAD, …)` ledger line. A resume recomputes it from the ledger, never from memory.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Subagent prompt addition for TASKS MODE:**"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "awareness",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "Execute this task only. Confirm its verify command passes.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "```"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "test-dispatch",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "- **Prompt:** [use Universal Subagent Prompt below]",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "e2e-dispatch",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "**CRITICAL:** Pass FILES_CREATED and FILES_MODIFIED from each implementation subagent to its validator.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "qa-fix",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "afterward, not a gate before it.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### STEP add-build.re-review Scoped Re-Review (after every fix round with a reviewer-sourced row) [HARD GATE]"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "verification",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "2. **Build Verification:** Run project build command (see AGENTS.md)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**CRITICAL:** Code MUST compile 100%. Fix errors before proceeding."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "coverage",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "2. **Build Verification:** Run project build command (see AGENTS.md)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**CRITICAL:** Code MUST compile 100%. Fix errors before proceeding."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "checkpoint-route",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "5. **If the sequence landed and rows are still pending**, per `EPIC_DELIVERY`:",
+        "ordinal": 1,
+        "position": "after",
+        "next": "6. **If no row is pending any more** → go to STEP add-build.publish."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "next-command",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "- `Final review: blocked N` → each `Blocker suggestion:` command",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Stop kind — confirming.** The report describes work the approval already covered. On `automatic`,"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-build",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-build.handoff Offer the continuation — `confirm`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-diagnose",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-trace",
+      "resource": {
+        "name": "add-diagnose",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "This STEP replaces the previous adaptive triage. All three sub-dispatches always run — Fase A directs Fase B; code-level tracing remains required to confirm the diagnosis.",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-diagnose",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-diagnose.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 2,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "docs-pruning",
+      "section": "prune",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "⛔ DO NOT USE: Bash for git add/commit/push in this substep. **`done.cjs` owns every LOCAL git write on both routes**, exactly as it does for the changelog and the wiki.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "ci-watch",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "items exist.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "Then, **before reading the verdict**, compare the SHA:"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-reindex",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "READ skill `add--ecosystem` Main Flows section. Resolve whether the user stated a next goal for this work FIRST — a merged branch carries none of its own, and branch type alone says only what shipped. Then use the branch type and epic status. ⛔ DO NOT print it at this step — the report comes first and STEP add-done.complete owns it.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-done",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-done.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-hotfix",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "red-gate",
+      "resource": {
+        "name": "add-hotfix",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "**WAIT for explicit confirmation before proceeding, unless a valid diagnose report already confirmed the root cause.**",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-impact",
+      "resource": {
+        "name": "add-hotfix",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "- [ ] On branch `hotfix/*`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### STEP add-hotfix.knowledge-base Consult Knowledge Base"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-hotfix",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-hotfix.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "output-cap",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "> **REF:** `AGENTS.md` for architecture patterns",
+        "ordinal": 1,
+        "position": "after",
+        "next": "> **LANG:** Respond in user's native language (detect from input). Tech terms always in English. Short sentences, one idea each; the common word over the rare one; a technical term explained in one line the first time it appears."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## STEP add-new.load: Load Skills + Validate Context"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-map",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "- Read past-features.md FIRST. Prioritize files touched by related features. Perform deep analysis: reusable functionality, existing patterns, integration points, prerequisites. Include \"Related Features\" section with table + refs. Write discovery.md using the section list above.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Coordinator: Deep Thinking (before STEP add-new.confirm)**"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "confirm-wait",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "```",
+        "ordinal": 11,
+        "position": "after",
+        "next": "⛔ **A confirmation screen that asks questions is a questionnaire wearing a different name.** It"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "closing-route",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "Then, after the seven blocks, summarize the created artifacts. Name the next activity in ordinary prose based on discovery: `/add-plan` for technical planning (design is produced inside `/add-plan`'s own UX step when the feature touches UI), `/add-build` for implementation. ⛔ Do not print its full invocation here — `STEP add-new.handoff` puts that behind the offer.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "⛔ **On `automatic` the next command is always `/add-plan`, never `/add-build`.** The plan is where the"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-new",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-new.handoff Offer the continuation — `confirm`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "stop-kinds",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "| `plan_reviewed` | STEP add-plan.review | `@plan-reviewer-agent` verdict is `blocked`, blockers remain after the re-dispatch `add--review-discipline` allows, or `@consistency-agent` leaves a conflict standing | STOP, present the blockers to the user; NEVER proceed to STEP add-plan.complete Completion | deciding |",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "step-list",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "- STEP add-plan.frontend: Frontend Specialist",
+        "ordinal": 1,
+        "position": "after",
+        "next": "STEP add-plan.consolidate:  Consolidate plan         -> preview (STEP add-plan.preview), then APPEND + VALIDATE + FILL GAPS + tasks.md + cross-SF review (EPIC ONLY)"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "step-list",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "- STEP add-plan.frontend: Frontend Specialist",
+        "ordinal": 1,
+        "position": "after",
+        "next": "STEP add-plan.consolidate:  Consolidate plan         -> preview (STEP add-plan.preview), then APPEND + VALIDATE + FILL GAPS + tasks.md + cross-SF review (EPIC ONLY)"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-plan",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "**Execution rule:** SEQUENTIAL only. Wait for each subagent to complete before dispatching next.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Output location:** Each subagent writes to: `.codeadd/docs/features/${FEATURE_ID}/plan-[area].md` (temporary; deleted after consolidation)."
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "design",
+      "section": "plan",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "⛔ A `design.md` with no `## Design Contract` is not a cosmetic gap — it silently disables `@qa-agent`'s deterministic conformance axis and leaves `/add-review`'s contract check with nothing to verify. Never let a provenance match preserve one.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "#### STEP add-plan.dispatch-ux-flow DISPATCH @ux-flow-agent (flow & interaction)"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "step9",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "**End of the area subagents.** STEP add-plan.database through STEP add-plan.frontend have run sequentially; every selected area now has its `plan-<area>.md` temp.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "qa-spec",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "## STEP add-plan.consolidate: Consolidate Plan (APPEND + VALIDATE + FILL GAPS)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**QA axis self-check:** IF no `STEP qa-pipeline.qa-spec` section is present above, do NOT infer that qa-pipeline is disabled. A missing section also means the manifest still requests it and the runtime warned. In that case say the QA section was unavailable and keep the request. The shared optional-step fallback remains in the installed prompt when neither QA nor TDD contributes; do not suppress it. Only when the manifest does not request qa-pipeline, add one line to the completion output: the QA axis is off and `codeadd features enable qa-pipeline` turns it on. Do NOT stop — the plan is valid without QA."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "preview-wait",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "```",
+        "ordinal": 23,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "closing-route",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "- Plan review verdict from STEP add-plan.review, and a one-line summary of any applied fixes",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### STEP add-plan.handoff Offer the continuation — `confirm`"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-plan",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-plan.handoff Offer the continuation — `confirm`",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-pull-request",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Required Skills"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-pull-request",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-pull-request.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-qa-setup",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 3,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "install-confirm",
+      "resource": {
+        "name": "add-qa-setup",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "## STEP add-qa-setup.install: Install Prerequisites (confirm-then-execute + functional verify)",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "config-values",
+      "resource": {
+        "name": "add-qa-setup",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "Target: the `qa` section of `.codeadd/settings.json` (git-tracked, project-wide). A file with no `qa` section counts as absent: read the file, merge the value fields into `qa`, and write it back without touching any other section. Keep the parsed file in memory as `BEFORE` (an absent file is `{ \"schema\": 1 }`); STEP add-qa-setup.validate compares against it.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "Write the shape declared in `## Materializes` → `.codeadd/settings.json#qa`. Values are free-text hints; viewports default to the declared set."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-qa-setup",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-qa-setup.offer Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": "## Yolo Mode"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "step-list",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "STEP add-review.spec-audit: Spec Compliance Audit   → Deep plan.md vs code (BEFORE technical review); SKIPPED when BUILD_REVIEW_COVERS=yes",
+        "ordinal": 1,
+        "position": "after",
+        "next": "STEP add-review.dispatch: Dispatch Reviewers      → PARALLEL (Frontend + Backend), READ-ONLY"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "step-list",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "STEP add-review.gates: Validation Gates Re-Run → INDEPENDENTLY re-run every gate from AGENTS.md (do NOT trust ticks)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "STEP add-review.report: Quality Gate Report    → Create review-NNN.md (incl. ## Fix Routing) + console output"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "staging-consent",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "Check working directory for unstaged/untracked changes.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**If user agrees (Yes):**"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "tdd-pipeline",
+      "section": "spec-audit",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "**IF SPEC_AUDIT_STATUS ≠ COMPLIANT:** Report findings to user. Do NOT proceed to STEP add-review.dispatch until resolved.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "preflight",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "contract.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Live driving is a `playwright` plugin enhancement of the QA judgement above, never a replacement for it.** With `qa-pipeline` disabled there is no judgement here for the plugin to enhance, and with the plugin absent the judges work from persisted evidence. Enabling one does not enable the other."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "evidence",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "contract.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Live driving is a `playwright` plugin enhancement of the QA judgement above, never a replacement for it.** With `qa-pipeline` disabled there is no judgement here for the plugin to enhance, and with the plugin absent the judges work from persisted evidence. Enabling one does not enable the other."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "judge-head",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "contract.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Live driving is a `playwright` plugin enhancement of the QA judgement above, never a replacement for it.** With `qa-pipeline` disabled there is no judgement here for the plugin to enhance, and with the plugin absent the judges work from persisted evidence. Enabling one does not enable the other."
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "qa-pipeline",
+      "section": "judge-tail",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "contract.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**Live driving is a `playwright` plugin enhancement of the QA judgement above, never a replacement for it.** With `qa-pipeline` disabled there is no judgement here for the plugin to enhance, and with the plugin absent the judges work from persisted evidence. Enabling one does not enable the other."
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "playwright",
+      "section": "drive",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "**Live driving is a `playwright` plugin enhancement of the QA judgement above, never a replacement for it.** With `qa-pipeline` disabled there is no judgement here for the plugin to enhance, and with the plugin absent the judges work from persisted evidence. Enabling one does not enable the other.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "---"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-review",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-review.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**On a correction, the block carries the CURRENT review and never a superseded one.** Name this"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "interaction",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "---",
+        "ordinal": 1,
+        "position": "after",
+        "next": null
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-classify",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "No temp file — use findings inline for classification below.",
+        "ordinal": 1,
+        "position": "after",
+        "next": "### STEP add-wiki.detect-apps Detect Apps"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-dispatch-common",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-wiki.common-dispatch-pattern Common Dispatch Pattern",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**For ALL analyzers** (app specialists + spine + database + code quality):"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-specialist",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-wiki.app-specialists-specialist App Specialists (with specialist: backend, frontend)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**DISPATCH FOR EACH APP WITH SPECIALIST:**"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-database",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-wiki.database-analyzer-detected Database Analyzer (if detected)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**DISPATCH IF DATABASE FOUND:**"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-quality",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-wiki.code-quality-analyzer Code Quality Analyzer (always)",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**DISPATCH ALWAYS:**"
+      }
+    },
+    {
+      "namespace": "plugin",
+      "name": "gitnexus",
+      "section": "graph-contract",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "## STEP add-wiki.agents-md: Update AGENTS.md",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**AGENTS.md is the only context file this command writes.** Claude Code, Codex, Cursor, OpenCode and"
+      }
+    },
+    {
+      "namespace": "feature",
+      "name": "agent-mode",
+      "section": "offer",
+      "resource": {
+        "name": "add-wiki",
+        "kind": "command"
+      },
+      "anchor": {
+        "text": "### STEP add-wiki.handoff Offer the continuation",
+        "ordinal": 1,
+        "position": "after",
+        "next": "**The documents the block points at**, each with the role it plays:"
+      }
+    }
+  ]
+}

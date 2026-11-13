@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "contracts": {
+    "add-qa-setup": {
+      "shape": "sha256:9c0cfa352e58dfb9",
+      "changed_in": "1.9.3",
+      "paths": [
+        {
+          "path": ".codeadd/settings.json#qa",
+          "owner": "shared",
+          "step": "7"
+        },
+        {
+          "path": "<provider skills dir>/qa-project/SKILL.md",
+          "owner": "setup",
+          "step": "6"
+        },
+        {
+          "path": ".codeadd/qa/",
+          "owner": "shared",
+          "step": "8"
+        },
+        {
+          "path": "FEATURE_DIR/_tests/screens.json",
+          "owner": "shared",
+          "step": "9"
+        },
+        {
+          "path": ".codeadd/docs/.gitignore",
+          "owner": "shared",
+          "step": "10"
+        }
+      ]
+    }
+  }
+}

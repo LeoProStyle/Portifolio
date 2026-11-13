@@ -1,0 +1,22 @@
+{
+  "/api/auth/logout/route": "/api/auth/logout",
+  "/_not-found/page": "/_not-found",
+  "/api/health/route": "/api/health",
+  "/api/auth/acesso/route": "/api/auth/acesso",
+  "/api/saida/close/route": "/api/saida/close",
+  "/api/auth/login/route": "/api/auth/login",
+  "/api/products/route": "/api/products",
+  "/api/saida/item/route": "/api/saida/item",
+  "/api/saida/reopen/route": "/api/saida/reopen",
+  "/api/products/[id]/route": "/api/products/[id]",
+  "/api/stats/route": "/api/stats",
+  "/api/saida/route": "/api/saida",
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/",
+  "/admin/page": "/admin",
+  "/acesso/page": "/acesso",
+  "/dashboard/page": "/dashboard",
+  "/login/page": "/login",
+  "/saida/page": "/saida",
+  "/vendas/page": "/vendas"
+}
