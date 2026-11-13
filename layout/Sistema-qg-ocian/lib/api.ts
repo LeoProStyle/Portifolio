@@ -51,3 +51,21 @@ export function handler<A extends unknown[]>(fn: (...args: A) => Promise<Respons
     }
   };
 }
+
+/** Resposta de download (planilha, XML, zip) — sem cache e com nome de arquivo. */
+export function fileResponse(body: BodyInit, filename: string, contentType: string) {
+  return new Response(body, {
+    headers: {
+      "Content-Type": contentType,
+      "Content-Disposition": `attachment; filename="${filename.replace(/[^\w.-]/g, "_")}"`,
+      "Cache-Control": "no-store",
+    },
+  });
+}
+
+/** Query string como objeto; parâmetros vazios viram undefined (para os schemas Zod). */
+export function queryOf(req: Request): Record<string, string | undefined> {
+  const out: Record<string, string | undefined> = {};
+  new URL(req.url).searchParams.forEach((v, k) => (out[k] = v || undefined));
+  return out;
+}

@@ -5,10 +5,13 @@
 import { connectDB, DB_NAME } from "../lib/db";
 import { Product } from "../models/Product";
 import { DailyRegister } from "../models/DailyRegister";
+import { CardClosing } from "../models/CardClosing";
+import { Expense } from "../models/Expense";
+import { Invoice } from "../models/Invoice";
 
 async function main() {
   const conn = await connectDB();
-  for (const m of [Product, DailyRegister]) {
+  for (const m of [Product, DailyRegister, CardClosing, Expense, Invoice]) {
     await m.createCollection().catch(() => undefined);
     await m.syncIndexes();
     console.log(`✔ ${m.collection.collectionName}`);

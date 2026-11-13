@@ -69,3 +69,40 @@ export function formatTime(iso: string): string {
     new Date(iso),
   );
 }
+
+/* ---------- Meses ("YYYY-MM") — usados nos filtros e exportações do financeiro ---------- */
+
+export function isMonthKey(value: unknown): value is string {
+  return typeof value === "string" && /^\d{4}-(0[1-9]|1[0-2])$/.test(value);
+}
+
+/** Mês atual (YYYY-MM) no fuso de São Paulo. */
+export function currentMonthKey(now: Date = new Date()): string {
+  return todayKey(now).slice(0, 7);
+}
+
+/** Primeiro e último dia de um mês. */
+export function monthRange(month: string): { from: string; to: string } {
+  const [y, m] = month.split("-").map(Number);
+  const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  return { from: `${month}-01`, to: `${month}-${String(last).padStart(2, "0")}` };
+}
+
+export function addMonths(month: string, delta: number): string {
+  const [y, m] = month.split("-").map(Number);
+  const d = new Date(Date.UTC(y, m - 1 + delta, 1));
+  return d.toISOString().slice(0, 7);
+}
+
+/** "novembro de 2026" */
+export function formatMonth(month: string): string {
+  return new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC", month: "long", year: "numeric" }).format(
+    new Date(`${month}-15T12:00:00Z`),
+  );
+}
+
+/** "13/11/2026" */
+export function formatDateBR(key: string): string {
+  const [y, m, d] = key.split("-");
+  return `${d}/${m}/${y}`;
+}

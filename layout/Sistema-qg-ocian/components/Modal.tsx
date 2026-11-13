@@ -9,10 +9,12 @@ type Props = {
   onClose: () => void;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  /** "lg" para formulários grandes (ex.: cupom fiscal). */
+  size?: "md" | "lg";
 };
 
 /** Janela modal acessível: fecha com Esc ou clique fora, prende o scroll da página. */
-export function Modal({ open, title, onClose, children, footer }: Props) {
+export function Modal({ open, title, onClose, children, footer, size = "md" }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,7 +43,7 @@ export function Modal({ open, title, onClose, children, footer }: Props) {
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className="relative flex max-h-[92dvh] w-full flex-col rounded-t-3xl border border-line bg-surface shadow-2xl outline-none sm:max-w-lg sm:rounded-3xl"
+        className={`relative flex max-h-[92dvh] w-full flex-col rounded-t-3xl border border-line bg-surface shadow-2xl outline-none sm:rounded-3xl ${size === "lg" ? "sm:max-w-3xl" : "sm:max-w-lg"}`}
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <h2 className="text-lg font-bold">{title}</h2>

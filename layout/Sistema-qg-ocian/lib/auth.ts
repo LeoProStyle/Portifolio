@@ -11,7 +11,14 @@ export const SESSION_COOKIE = "qg_session";
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 dias
 
 /** Páginas e APIs que só o dono acessa. */
-const ADMIN_PREFIXES = ["/admin", "/dashboard", "/api/products", "/api/stats", "/api/saida/reopen"];
+const ADMIN_PREFIXES = [
+  "/admin",
+  "/dashboard",
+  "/api/products",
+  "/api/stats",
+  "/api/saida/reopen",
+  "/api/finance", // fechamentos, despesas e cupons
+];
 
 export function isAdminPath(pathname: string): boolean {
   return ADMIN_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
