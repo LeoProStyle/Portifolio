@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* Paleta QG Ocian — creme quente + laranja de lanchonete. Tokens viram classes: bg-surface, text-muted, border-line, bg-brand... */
+:root {
+  --bg: #faf7f2;
+  --surface: #ffffff;
+  --surface-2: #f4efe7;
+  --line: #e8e1d6;
+  --ink: #1c1917;
+  --muted: #78716c;
+  --brand: #ea580c;
+  --brand-ink: #ffffff;
+  --brand-soft: #ffedd5;
+  --success: #15803d;
+  --success-soft: #dcfce7;
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+  --chart: #ea580c; /* validado (dataviz) no claro e no escuro */
+  --grid: #ece6dc;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12100e;
+    --surface: #1c1917;
+    --surface-2: #26221f;
+    --line: #342f2a;
+    --ink: #f5f5f4;
+    --muted: #a8a29e;
+    --brand: #fb923c;
+    --brand-ink: #1c1917;
+    --brand-soft: #3b1d0b;
+    --success: #4ade80;
+    --success-soft: #0f2e1a;
+    --danger: #f87171;
+    --danger-soft: #3a1414;
+    --grid: #2a2622;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-chart: var(--chart);
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+.animate-pop {
+  animation: pop 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

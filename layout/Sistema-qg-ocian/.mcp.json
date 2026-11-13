@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "codeadd-docs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "codeadd@1.9.3",
+        "mcp",
+        "--corpus=docs"
+      ]
+    }
+  }
+}
