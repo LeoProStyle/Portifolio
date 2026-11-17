@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { ZodError } from "zod";
-import { SESSION_COOKIE, getSessionRole } from "./auth";
+import { SESSION_COOKIE, getSessionRole, type Role } from "./auth";
 
 export class ApiError extends Error {
   constructor(
@@ -21,9 +21,11 @@ async function currentRole() {
   return getSessionRole(store.get(SESSION_COOKIE)?.value);
 }
 
-/** Garante que há alguém logado (funcionário ou dono) — defesa além do middleware. */
-export async function requireSession(): Promise<void> {
-  if (!(await currentRole())) throw new ApiError(401, "Não autorizado. Faça login.");
+/** Garante que há alguém logado (funcionário ou dono) — defesa além do middleware. Devolve o papel. */
+export async function requireSession(): Promise<Role> {
+  const role = await currentRole();
+  if (!role) throw new ApiError(401, "Não autorizado. Faça login.");
+  return role;
 }
 
 /** Garante que a requisição vem do dono logado (defesa além do middleware). */

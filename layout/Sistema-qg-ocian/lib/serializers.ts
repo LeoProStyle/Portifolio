@@ -3,7 +3,13 @@ import type { DailyRegisterRecord, RegisterItemRecord } from "@/models/DailyRegi
 import type { CardClosingRecord } from "@/models/CardClosing";
 import type { ExpenseRecord } from "@/models/Expense";
 import type { InvoiceRecord } from "@/models/Invoice";
+import type { SaleRecord } from "@/models/Sale";
+import type { FiscalSettingsRecord } from "@/models/FiscalSettings";
+import type { ProductFiscalRecord } from "@/models/ProductFiscal";
 import type {
+  FiscalSettingsDTO,
+  ProductFiscalDTO,
+  SaleDTO,
   ClosingDTO,
   ExpenseDTO,
   InvoiceDTO,
@@ -138,5 +144,106 @@ export function toInvoiceDTO(i: InvoiceRecord): InvoiceDTO {
     payments: i.payments.map((p) => ({ method: p.method, amountCents: p.amountCents })),
     totalCents: i.totalCents,
     notes: i.notes ?? "",
+  };
+}
+
+/* ===================== Vendas (caixa) ===================== */
+
+const iso = (d: Date | string | null | undefined) => (d ? new Date(d).toISOString() : null);
+
+export function toSaleDTO(s: SaleRecord): SaleDTO {
+  const f = s.fiscal;
+  return {
+    id: String(s._id),
+    number: s.number,
+    date: s.date,
+    createdAt: iso(s.createdAt) ?? "",
+    kind: s.kind,
+    items: s.items.map((it) => ({
+      productId: String(it.productId),
+      name: it.name,
+      category: it.category ?? "",
+      emoji: it.emoji ?? "",
+      unitCents: it.unitCents,
+      qty: it.qty,
+      totalCents: it.totalCents,
+      ...(it.fiscal
+        ? {
+            fiscal: {
+              ncm: it.fiscal.ncm ?? "",
+              cfop: it.fiscal.cfop ?? "",
+              cest: it.fiscal.cest ?? "",
+              unit: it.fiscal.unit ?? "UN",
+              origin: it.fiscal.origin ?? "0",
+              taxCode: it.fiscal.taxCode ?? "",
+            },
+          }
+        : {}),
+    })),
+    totalCents: s.totalCents,
+    payments: s.payments.map((p) => ({ method: p.method, amountCents: p.amountCents })),
+    receivedCents: s.receivedCents ?? 0,
+    changeCents: s.changeCents ?? 0,
+    customerDoc: s.customerDoc ?? "",
+    status: s.status,
+    cancelReason: s.cancelReason ?? "",
+    canceledAt: iso(s.canceledAt),
+    fiscal: f
+      ? {
+          status: f.status,
+          provider: f.provider,
+          environment: f.environment,
+          ref: f.ref,
+          accessKey: f.accessKey ?? "",
+          number: f.number ?? "",
+          series: f.series ?? "",
+          protocol: f.protocol ?? "",
+          qrCodeUrl: f.qrCodeUrl ?? "",
+          consultUrl: f.consultUrl ?? "",
+          xmlUrl: f.xmlUrl ?? "",
+          danfeUrl: f.danfeUrl ?? "",
+          message: f.message ?? "",
+          attempts: f.attempts ?? 0,
+        }
+      : null,
+  };
+}
+
+export const DEFAULT_FISCAL_DEFAULTS: FiscalSettingsDTO["defaults"] = { cfop: "5102", taxCode: "102", origin: "0", unit: "UN" };
+
+/** Configuração fiscal; sem documento salvo devolve os padrões da loja. */
+export function toFiscalSettingsDTO(s: FiscalSettingsRecord | null): FiscalSettingsDTO {
+  const c = s?.company;
+  return {
+    company: toPartyDTO({
+      doc: c?.doc ?? "",
+      name: c?.name || "QG Ocian",
+      ie: c?.ie ?? "",
+      crt: c?.crt ?? "1",
+      ieIndicator: c?.ieIndicator ?? "9",
+      street: c?.street ?? "",
+      number: c?.number ?? "",
+      district: c?.district ?? "",
+      cityCode: c?.cityCode ?? "",
+      city: c?.city ?? "",
+      uf: c?.uf || "SP",
+      cep: c?.cep ?? "",
+      phone: c?.phone ?? "",
+    }),
+    tradeName: s?.tradeName ?? "",
+    receiptFooter: s?.receiptFooter ?? "",
+    defaults: { ...DEFAULT_FISCAL_DEFAULTS, ...(s?.defaults ?? {}) },
+  };
+}
+
+export function toProductFiscalDTO(r: ProductFiscalRecord): ProductFiscalDTO {
+  return {
+    productId: String(r.productId),
+    ncm: r.ncm ?? "",
+    cfop: r.cfop ?? "",
+    cest: r.cest ?? "",
+    unit: r.unit ?? "",
+    origin: r.origin ?? "",
+    taxCode: r.taxCode ?? "",
   };
 }

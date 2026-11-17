@@ -38,6 +38,8 @@ Variáveis em `.env.local` (modelo em `.env.example`): `MONGODB_URI`, `MONGODB_D
 
 **Financeiro** (`/admin/fechamentos|despesas|cupons`, APIs em `/api/finance/*`): models `CardClosing`, `Expense`, `Invoice`; consultas e planilhas em `lib/finance-data.ts`, regras puras em `lib/finance.ts`. Excel via `lib/xlsx.ts` (`buildSheet`, sempre com linha TOTAL). O XML dos cupons (`lib/fiscal.ts` → `buildInvoiceXml`) precisa manter **a mesma sequência de tags** de `docs/ref/*.xml`. Isso é coberto por `tests/finance.test.ts`, então não mude a estrutura sem atualizar a referência. Rotas `route.ts` só exportam handlers (GET/POST/...); helpers vão para `lib/`.
 
+**Vendas / caixa** (`/vendas`, `/vendas/config`, `/vendas/comprovante/[id]`, APIs em `/api/vendas/*`): models `Sale`, `Counter` (`nextSeq`), `FiscalSettings` (doc único `_id: "default"`), `ProductFiscal` (NCM etc. por produto — o model `Product` não tem dados fiscais de propósito). Regras puras em `lib/sales-rules.ts` (lançam `SaleError`), banco + provedor em `lib/sales.ts`. NFC-e via `lib/fiscal-provider/` (`getFiscalProvider()` lê `FISCAL_PROVIDER` = vazio | `focusnfe` | `mock`; `FOCUS_NFE_TOKEN`, `FOCUS_NFE_ENV`). Use `FISCAL_PROVIDER=mock` em testes/local — nunca em produção. `/vendas/config` e `/api/vendas/config` estão em `ADMIN_PREFIXES`. `requireSession()` devolve o papel (`staff`/`admin`).
+
 ## Regras de domínio que não podem quebrar
 
 - **Dinheiro em centavos (inteiro)** em todo lugar; formatação/parse via `lib/money.ts` (`formatBRL`, `parseBRL`).
@@ -46,7 +48,9 @@ Variáveis em `.env.local` (modelo em `.env.example`): `MONGODB_URI`, `MONGODB_D
 - **Concorrência:** `+`/`−` usam `$inc` atômico com filtros (`status: "open"`, `qty > 0`) — nunca leia-modifique-grave o array de itens. `closeDay` usa trava otimista por `updatedAt` e responde 409 se o dia mudou.
 - Dia fechado não aceita alterações (409); só o admin reabre (`/api/saida/reopen`). Não se anota em dias futuros.
 - Produto com histórico não é apagado, só desativado.
-- Vendas (`/vendas`) é uma fase futura (carrinho, pagamento, cupom fiscal/NFC-e) e terá coleção própria (`sales`), separada de `dailyregisters`.
+- Vendas tem coleção própria (`sales`), separada de `dailyregisters`: vender **não** mexe na Saída nem no Dashboard.
+- **Venda nunca confia no navegador:** o corpo traz só `productId` + `qty`; preço/nome vêm do banco. O mesmo `clientRef` devolve a mesma venda (clique duplo).
+- **NFC-e nunca em dobro:** a `ref` no provedor é o id da venda; "tentar de novo" (`retryFiscal`) consulta o provedor antes de reenviar. Cancelar NFC-e exige motivo ≥ 15 caracteres (SEFAZ aceita até 30 min após a emissão). Certificado A1 e CSC ficam no painel do provedor, nunca no sistema.
 
 ## Fluxo de trabalho
 

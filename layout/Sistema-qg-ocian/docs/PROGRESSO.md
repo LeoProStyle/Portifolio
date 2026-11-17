@@ -3,9 +3,9 @@
 > **Documento vivo de acompanhamento.** Ler ANTES de qualquer tarefa e atualizar DEPOIS de cada uma.
 > Regra: marcar `[x]` só quando a tarefa estiver feita **e verificada** (build/teste/tela conferida).
 
-**Última atualização:** 2026-11-13
-**Fase atual:** Fases 1–4 + Financeiro (4F) concluídas localmente · aguardando Fase 6 (publicar na Vercel)
-**Próximo passo:** cadastrar os produtos reais no Admin → publicar na Vercel (Fase 6) → depois Vendas (Fase 5)
+**Última atualização:** 2026-11-17
+**Fase atual:** Fases 1–4 + Financeiro (4F) em produção (informado pelo usuário em 2026-11-17, produtos reais cadastrados) · Fase 5 (Vendas) implementada localmente, aguardando publicação
+**Próximo passo:** publicar a Fase 5 → `npm run db:init` no banco da loja → (quando for usar o fiscal) conta na Focus NFe + token de homologação
 
 ---
 
@@ -14,7 +14,8 @@
 | Área | Quem usa | O que faz |
 |---|---|---|
 | **Saída de produtos** (`/saida`) | Dono/atendente | Lista os produtos com botões **+ / −** para anotar o que sai; no fim do dia, **Fechar dia** com observação, relação do que saiu e total. *(As vendas reais são feitas na maquininha.)* |
-| **Vendas** (`/vendas`) | Caixa | **Futuro (Fase 5):** venda com carrinho e pagamento, impressão de cupom fiscal. Hoje mostra página "em breve" |
+| **Vendas** (`/vendas`) | Caixa (funcionário e dono) | Caixa com pedido, pagamento (dividido, troco), seletor **Não fiscal / Fiscal**; comprovante 80 mm; Vendas do dia (reimprimir, cancelar, tentar NFC-e de novo). NFC-e via Focus NFe, travada até configurar |
+| **Configuração fiscal** (`/vendas/config`) | Dono | Empresa (CNPJ, IE, regime, endereço), padrões fiscais e NCM/CFOP de cada produto; status do provedor |
 | **Admin** (`/admin`) | Dono | Cadastrar, editar, ativar/desativar e remover produtos |
 | **Fechamentos** (`/admin/fechamentos`) | Dono | Valor da maquininha por dia (débito/crédito/PIX/voucher + taxas), conferência com a Saída, exporta Excel com TOTAL |
 | **Despesas** (`/admin/despesas`) | Dono | Despesas, compras no cartão de crédito (parcelas) e suprimentos; exporta Excel com TOTAL e resumo por tipo |
@@ -66,6 +67,9 @@ AUTH_SECRET=                    # ⚠️ hoje tem 8 caracteres — trocar por 32
 **`invoices`** — `kind fiscal|nao_fiscal`, `model 55|65`, `series`, `number`, `issueDate`, `issueTime`, `natOp`, `accessKey` (opcional), `cNF`, `emitter`/`recipient` (doc, nome, IE, CRT/indIEDest, endereço com código IBGE), `items[]` (código, EAN, NCM, CEST, CFOP, unidade, qtd 4 casas, unitário, total), `payments[]` (tPag + valor), `totalCents`, `notes`
 - Cupom fiscal é único por emitente+modelo+série+número (409). Soma dos pagamentos tem de ser igual ao total.
 - XML: `lib/fiscal.ts` → `buildInvoiceXml`. Campos fixos (tpAmb=2, tpNF, idDest… iguais ao XML de referência) em `XML_FIXED`. Chave de acesso: a informada (validada) ou calculada com DV módulo 11. Aceita CNPJ alfanumérico.
+
+**`sales`** (Fase 5) — `number` (sequencial, único), `clientRef` (único — clique duplo não duplica), `date`, `kind nao_fiscal|fiscal`, `items[]` (cópia de nome/preço + dados fiscais se fiscal), `totalCents`, `payments[]` (tPag), `receivedCents`/`changeCents`, `customerDoc`, `status concluida|cancelada`, `cancelReason`, `createdBy`, `fiscal{status pendente|autorizada|rejeitada|erro|cancelada, ref, chave, protocolo, URLs, tentativas}`
+- **`counters`** (número da venda), **`fiscalsettings`** (documento único: empresa + padrões), **`productfiscals`** (NCM/CFOP/CEST/unidade/origem/CSOSN por produto — separado de `products` para não mexer no Admin)
 
 ## 4. Estrutura de pastas
 
@@ -137,12 +141,15 @@ tests/core.test.ts   # vitest
 - [x] 4F.7 XML no mesmo layout do `docs/ref` (teste compara a sequência de tags) · download por cupom ou .zip do mês com planilha-resumo
 - [x] 4F.8 Verificado: 41 testes unitários ✅ · e2e da API 35 checagens ✅ · lint ✅ · tsc ✅ · build ✅ · telas em 1280px e 390px ✅
 
-### Fase 5 — Vendas + cupom (futuro)
-- [ ] 5.1 Model `Sale` (itens, forma de pagamento, total, status)
-- [ ] 5.2 Tela de venda: carrinho, forma de pagamento, finalizar
-- [ ] 5.3 Comprovante não fiscal na impressora térmica
-- [ ] 5.4 Cupom fiscal NFC-e (definir provedor: Focus NFe, NFe.io etc. — exige certificado digital e CSC da SEFAZ)
-- [ ] 5.5 Vendas no dashboard
+### Fase 5 — Vendas + cupom (implementada localmente)
+> Design: [specs/2026-11-17-vendas-design.md](superpowers/specs/2026-11-17-vendas-design.md) · Plano: [plans/2026-11-17-vendas.md](superpowers/plans/2026-11-17-vendas.md)
+
+- [x] 5.1 Models `Sale`, `Counter`, `FiscalSettings`, `ProductFiscal` + `db:init` + regras puras (`lib/sales-rules.ts`) e serviço (`lib/sales.ts`)
+- [x] 5.2 Caixa: pedido, seletor Não fiscal/Fiscal, pagamento dividido com troco, Vendas do dia (reimprimir, cancelar, tentar de novo)
+- [x] 5.3 Comprovante não fiscal 80 mm (`/vendas/comprovante/[id]`) — conferido na tela; **impressão na térmica real ainda não testada**
+- [x] 5.4 Estrutura NFC-e pronta: provedor Focus NFe atrás de `lib/fiscal-provider/` + provedor simulado; Configuração fiscal (`/vendas/config`). **Ligar:** conta Focus → certificado + CSC no painel → `FISCAL_PROVIDER=focusnfe`, `FOCUS_NFE_TOKEN`, `FOCUS_NFE_ENV=homologacao` → testar → `producao`
+- [ ] 5.5 Vendas no dashboard (fora do escopo desta fase a pedido do usuário: outras abas não mudam)
+- [x] 5.6 Verificado: 77 testes (34 novos) · e2e da API 31/31 num banco temporário (apagado) · lint/tsc/build ✅ · telas 1280px e 390px ✅
 
 ### Fase 6 — Publicação
 - [ ] 6.0 Trocar `AUTH_SECRET` por chave de 32+ caracteres
@@ -168,13 +175,18 @@ tests/core.test.ts   # vitest
 
 | 2026-11-13 | **Financeiro no Admin**: Fechamentos diários (maquininha, Excel com TOTAL), Despesas/cartão/suprimentos (Excel com TOTAL e resumo), Cupons fiscais e não fiscais com XML no layout do `docs/ref` (por cupom ou .zip do mês). Libs novas: `exceljs`, `jszip` | 41 testes ✅ (21 novos, incluindo sequência de tags idêntica ao XML de referência) · e2e 35 checagens num banco temporário (apagado depois) ✅ · lint/tsc/build ✅ · telas 1280px e 390px ✅ (ajustados: abas do Admin e descrição de despesas no celular) |
 | 2026-11-13 | Cupom: endereço do emitente/destinatário (CEP, logradouro, número, bairro, município, cód. IBGE) 100% opcional, inclusive no fiscal. Sem cód. IBGE o XML usa o do destinatário ou 3550308; tags continuam todas presentes. Placeholders viraram "Opcional" | 43 testes ✅ (2 novos) · tsc/lint ✅ |
+| 2026-11-17 | Fase 5 desenhada e planejada: caixa em `/vendas` (coleção `sales`), seletor Não fiscal/Fiscal, comprovante 80 mm, NFC-e via provedor (Focus NFe) atrás de interface, configuração fiscal em `/vendas/config` (só dono). Outras abas não mudam | Decisões do usuário: só a aba Vendas; caminho B (provedor) após comparar com emissão direta; dados fiscais dentro de Vendas; sem desconto na v1. Só documentação |
+| 2026-11-17 | **Fase 5 implementada:** caixa, pagamento dividido/troco, comprovante 80 mm, Vendas do dia, cancelamento (staff só no dia; NFC-e com motivo ≥ 15 e até 30 min), Configuração fiscal, provedor Focus NFe + simulado. Preço sempre do banco; `clientRef` evita venda dupla; "Tentar de novo" consulta o provedor antes de reenviar. Única mudança fora de Vendas: tirada a etiqueta "BREVE" do menu | 77 testes ✅ · e2e 31/31 ✅ · lint/tsc/build ✅ · telas 1280/390 ✅. Revisão final achou e corrigiu: cancelar venda com NFC-e "sem resposta" agora confirma no provedor e cancela a nota lá também. Campos da Focus conferidos na doc oficial (troco, PIS/COFINS e CEST não constam do schema → não enviados) |
 
 ## 7. Pendências / dúvidas em aberto
 - Financeiro: rodar `npm run db:init` uma vez no banco da loja para criar as coleções `cardclosings`, `expenses` e `invoices` com os índices (o índice único de cupom fiscal depende disso).
 - XML dos cupons usa `tpAmb=2` e impostos zerados, exatamente como o XML de referência. Se o contador pedir ICMS/PIS/COFINS reais ou `tpAmb=1`, ajustar `XML_FIXED`/`buildInvoiceXml` em `lib/fiscal.ts`.
 - Ideia (não pedida): importar XML de NF-e recebida para preencher o cupom automaticamente.
 - ⚠️ `AUTH_SECRET` atual tem só 8 caracteres — gerar uma de 32+ antes de publicar (comando no `.env.example`).
-- Vendas/cupom: provedor de NFC-e e modelo da impressora — definir na Fase 5.
+- Vendas: rodar `npm run db:init` no banco da loja (cria `sales`, `counters`, `fiscalsettings`, `productfiscals` e o índice único de `clientRef`).
+- Vendas: testar uma impressão real na térmica (layout 80 mm pelo navegador).
+- NFC-e: contratar Focus NFe, cadastrar certificado A1 + CSC no painel, NCM de cada produto com o contador, testar em homologação. Conferir na homologação: valores como texto ("10.00") e ausência de troco/CEST no envio.
+- Vendas no Dashboard (5.5) e desconto no caixa: não pedidos ainda.
 - Ideias futuras (não pedidas): exportar relação do dia em PDF/WhatsApp; estoque com aviso de produto acabando.
 
 ## 8. Como verificar

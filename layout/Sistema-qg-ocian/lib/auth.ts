@@ -18,6 +18,8 @@ const ADMIN_PREFIXES = [
   "/api/stats",
   "/api/saida/reopen",
   "/api/finance", // fechamentos, despesas e cupons
+  "/vendas/config", // configuração fiscal do caixa
+  "/api/vendas/config",
 ];
 
 export function isAdminPath(pathname: string): boolean {

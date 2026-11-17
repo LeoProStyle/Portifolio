@@ -11,7 +11,7 @@ async function logout() {
 
 const TABS = [
   { href: "/saida", label: "Saída", icon: ClipboardList },
-  { href: "/vendas", label: "Vendas", icon: Receipt, soon: true },
+  { href: "/vendas", label: "Vendas", icon: Receipt, soon: false },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin", label: "Admin", icon: Settings2 },
 ];

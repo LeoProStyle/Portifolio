@@ -182,3 +182,124 @@ export interface InvoicesResponse {
   /** Último destinatário usado (dados da loja). */
   lastRecipient: PartyDTO | null;
 }
+
+/* ===================== Vendas (caixa) ===================== */
+
+export type SaleKind = "nao_fiscal" | "fiscal";
+export type SaleStatus = "concluida" | "cancelada";
+export type FiscalStatus = "pendente" | "autorizada" | "rejeitada" | "erro" | "cancelada";
+export type FiscalEnv = "homologacao" | "producao";
+
+/** Dados fiscais de um item (NCM obrigatório para NFC-e; o resto tem padrão). */
+export interface ItemFiscalDTO {
+  ncm: string;
+  cfop: string;
+  cest: string;
+  unit: string;
+  origin: string;
+  /** CSOSN (Simples/MEI) ou CST (regime normal). */
+  taxCode: string;
+}
+
+export interface SaleItemDTO {
+  productId: string;
+  name: string;
+  category: string;
+  emoji: string;
+  unitCents: number;
+  qty: number;
+  totalCents: number;
+  /** Só nas vendas fiscais (cópia da configuração no momento da venda). */
+  fiscal?: ItemFiscalDTO;
+}
+
+export interface SaleFiscalDTO {
+  status: FiscalStatus;
+  provider: string;
+  environment: FiscalEnv;
+  ref: string;
+  accessKey: string;
+  number: string;
+  series: string;
+  protocol: string;
+  qrCodeUrl: string;
+  consultUrl: string;
+  xmlUrl: string;
+  danfeUrl: string;
+  message: string;
+  attempts: number;
+}
+
+export interface SaleDTO {
+  id: string;
+  number: number;
+  date: string;
+  createdAt: string;
+  kind: SaleKind;
+  items: SaleItemDTO[];
+  totalCents: number;
+  payments: InvoicePaymentDTO[];
+  /** Dinheiro entregue pelo cliente (0 se não houve dinheiro). */
+  receivedCents: number;
+  changeCents: number;
+  customerDoc: string;
+  status: SaleStatus;
+  cancelReason: string;
+  canceledAt: string | null;
+  fiscal: SaleFiscalDTO | null;
+}
+
+export interface SalesDayResponse {
+  date: string;
+  today: string;
+  sales: SaleDTO[];
+  totals: { count: number; totalCents: number; byMethod: InvoicePaymentDTO[] };
+}
+
+export interface ProductFiscalDTO extends ItemFiscalDTO {
+  productId: string;
+}
+
+export interface FiscalSettingsDTO {
+  company: PartyDTO;
+  tradeName: string;
+  receiptFooter: string;
+  defaults: { cfop: string; taxCode: string; origin: string; unit: string };
+}
+
+export interface FiscalReadiness {
+  enabled: boolean;
+  provider: string | null;
+  environment: FiscalEnv | null;
+  /** Motivos que impedem o cupom fiscal (vazio = liberado). */
+  reasons: string[];
+  /** Produtos ativos sem NCM (não podem ir em venda fiscal). */
+  missingNcm: string[];
+}
+
+export interface ReceiptCompany {
+  name: string;
+  doc: string;
+  address: string;
+  phone: string;
+  footer: string;
+}
+
+export interface VendasCatalogResponse {
+  today: string;
+  role: "admin" | "staff";
+  products: ProductDTO[];
+  readiness: FiscalReadiness;
+}
+
+export interface SaleReceiptResponse {
+  sale: SaleDTO;
+  company: ReceiptCompany;
+}
+
+export interface FiscalConfigResponse {
+  settings: FiscalSettingsDTO;
+  products: ProductDTO[];
+  fiscal: ProductFiscalDTO[];
+  readiness: FiscalReadiness;
+}

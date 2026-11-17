@@ -50,6 +50,38 @@
         "nxtPid": "nxtPid"
       },
       "namedRegex": "^/api/products/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/vendas/[id]",
+      "regex": "^/api/vendas/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/vendas/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/vendas/[id]/cancel",
+      "regex": "^/api/vendas/([^/]+?)/cancel(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/vendas/(?<nxtPid>[^/]+?)/cancel(?:/)?$"
+    },
+    {
+      "page": "/api/vendas/[id]/fiscal/retry",
+      "regex": "^/api/vendas/([^/]+?)/fiscal/retry(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/vendas/(?<nxtPid>[^/]+?)/fiscal/retry(?:/)?$"
+    },
+    {
+      "page": "/vendas/comprovante/[id]",
+      "regex": "^/vendas/comprovante/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/vendas/comprovante/(?<nxtPid>[^/]+?)(?:/)?$"
     }
   ],
   "staticRoutes": [
@@ -118,6 +150,12 @@
       "regex": "^/vendas(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/vendas(?:/)?$"
+    },
+    {
+      "page": "/vendas/config",
+      "regex": "^/vendas/config(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/vendas/config(?:/)?$"
     }
   ],
   "dataRoutes": [],

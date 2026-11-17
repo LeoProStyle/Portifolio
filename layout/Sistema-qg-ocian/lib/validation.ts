@@ -11,6 +11,7 @@ import {
   parseAccessKey,
   type PaymentCode,
 } from "./fiscal";
+import { SALE_METHODS } from "./sales-rules";
 
 export const ProductInput = z.object({
   name: z.string().trim().min(1, "Informe o nome").max(60, "Nome muito longo"),
@@ -155,4 +156,64 @@ export const ExpenseFilter = z.object({
 export const InvoiceFilter = z.object({
   month: MonthKey.optional().transform((m) => m ?? currentMonth()),
   kind: z.enum(["fiscal", "nao_fiscal"]).optional(),
+});
+
+/* ===================== Vendas (caixa) ===================== */
+
+export const SaleInput = z
+  .object({
+    clientRef: z.string().trim().min(8, "Referência inválida").max(64, "Referência inválida"),
+    kind: z.enum(["nao_fiscal", "fiscal"], "Tipo de cupom inválido"),
+    items: z
+      .array(
+        z.object({
+          productId: z.string().min(1, "Produto inválido"),
+          qty: z.number().int("Quantidade inválida").min(1, "Quantidade inválida").max(999, "Quantidade muito alta"),
+        }),
+      )
+      .min(1, "Adicione ao menos um produto")
+      .max(200, "Itens demais"),
+    payments: z
+      .array(z.object({ method: z.enum(SALE_METHODS, "Forma de pagamento inválida"), amountCents: Cents("Pagamento").refine((v) => v > 0, "Informe o valor do pagamento") }))
+      .min(1, "Informe a forma de pagamento")
+      .max(10, "Formas de pagamento demais"),
+    receivedCents: Cents("Valor recebido").optional(),
+    customerDoc: z.string().trim().optional().default(""),
+  })
+  .transform((s) => ({ ...s, customerDoc: s.kind === "fiscal" ? cleanDoc(s.customerDoc) : "" }))
+  .refine((s) => s.customerDoc === "" || isValidDoc(s.customerDoc), { message: "CPF/CNPJ inválido", path: ["customerDoc"] });
+
+export const CancelSaleInput = z.object({
+  reason: z.string().trim().min(3, "Informe o motivo do cancelamento").max(255, "Motivo muito longo"),
+});
+
+const optDigits = (label: string, len: number) => z.string().trim().refine((v) => v === "" || new RegExp(`^\\d{${len}}$`).test(v), `${label} deve ter ${len} dígitos`);
+const TaxCode = z.string().trim().regex(/^\d{2,3}$/, "CSOSN/CST inválido");
+const Origin = z.string().trim().regex(/^[0-8]$/, "Origem inválida");
+
+export const FiscalConfigInput = z.object({
+  settings: z.object({
+    company: Party,
+    tradeName: z.string().trim().max(60, "Nome fantasia muito longo").optional().default(""),
+    receiptFooter: z.string().trim().max(120, "Rodapé muito longo").optional().default(""),
+    defaults: z.object({
+      cfop: z.string().trim().regex(/^\d{4}$/, "CFOP padrão deve ter 4 dígitos"),
+      taxCode: TaxCode,
+      origin: Origin,
+      unit: z.string().trim().min(1, "Informe a unidade padrão").max(6, "Unidade muito longa"),
+    }),
+  }),
+  products: z
+    .array(
+      z.object({
+        productId: z.string().min(1),
+        ncm: optDigits("NCM", 8),
+        cfop: optDigits("CFOP", 4),
+        cest: optDigits("CEST", 7),
+        unit: z.string().trim().max(6, "Unidade muito longa").optional().default(""),
+        origin: z.union([z.literal(""), Origin]).optional().default(""),
+        taxCode: z.union([z.literal(""), TaxCode]).optional().default(""),
+      }),
+    )
+    .max(2000),
 });
