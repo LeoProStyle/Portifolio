@@ -1,0 +1,40 @@
+# Segredos
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.db
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+*.log
+
+# Editor / SO
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# ADD - managed by code-addiction
+.codeadd/*
+!.codeadd/settings.json
+!.codeadd/wiki/
+!.codeadd/qa/
+.codeadd/settings.local.json
+.claude/
+# END ADD
+
+# workspace de execução de planos (scratch)
+.superpowers/
+
+# logs do escritório (scripts/iniciar-escritorio.ps1)
+backend/logs/

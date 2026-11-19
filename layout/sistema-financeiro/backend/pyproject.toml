@@ -1,0 +1,44 @@
+[project]
+name = "trading-room-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.20.1",
+    "apscheduler<4",
+    "exchange-calendars>=4.13.3",
+    "fastapi>=0.164.0",
+    "feedparser>=6.0.14",
+    "langgraph>=1.2.22",
+    "numpy>=2.5.5",
+    "pandas>=3.1.1",
+    "pydantic>=2.14.3",
+    "pydantic-settings>=2.16.3",
+    "pyyaml>=6.0.3",
+    "sqlalchemy>=2.1.9",
+    "tzdata>=2026.6",
+    "uvicorn[standard]>=0.54.0",
+    "yfinance>=1.8.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.10.1",
+    "httpx>=0.28.1",
+    "pytest>=9.2.0",
+    "ruff>=0.17.5",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+filterwarnings = ["ignore:Using .httpx. with .starlette.testclient. is deprecated"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.black]
+line-length = 100

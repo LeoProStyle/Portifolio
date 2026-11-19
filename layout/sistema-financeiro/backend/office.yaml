@@ -1,0 +1,205 @@
+# Escritório de Pregão — salas e robôs (SIMULAÇÃO / paper trading)
+#
+# Mudar strategy/params, ticker, interval, initial_cash ou limites de um robô
+# abre uma NOVA execução (conta nova): os números nunca misturam configurações.
+# Mudar name/look/enabled não reinicia nada.
+#
+# Estratégias (código, sem custo): sma_cross, rsi_reversion, donchian, atr_trend,
+# bull_flag, ma20_reclaim, oversold_bounce. mesa_ia = equipe de agentes de IA.
+
+building_max_daily_loss: 0.03     # perda máxima do dia do prédio todo (3%)
+
+rooms:
+  - id: acoes
+    name: Ações B3
+    max_daily_loss: 0.03          # perda máxima do dia da sala (3%)
+    max_instrument_exposure: 0.40 # exposição máx. somada por ativo (40% do patrimônio da sala)
+    # ações extras aceitas na sala (lista fixa dos rastreadores: ~20 das mais negociadas)
+    assets: [BBDC4.SA, BBAS3.SA, ABEV3.SA, WEGE3.SA, B3SA3.SA, ITSA4.SA, RENT3.SA, SUZB3.SA,
+             PRIO3.SA, GGBR4.SA, AXIA3.SA, RADL3.SA, EQTL3.SA, LREN3.SA, VIVT3.SA, BPAC11.SA,
+             RAIL3.SA]
+
+  - id: minis
+    name: Minicontratos B3
+    max_daily_loss: 0.03
+    max_instrument_exposure: 0.40 # aqui a exposição é medida em MARGEM usada
+    # 1 contrato de WDO com stop de 2×ATR arrisca ~R$ 1.900 (≈1,9% de R$ 100 mil):
+    # com 1% ele nunca operaria. 2% permite 1 contrato; acima disso a ordem é recusada.
+    max_risk_per_trade: 0.02
+
+  - id: cripto
+    name: Criptomoedas
+    currency: USD          # contas em dólar; o prédio converte para reais pelo USDBRL=X do instante
+    calendar: 24x7         # todo dia; o candle diário fecha às 21h de Brasília (00:00 UTC)
+    assets: [BTC-USD, ETH-USD, SOL-USD, BNB-USD, XRP-USD, ADA-USD, DOGE-USD, AVAX-USD,
+             LINK-USD, DOT-USD]  # preço agregado do yfinance (não é de uma exchange)
+    fee_pct: 0.001         # 0,1% por execução
+    slippage_pct: 0.0005   # 0,05% contra
+    qty_step: 0.0001       # quantidade fracionária (passo de 0,0001)
+    max_daily_loss: 0.03
+    max_instrument_exposure: 0.40
+
+# Minicontratos simulados por PROXY (limitação declarada na tela):
+# - não há fonte gratuita confiável de série contínua do WIN/WDO;
+# - sem base (diferença futuro × à vista) e sem rolagem de vencimento.
+# Custos e margens são estimativas configuráveis, não valores oficiais da B3.
+instruments:
+  - symbol: WIN
+    name: Mini-índice (proxy ^BVSP)
+    source: ^BVSP
+    scale: 1
+    multiplier: 0.20          # R$ por ponto por contrato
+    fee_per_contract: 0.50    # corretagem + emolumentos estimados, por contrato e por lado
+    margin_per_contract: 4000
+    slippage_points: 5        # 1 tick contra
+
+  - symbol: WDO
+    name: Mini-dólar (proxy USDBRL=X × 1000)
+    source: USDBRL=X
+    scale: 1000
+    multiplier: 10.00
+    fee_per_contract: 1.20
+    margin_per_contract: 9000
+    slippage_points: 0.5      # 1 tick contra
+
+robots:
+  - id: atlas
+    name: ATLAS
+    room: acoes
+    ticker: PETR4.SA
+    strategy: {kind: sma_cross, params: {fast: 9, slow: 21}}
+
+  - id: orion
+    name: ORION
+    room: acoes
+    ticker: VALE3.SA
+    strategy: {kind: rsi_reversion, params: {period: 14, buy_below: 30, sell_above: 55}}
+
+  - id: vega
+    name: VEGA
+    room: acoes
+    ticker: ITUB4.SA
+    strategy: {kind: donchian, params: {entry: 20, exit: 10}}
+
+  - id: rigel
+    name: RIGEL
+    room: acoes
+    ticker: PETR4.SA
+    strategy: {kind: atr_trend, params: {sma: 50, atr: 14, mult: 3}}
+
+  - id: nova
+    name: NOVA
+    room: acoes
+    ticker: VALE3.SA
+    strategy: {kind: bull_flag, params: {rise: 0.10, lookback: 10, flag: 5, band: 0.05}}
+
+  - id: mesa-ia
+    name: MESA IA
+    room: acoes
+    ticker: PETR4.SA
+    strategy: {kind: mesa_ia}
+
+  # ----- Minicontratos (compram e vendem a descoberto) -----
+  - id: sirius
+    name: SIRIUS
+    room: minis
+    ticker: WIN
+    short: true
+    min_avg_volume: 0
+    strategy: {kind: sma_cross, params: {fast: 9, slow: 21}}
+
+  - id: altair
+    name: ALTAIR
+    room: minis
+    ticker: WIN
+    short: true
+    min_avg_volume: 0
+    strategy: {kind: donchian, params: {entry: 20, exit: 10}}
+
+  - id: polaris
+    name: POLARIS
+    room: minis
+    ticker: WDO
+    short: true
+    min_avg_volume: 0         # câmbio no yfinance vem sem volume
+    strategy: {kind: atr_trend, params: {sma: 50, atr: 14, mult: 3}}
+
+  # ----- Criptomoedas (só comprado; contas de US$ 20 mil) -----
+  - id: antares
+    name: ANTARES
+    room: cripto
+    ticker: BTC-USD
+    initial_cash: 20000
+    strategy: {kind: sma_cross, params: {fast: 9, slow: 21}}
+
+  - id: capella
+    name: CAPELLA
+    room: cripto
+    ticker: ETH-USD
+    initial_cash: 20000
+    strategy: {kind: donchian, params: {entry: 20, exit: 10}}
+
+  - id: deneb
+    name: DENEB
+    room: cripto
+    ticker: SOL-USD
+    initial_cash: 20000
+    strategy: {kind: rsi_reversion, params: {period: 14, buy_below: 30, sell_above: 55}}
+
+  - id: lyra
+    name: LYRA
+    room: cripto
+    ticker: BTC-USD
+    initial_cash: 20000
+    strategy: {kind: atr_trend, params: {sma: 50, atr: 14, mult: 3}}
+
+  # ----- Rastreadores: escolhem entre vários ativos (lista FIXA, declarada aqui) -----
+  - id: orbita
+    name: ÓRBITA
+    room: acoes
+    ticker: VARREDURA
+    universe: [PETR4.SA, VALE3.SA, ITUB4.SA, BBDC4.SA, BBAS3.SA, ABEV3.SA, WEGE3.SA, B3SA3.SA,
+               ITSA4.SA, RENT3.SA, SUZB3.SA, PRIO3.SA, GGBR4.SA, AXIA3.SA, RADL3.SA, EQTL3.SA,
+               LREN3.SA, VIVT3.SA, BPAC11.SA, RAIL3.SA]
+    max_positions: 3
+    strategy: {kind: rsi_reversion, params: {period: 14, buy_below: 30, sell_above: 55}}
+
+  - id: cometa
+    name: COMETA
+    room: acoes
+    ticker: VARREDURA
+    universe: [PETR4.SA, VALE3.SA, ITUB4.SA, BBDC4.SA, BBAS3.SA, ABEV3.SA, WEGE3.SA, B3SA3.SA,
+               ITSA4.SA, RENT3.SA, SUZB3.SA, PRIO3.SA, GGBR4.SA, AXIA3.SA, RADL3.SA, EQTL3.SA,
+               LREN3.SA, VIVT3.SA, BPAC11.SA, RAIL3.SA]
+    max_positions: 3
+    strategy: {kind: donchian, params: {entry: 20, exit: 10}}
+
+  - id: quasar
+    name: QUASAR
+    room: minis
+    ticker: VARREDURA
+    universe: [WIN, WDO]
+    short: true
+    min_avg_volume: 0
+    max_positions: 2
+    strategy: {kind: donchian, params: {entry: 20, exit: 10}}
+
+  - id: pulsar
+    name: PULSAR
+    room: cripto
+    ticker: VARREDURA
+    initial_cash: 20000
+    universe: [BTC-USD, ETH-USD, SOL-USD, BNB-USD, XRP-USD, ADA-USD, DOGE-USD, AVAX-USD,
+               LINK-USD, DOT-USD]
+    max_positions: 3
+    strategy: {kind: rsi_reversion, params: {period: 14, buy_below: 30, sell_above: 55}}
+
+  - id: nebula
+    name: NEBULA
+    room: cripto
+    ticker: VARREDURA
+    initial_cash: 20000
+    universe: [BTC-USD, ETH-USD, SOL-USD, BNB-USD, XRP-USD, ADA-USD, DOGE-USD, AVAX-USD,
+               LINK-USD, DOT-USD]
+    max_positions: 3
+    strategy: {kind: donchian, params: {entry: 20, exit: 10}}
